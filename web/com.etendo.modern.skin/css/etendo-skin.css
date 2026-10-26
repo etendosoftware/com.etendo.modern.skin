@@ -1,0 +1,4023 @@
+/*
+ *************************************************************************
+ * Copyright (C) 2026 Futit Services S.L.
+ * Licensed under the Openbravo Public License version 1.1.
+ * You may obtain a copy of the License at
+ * http://www.openbravo.com/legal/license.html
+ ************************************************************************
+ */
+
+/*
+ * Etendo Modern Skin.
+ *
+ * Notes for whoever edits this next:
+ *
+ * - The whole file is scoped under .etskin-on, a class that etendo-skin.js puts on <html> only
+ *   when the skin is enabled for the current session. The stylesheet bundle itself is cached
+ *   globally, so this class is the only per-client switch available.
+ * - SmartClient builds style names by concatenating state suffixes onto a base name
+ *   (OBGridCell -> OBGridCellSelectedOverDark and so on), which yields hundreds of classes.
+ *   Enumerating them is unmaintainable, so we match on the base with attribute selectors. That
+ *   also buys specificity (0,2,1) over the stock (0,1,0) rules, which makes the result
+ *   independent of concatenation order in the bundle.
+ * - This file is concatenated after ob-rtl-styles.css, whose own comment warns that nothing may
+ *   follow it. Use logical properties (padding-inline-start, not padding-left) so RTL keeps
+ *   working.
+ * - The kernel rewrites relative image references and inlines jpg/png/gif as data URIs. It scans
+ *   one line at a time and stops at the first closing parenthesis, so inline SVG must not contain
+ *   parentheses of its own. Arc commands in path data are fine; transform functions are not.
+ * - Sizes here mirror the JS values set by etendo-skin.js. Changing one without the other makes
+ *   text drift inside its row.
+ */
+
+/* ------------------------------------------------------------------ font */
+
+/*
+ * Inter, self hosted. The stack in --sk-font has always asked for it, but nothing shipped it, so
+ * every installation silently fell through to the platform UI font: SF Pro on macOS, Segoe UI on
+ * Windows. That is the single biggest reason the skin did not look like the reference.
+ *
+ * Inter 20 is a variable font, so one file covers 100..900 and the four weights this skin uses
+ * cost one download, not four. Two subsets: latin, and latin-ext for the accented characters an
+ * ERP actually meets. unicode-range keeps the second one from loading unless a page needs it.
+ *
+ * The url() form is deliberate. The kernel rewrites "url(./" to the module web directory of the
+ * stylesheet that contained it (StyleSheetResourceComponent, "repair urls"), so "./../fonts/" is
+ * what resolves from inside the concatenated bundle, whose own URL is the kernel servlet and not
+ * this file. A plain "../fonts/" would resolve against the servlet and 404. The same string is
+ * also correct for the login stylesheet, which is linked directly from its css directory.
+ *
+ * woff2 is not one of the extensions the data URI pass inlines, and there are no parentheses
+ * inside the url(), so both passes leave these rules alone.
+ */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(./../fonts/inter-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(./../fonts/inter-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------------------------------------------------------------- tokens */
+
+/*
+ * Fallbacks only. etendo-skin.js overwrites these on <html> from the ETSKIN_Theme preference, so
+ * the palette changes per client without recompiling anything. Keeping real values here means a
+ * JS failure degrades to a sane theme instead of an unstyled page.
+ *
+ * They sit on :root rather than on .etskin-on because the boot screen at the bottom of this file
+ * paints before any script has run and therefore before that class exists. Custom properties are
+ * inert until something reads them, so declaring them unconditionally costs a disabled client
+ * nothing.
+ */
+:root {
+  --sk-primary: #2563eb;
+  --sk-on-primary: #ffffff;
+  --sk-accent: #1e293b;
+  --sk-on-accent: #ffffff;
+  --sk-marker: #f5c518;
+  --sk-danger: #dc2626;
+  --sk-on-danger: #ffffff;
+
+  --sk-surface: #ffffff;
+  --sk-canvas: #c6d3ff;
+  --sk-canvas-tint: #f5f6fa;
+  --sk-text: #101828;
+
+  /*
+   * Etendo GO's side navigation: a pale grey panel, a hairline edge and the brand yellow for the
+   * open entry. Kept apart from the palette on purpose - the presets recolour the windows, not the
+   * way into them - and from --sk-marker, which is the split view's focus mark.
+   */
+  --sk-nav-surface: #f6f7f9;
+  --sk-nav-border: #e1e7ef;
+  --sk-nav-highlight: #ffd900;
+  --sk-nav-on-highlight: var(--sk-text);
+
+  /*
+   * Etendo GO's top bar sits on the same grey as the side navigation, so the two read as one frame
+   * around the content, and its search field is a slightly darker grey pill.
+   */
+  --sk-topbar-surface: var(--sk-nav-surface);
+  --sk-search-fill: #e7e9ee;
+
+  /*
+   * Etendo GO's form and table language, for the standard windows: its near-black ink, the pale
+   * fills behind fields and under the pointer, and its muted glyph grey. New tokens only - no value a
+   * UIKit view reads changes.
+   */
+  --sk-go-ink: #0f172a;
+  --sk-go-ink-hover: #1e293b;
+  --sk-go-fill: #f1f5f9;
+  --sk-go-fill-soft: #f8fafc;
+  --sk-go-icon: #64748b;
+
+  --sk-radius: 8px;
+  --sk-font: "Inter", "Inter var", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  --sk-cell-height: 34px;
+  --sk-field-height: 30px;
+  --sk-tabbar-height: 44px;
+
+  /* Derived. color-mix keeps every shade in step with whatever primary the client picked. */
+  --sk-text-muted: color-mix(in srgb, var(--sk-text) 58%, transparent);
+  --sk-text-faint: color-mix(in srgb, var(--sk-text) 40%, transparent);
+  --sk-border: color-mix(in srgb, var(--sk-text) 14%, transparent);
+  --sk-border-strong: color-mix(in srgb, var(--sk-text) 24%, transparent);
+  /* The rule between two rows of data is read as texture, not as a border; the chrome around a
+     control is read as a border. They cannot be the same weight. */
+  --sk-border-hairline: color-mix(in srgb, var(--sk-text) 7%, transparent);
+  /* Fields are filled rather than boxed, so the fill has to be a token like every other colour. */
+  --sk-field-fill: color-mix(in srgb, var(--sk-text) 3%, var(--sk-surface));
+  /*
+   * The fill behind a band that divides content rather than contains it: a form section header, and
+   * anything else that has to read as a rule with a name on it. Opaque, not a tint over the surface,
+   * because these sit on top of cards that are themselves already tinted.
+   */
+  --sk-band: color-mix(in srgb, var(--sk-text) 7%, var(--sk-surface));
+  --sk-primary-hover: color-mix(in srgb, var(--sk-primary) 86%, black);
+  --sk-primary-soft: color-mix(in srgb, var(--sk-primary) 10%, var(--sk-surface));
+  --sk-primary-softer: color-mix(in srgb, var(--sk-primary) 5%, var(--sk-surface));
+  --sk-focus-ring: color-mix(in srgb, var(--sk-primary) 32%, transparent);
+
+  --sk-shadow-sm: 0 1px 2px color-mix(in srgb, black 8%, transparent);
+  --sk-shadow-md: 0 4px 16px color-mix(in srgb, black 12%, transparent);
+  --sk-radius-sm: calc(var(--sk-radius) * 0.65);
+  --sk-radius-lg: calc(var(--sk-radius) * 2);
+
+  /*
+   * The colour icons and text take on a surface. Redefined on the few bands that are not the
+   * surface colour, so the masked SVG icons follow their container instead of being pinned to one
+   * palette entry.
+   */
+  --sk-icon-color: var(--sk-text);
+
+  /*
+   * The colour of a form section title and of the line under it: the muted grey of GO's glyphs, so a
+   * title reads as a heading over its fields rather than as one more label in their ink.
+   */
+  --sk-section-title: var(--sk-go-icon);
+
+  /* Neutral hover for controls that sit on a surface rather than on the primary. */
+  --sk-neutral-soft: color-mix(in srgb, var(--sk-text) 6%, transparent);
+  --sk-neutral-softer: color-mix(in srgb, var(--sk-text) 4%, transparent);
+
+  /*
+   * Semantic colours for message bars. Info and warning ride the configured palette; success and
+   * error are the two the palette cannot supply, because "this worked" and "this failed" must not
+   * change meaning when an admin picks a green or a red primary.
+   */
+  --sk-info: var(--sk-primary);
+  --sk-warning: #b45309;
+  --sk-success: #047857;
+  --sk-error: var(--sk-danger);
+}
+
+/*
+ * Etendo sets html { font-size: 62.5% } in ob-application-styles.css, so 1rem is 10px here.
+ * Everything below uses px on purpose to avoid depending on that.
+ */
+
+/* ------------------------------------------------------------- typography */
+
+.etskin-on body,
+.etskin-on .normal,
+.etskin-on .pageBackground,
+.etskin-on [class^="OB"] {
+  font-family: var(--sk-font);
+}
+
+.etskin-on .pageBackground {
+  background-color: var(--sk-canvas);
+  background-image: linear-gradient(var(--sk-canvas) 0%, var(--sk-canvas-tint) 100%);
+  color: var(--sk-text);
+}
+
+.etskin-on .OBTopLayout {
+  background-color: var(--sk-surface);
+}
+
+/* ------------------------------------------------------------------ shell */
+
+/*
+ * The window content is a sheet of surface floating on the canvas, the way the React skin lays it
+ * out. SmartClient positions every pane absolutely with inline left/top/width/height, so the sheet
+ * cannot be inset with a margin without moving things the framework has already measured. The
+ * rounded top corners plus a shadow give the same read at no layout cost: the canvas shows through
+ * around the tab strip, and the sheet starts at the toolbar.
+ */
+.etskin-on .OBToolbar {
+  border-radius: var(--sk-radius-lg) var(--sk-radius-lg) 0 0;
+}
+
+/* ------------------------------------------------------------- scrollbars */
+
+/*
+ * etendo-skin.js switches SmartClient off its PNG-drawn scrollbars. These rules style the native
+ * ones that take over.
+ */
+.etskin-on * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sk-border-strong) transparent;
+}
+
+.etskin-on ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.etskin-on ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.etskin-on ::-webkit-scrollbar-thumb {
+  background-color: var(--sk-border-strong);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.etskin-on ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--sk-text-faint);
+}
+
+.etskin-on ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ------------------------------------------------------------------- grid */
+
+.etskin-on .OBGridBody,
+.etskin-on .OBViewGridBody {
+  background-color: var(--sk-surface);
+}
+
+/*
+ * One rule for all 42 OBGridCell* variants. Tabular figures matter more than they look: without
+ * them numeric columns do not line up, which is most of what an ERP grid shows.
+ */
+.etskin-on td[class^="OBGridCell"],
+.etskin-on td[class^="OBGridLinkCell"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--sk-text);
+  border-width: 0 0 1px 0;
+  border-style: solid;
+  border-color: var(--sk-border-hairline);
+  padding: 0 10px;
+  vertical-align: middle;
+}
+
+/* Zebra striping plus a hover tint plus a selection tint is two too many signals. Drop the
+   stripes and let selection carry the emphasis. */
+.etskin-on td[class^="OBGridCell"],
+.etskin-on td[class^="OBGridCell"][class$="Dark"],
+.etskin-on td[class^="OBGridCell"][class*="Dark"] {
+  background-color: var(--sk-surface);
+}
+
+.etskin-on td[class^="OBGridCell"][class*="Over"] {
+  background-color: var(--sk-primary-softer);
+}
+
+/*
+ * Selection is carried by the tint alone. A leading rule would be the obvious alternative, but
+ * the styled unit here is the cell, not the row, so an inset shadow repeats down the left edge of
+ * every column and draws the grid full of vertical lines. There is no row level hook to hang it
+ * on: SmartClient gives the TR neither a class nor a background.
+ */
+.etskin-on td[class^="OBGridCell"][class*="Selected"] {
+  background-color: var(--sk-primary-soft);
+}
+
+.etskin-on td[class^="OBGridCell"][class*="SelectedViewInactive"] {
+  background-color: color-mix(in srgb, var(--sk-text) 6%, transparent);
+}
+
+.etskin-on td[class^="OBGridCell"][class*="Error"] {
+  background-color: color-mix(in srgb, var(--sk-danger) 12%, var(--sk-surface));
+}
+
+.etskin-on td[class^="OBGridCell"][class*="Disabled"] {
+  color: var(--sk-text-faint);
+}
+
+/* Header: flat, quiet, uppercase micro-label. The stock one paints a gradient PNG. */
+.etskin-on .OBGridHeaderBar {
+  background: var(--sk-surface);
+  background-image: none;
+  border-width: 0 0 1px 0;
+  border-style: solid;
+  border-color: var(--sk-border-strong);
+}
+
+.etskin-on td[class^="OBGridHeaderCell"],
+.etskin-on div[class^="OBGridHeaderCell"] {
+  background: transparent;
+  background-image: none;
+  border-width: 0;
+}
+
+.etskin-on [class^="OBGridHeaderCellTitle"] {
+  font-family: var(--sk-font);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--sk-text-muted);
+  background: none;
+  border-width: 0;
+  padding: 0 10px;
+}
+
+/*
+ * Stock centres every header over columns whose data is flush left or flush right, so the label and
+ * the value it names never share an edge. SmartClient already writes the column's alignment onto
+ * the title cell as an attribute and then overrides it in the skin's stylesheet; honouring the
+ * attribute is the whole fix.
+ */
+.etskin-on [class^="OBGridHeaderCellTitle"][align="left"] {
+  text-align: left;
+}
+
+.etskin-on [class^="OBGridHeaderCellTitle"][align="right"] {
+  text-align: right;
+}
+
+.etskin-on [class^="OBGridHeaderCellTitle"][align="center"] {
+  text-align: center;
+}
+
+.etskin-on [class^="OBGridFilter"] input,
+.etskin-on td[class^="OBGridFilter"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+}
+
+/* --------------------------------------------------------------- toolbar */
+
+/*
+ * A full width slab of primary is the loudest thing on a screen whose job is to show data, and it
+ * puts a saturated band between the tabs and the grid they belong to. The toolbar is a surface
+ * instead, so the icons read as controls on the sheet rather than as a masthead, and the primary
+ * is left free to mean selection.
+ */
+.etskin-on .OBToolbar {
+  background-color: var(--sk-surface);
+  border-bottom: 1px solid var(--sk-border);
+}
+
+.etskin-on [class^="OBToolbarIconButton"] {
+  border-radius: 999px;
+  border: 0 none !important;
+  background-color: transparent;
+  transition: background-color 120ms ease;
+}
+
+.etskin-on [class^="OBToolbarIconButton"][class*="Over"] {
+  background-color: var(--sk-neutral-soft);
+  border: 0 none !important;
+}
+
+.etskin-on [class^="OBToolbarIconButton"][class*="Down"],
+.etskin-on [class^="OBToolbarIconButton"][class*="Selected"] {
+  background-color: var(--sk-primary-soft);
+  border: 0 none !important;
+}
+
+.etskin-on [class^="OBToolbarIconButton"][class*="Selected"] {
+  --sk-icon-color: var(--sk-primary);
+}
+
+.etskin-on [class^="OBToolbarIconButton"][class*="Disabled"] {
+  opacity: 0.3;
+}
+
+/* Primary action buttons: solid accent pill. */
+.etskin-on [class^="OBToolbarTextButton"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--sk-on-accent);
+  background-color: var(--sk-accent);
+  border-radius: 999px;
+  padding: 6px 18px;
+  text-decoration: none;
+  transition: filter 120ms ease;
+}
+
+.etskin-on [class^="OBToolbarTextButton"]:hover {
+  filter: brightness(1.18);
+  opacity: 1;
+  text-decoration: none;
+}
+
+/* Stock renders the label as a link, underline included. */
+.etskin-on [class^="OBToolbarTextButton"] a,
+.etskin-on [class^="OBToolbarTextButton"] u {
+  text-decoration: none;
+  color: inherit;
+}
+
+.etskin-on [class^="OBToolbarTextButton"][class*="Disabled"] {
+  background-color: var(--sk-neutral-soft);
+  color: var(--sk-text-faint);
+}
+
+/* --------------------------------------------------------- toolbar icons */
+
+/*
+ * The stock icons are 2014-era PNGs. Swapping them for masked SVG does two things at once: the
+ * shapes become current, and they are painted with a background colour rather than baked into the
+ * image, so they retint with the palette.
+ *
+ * The selector below is an explicit list rather than a [class^="OBToolbarIconButton_icon_"] prefix
+ * on purpose. Masking hides the stock image, so a prefix match would blank out any icon this file
+ * does not define - including icons added by other modules, which we cannot enumerate. Listing the
+ * classes means an unknown icon simply keeps its stock PNG.
+ */
+.etskin-on .OBToolbarIconButton_icon_attach,
+.etskin-on .OBToolbarIconButton_icon_attachExists,
+.etskin-on .OBToolbarIconButton_icon_attachExistsProgress,
+.etskin-on .OBToolbarIconButton_icon_attachProgress,
+.etskin-on .OBToolbarIconButton_icon_audit,
+.etskin-on .OBToolbarIconButton_icon_clone,
+.etskin-on .OBToolbarIconButton_icon_createCopy,
+.etskin-on .OBToolbarIconButton_icon_edit_personalization,
+.etskin-on .OBToolbarIconButton_icon_eliminate,
+.etskin-on .OBToolbarIconButton_icon_email,
+.etskin-on .OBToolbarIconButton_icon_export,
+.etskin-on .OBToolbarIconButton_icon_favourites,
+.etskin-on .OBToolbarIconButton_icon_gridAndFilter,
+.etskin-on .OBToolbarIconButton_icon_innerJoin,
+.etskin-on .OBToolbarIconButton_icon_link,
+.etskin-on .OBToolbarIconButton_icon_manageviews,
+.etskin-on .OBToolbarIconButton_icon_newDoc,
+.etskin-on .OBToolbarIconButton_icon_newRow,
+.etskin-on .OBToolbarIconButton_icon_outerJoin,
+.etskin-on .OBToolbarIconButton_icon_personalization,
+.etskin-on .OBToolbarIconButton_icon_print,
+.etskin-on .OBToolbarIconButton_icon_redo,
+.etskin-on .OBToolbarIconButton_icon_refresh,
+.etskin-on .OBToolbarIconButton_icon_rmFilters,
+.etskin-on .OBToolbarIconButton_icon_save,
+.etskin-on .OBToolbarIconButton_icon_saveProgress,
+.etskin-on .OBToolbarIconButton_icon_saveView,
+.etskin-on .OBToolbarIconButton_icon_saveclose,
+.etskin-on .OBToolbarIconButton_icon_savecloseX,
+.etskin-on .OBToolbarIconButton_icon_showFields,
+.etskin-on .OBToolbarIconButton_icon_showGridId,
+.etskin-on .OBToolbarIconButton_icon_splitView,
+.etskin-on .OBToolbarIconButton_icon_sum,
+.etskin-on .OBToolbarIconButton_icon_tree,
+.etskin-on .OBToolbarIconButton_icon_treeGrid,
+.etskin-on .OBToolbarIconButton_icon_undo {
+  background-image: none;
+  background-color: var(--sk-icon-color);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 19px 19px;
+  mask-size: 19px 19px;
+  -webkit-mask-image: var(--sk-icon);
+  mask-image: var(--sk-icon);
+}
+
+.etskin-on .OBToolbarIconButton_icon_save,
+.etskin-on .OBToolbarIconButton_icon_saveProgress {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h11l5 5v11H4z M8 4v5h6V4 M8 20v-6h8v6'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_saveclose,
+.etskin-on .OBToolbarIconButton_icon_savecloseX {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h10l4 4v6 M8 4v4h5V4 M4 14v6h8 M16 17l5 5 M21 17l-5 5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_saveView {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h12v18l-6-4-6 4z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_newDoc {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H6v18h12V7z M14 3v4h4 M12 11v6 M9 14h6'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_newRow {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14 M5 12h14'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_eliminate {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h16 M9 6V4h6v2 M6 6l1 14h10l1-14 M10 10v7 M14 10v7'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_refresh {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.5 12a8.5 8.5 0 1 1-2.5-6 M20 3v5h-5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_print {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 9V3h10v6 M7 17H4V9h16v8h-3 M7 13h10v8H7z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_export {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v13 M8 7l4-4 4 4 M4 16v4h16v-4'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_email {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18v12H3z M3 7l9 7 9-7'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_attach,
+.etskin-on .OBToolbarIconButton_icon_attachExists,
+.etskin-on .OBToolbarIconButton_icon_attachProgress,
+.etskin-on .OBToolbarIconButton_icon_attachExistsProgress {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11.5l-8.4 8.4a5 5 0 0 1-7.1-7.1l8.5-8.5a3.5 3.5 0 0 1 4.9 4.9l-8.4 8.5a2 2 0 0 1-2.8-2.8l7.8-7.8'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_undo {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 7L4 12l5 5 M4 12h10a6 6 0 0 1 0 12h-2'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_redo {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 7l5 5-5 5 M20 12H10a6 6 0 0 0 0 12h2'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_link {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a4 4 0 0 0 6 .5l3-3a4 4 0 0 0-5.7-5.7l-1.7 1.7 M14 11a4 4 0 0 0-6-.5l-3 3a4 4 0 0 0 5.7 5.7l1.7-1.7'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_createCopy,
+.etskin-on .OBToolbarIconButton_icon_clone {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 9h11v11H9z M5 15H4V4h11v1'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_sum {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 5H7l7 7-7 7h11'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_splitView {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h16v16H4z M12 4v16'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_audit {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 1 0 9 9 M12 3a9 9 0 0 1 9 9 M12 7v5l3 2'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_favourites {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_tree,
+.etskin-on .OBToolbarIconButton_icon_treeGrid {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h6v4H4z M14 10h6v4h-6z M14 16h6v4h-6z M7 8v10 M7 12h7 M7 18h7'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_innerJoin {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 6a6 6 0 1 0 0 12 6 6 0 1 0 0-12 M14.5 6a6 6 0 1 1 0 12 6 6 0 1 1 0-12'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_outerJoin {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 6a6 6 0 1 0 0 12 6 6 0 1 0 0-12 M14.5 6a6 6 0 1 1 0 12 6 6 0 1 1 0-12 M12 7.2v9.6'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_gridAndFilter {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16 M7 11h10 M10 17h4'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_rmFilters {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16 M7 11h10 M10 17h4 M15.5 15.5l5 5 M20.5 15.5l-5 5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_manageviews {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l9 5-9 5-9-5z M3 13l9 5 9-5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_personalization {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7h9 M18 7h1 M5 12h3 M12 12h7 M5 17h9 M18 17h1 M16 5v4 M10 10v4 M16 15v4'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_edit_personalization {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 16.5V20h3.5L18 9.5l-3.5-3.5z M13.5 7.5l3 3'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_showFields {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v14H4z M4 10h16 M10 10v9'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBToolbarIconButton_icon_showGridId {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4v16 M13 4v16 M3 9h16 M3 15h16'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------ tabs */
+
+/*
+ * The main tab strip sits on the canvas, not on a surface: the open windows read as sheets laid on
+ * the desk, and the selected one is the sheet the toolbar and grid below belong to. The child tab
+ * strip is inside a sheet already, so it keeps a surface and a rule.
+ */
+.etskin-on .OBTabBarMain {
+  background-color: transparent;
+  background-image: none;
+  border-bottom: 0 none;
+  text-transform: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* The 1px separator the tab set draws under itself; the sheet edge below replaces it. */
+.etskin-on .OBTabBarMain > div.normal {
+  background-color: transparent !important;
+}
+
+/*
+ * The child strip is a band, not a rule with labels on it: a wash of the canvas over the sheet,
+ * with the selected tab lifted out of it as a white pill. That is what the React skin does with
+ * its section tabs, and it is the one place in the window where a pill is affordable - the tab
+ * buttons are sized to their own title, unlike the workspace rows.
+ */
+.etskin-on .OBTabBarChild {
+  background-color: color-mix(in srgb, var(--sk-canvas) 55%, var(--sk-surface));
+  background-image: none;
+  border-bottom: 1px solid var(--sk-border);
+  text-transform: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/*
+ * 27 title variants collapse into a handful of rules. The stock skin marks the active tab with a
+ * background PNG; the pill below and a colour change replace it and cost no image.
+ */
+.etskin-on [class^="OBTabBarButtonMainTitle"],
+.etskin-on [class^="OBTabBarButtonChildTitle"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  /* --sk-text-muted is tuned for supporting text; a tab label is a control and has to stay
+     readable at 13px, so it is the text colour held back rather than a separate grey. */
+  color: color-mix(in srgb, var(--sk-text) 78%, transparent);
+  background: none;
+  background-image: none;
+  border: 0 none;
+  padding: 0 16px;
+}
+
+/*
+ * The selected child tab is marked by its fill, not by its type: same colour and same weight as
+ * its neighbours, which is what the React skin does. The window tabs above still take a weight
+ * step, because there the selected tab is a different shape and carries the accent line.
+ */
+.etskin-on [class^="OBTabBarButtonChildTitle"][class*="Selected"] {
+  color: var(--sk-text);
+}
+
+.etskin-on [class^="OBTabBarButtonMainTitle"][class*="Selected"] {
+  color: var(--sk-text);
+  font-weight: 600;
+}
+
+.etskin-on [class^="OBTabBarButtonMainTitle"][class*="Over"],
+.etskin-on [class^="OBTabBarButtonChildTitle"][class*="Over"] {
+  color: var(--sk-text);
+}
+
+.etskin-on [class^="OBTabBarButtonMainTitle"][class*="Disabled"],
+.etskin-on [class^="OBTabBarButtonChildTitle"][class*="Disabled"] {
+  color: var(--sk-text-faint);
+}
+
+.etskin-on [class^="OBTabBarButtonMainTop"],
+.etskin-on [class^="OBTabBarButtonChildTop"] {
+  background-image: none;
+  background-color: transparent;
+  border: 0 none;
+}
+
+/*
+ * The selected window tab is the top edge of the sheet below it: same surface, rounded on the two
+ * corners that are exposed, square where it meets the toolbar.
+ */
+.etskin-on [class^="OBTabBarButtonMainTop"][class*="Selected"] {
+  background-color: var(--sk-surface);
+  border-radius: var(--sk-radius-lg) var(--sk-radius-lg) 0 0;
+  /* The accent along the bottom edge, where the React skin puts it: the tab is underlined against
+     the sheet rather than capped. An inset shadow rather than a border, because SmartClient has
+     already written width and height onto this element inline and a border would grow the box. */
+  box-shadow: inset 0 -2px 0 0 var(--sk-primary);
+}
+
+.etskin-on [class^="OBTabBarButtonMainTop"][class*="Over"]:not([class*="Selected"]) {
+  background-color: color-mix(in srgb, var(--sk-surface) 45%, transparent);
+  border-radius: var(--sk-radius-lg) var(--sk-radius-lg) 0 0;
+}
+
+/*
+ * The child tab pill. Every tab button is absolutely positioned with an inline width and height
+ * SmartClient measured, so the pill cannot be the element itself - a margin would move it and a
+ * border would grow it. A pseudo element inset inside the box costs no layout: 5px off the top and
+ * bottom leaves the band showing around it, 2px off the sides turns the 1px gap the tab set leaves
+ * between buttons into a visible one.
+ */
+.etskin-on [class^="OBTabBarButtonChildTop"]::before {
+  content: "";
+  position: absolute;
+  inset: 4px 2px;
+  border-radius: 999px;
+  /* Three fills over one band, lightest wins - the same three steps the React skin uses. An
+     unselected tab is still a chip, not bare text, so the strip reads as a set. */
+  background-color: color-mix(in srgb, var(--sk-primary) 8%, var(--sk-surface));
+  transition: background-color 120ms ease;
+}
+
+.etskin-on [class^="OBTabBarButtonChildTop"][class*="Over"]::before {
+  background-color: color-mix(in srgb, var(--sk-primary) 14%, var(--sk-surface));
+}
+
+.etskin-on [class^="OBTabBarButtonChildTop"][class*="Selected"]::before {
+  background-color: var(--sk-surface);
+}
+
+/*
+ * The desk is painted once, on the tab set, and everything between it and the sheets is
+ * transparent. It is GO's grey, the one of the top bar and the side navigation, whatever the tab on
+ * screen: a standard window, the workspace, an EMOS view - which paints its own ground over it - or
+ * a window still loading. See the GO frame below for the window strip.
+ */
+.etskin-on .OBTabSetMain {
+  background-color: var(--sk-nav-surface);
+  background-image: none;
+}
+
+.etskin-on .OBTabSetMainContainer,
+.etskin-on .OBTabSetChildContainer {
+  background-color: transparent;
+  border: 0 none;
+}
+
+/* Legacy 2.50 tab colour hooks, kept in step with the palette. */
+.etskin-on .tabStyleActive,
+.etskin-on .tabStyleActiveSelected {
+  background-color: var(--sk-primary);
+}
+
+.etskin-on .tabStyleActiveSelected {
+  border-top: 3px solid var(--sk-accent);
+}
+
+.etskin-on .tabStyleInactive {
+  background-color: var(--sk-canvas-tint);
+  color: var(--sk-text-faint);
+}
+
+/* ------------------------------------------------------------ form fields */
+
+.etskin-on .OBViewForm,
+.etskin-on .OBParameterWindowForm {
+  background-color: var(--sk-surface);
+}
+
+.etskin-on [class^="OBFormFieldLabel"] {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sk-text-muted);
+  padding-bottom: 3px;
+}
+
+/*
+ * etendo-skin-form.js drops the <b> the framework wrapped every title in, but personalisation
+ * dialogs and parameter windows build their own titles and still send one through.
+ */
+.etskin-on [class^="OBFormFieldLabel"] b {
+  font-weight: inherit;
+}
+
+/*
+ * The required marker. Stock appends a bare "*" inside the bold title, which reads as punctuation;
+ * wrapped and coloured it reads as a rule. etendo-skin-form.js is what wraps it.
+ */
+.etskin-on .etskin-required {
+  color: var(--sk-danger);
+  font-weight: 600;
+  font-size: 11px;
+  vertical-align: super;
+  margin-inline-start: 2px;
+}
+
+/*
+ * The "open in new tab" arrow sat on every foreign key field at full strength, so a row of four
+ * fields carried four arrows competing with the values. It stays laid out - nothing shifts when it
+ * appears - and comes back the moment the field is under the pointer or holds focus.
+ */
+.etskin-on .etskin-linkglyph {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.etskin-on td[class^="OBFormField"]:hover .etskin-linkglyph,
+.etskin-on [class^="OBFormFieldLabel"]:hover .etskin-linkglyph,
+.etskin-on td[class^="OBFormField"]:focus-within .etskin-linkglyph {
+  opacity: 1;
+}
+
+/*
+ * A selector field ships two trigger buttons side by side: the caret that drops the inline list and
+ * the magnifier that opens the full search window. Both are needed, but two buttons on one field
+ * read as clutter multiplied by every foreign key on the form. The caret stays as the resting
+ * affordance because it is the one reached for; the magnifier follows the same rule as the link
+ * arrow - laid out, so nothing shifts, and painted the moment the field is touched.
+ */
+.etskin-on img[src*="search_picker"] {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.etskin-on td[class^="OBFormField"]:hover img[src*="search_picker"],
+.etskin-on td[class^="OBFormField"]:focus-within img[src*="search_picker"] {
+  opacity: 1;
+}
+
+.etskin-on [class^="OBFormFieldLabel"][class*="Error"] {
+  color: var(--sk-danger);
+}
+
+/*
+ * One rule for every input flavour: text, select, date, number, image, plus the read-only static
+ * renderer. The suffix set is the usual state explosion.
+ */
+.etskin-on [class^="OBFormFieldInput"],
+.etskin-on [class^="OBFormFieldSelectInput"],
+.etskin-on [class^="OBFormFieldDateInput"],
+.etskin-on [class^="OBFormFieldNumberInput"],
+.etskin-on [class^="OBFormFieldStatic"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  color: var(--sk-text);
+  background-color: var(--sk-field-fill);
+  border: 0;
+  border-bottom: 1px solid var(--sk-border-strong);
+  border-radius: var(--sk-radius) var(--sk-radius) 0 0;
+  box-shadow: var(--sk-shadow-sm);
+  box-sizing: border-box;
+  min-height: var(--sk-field-height);
+  padding: 6px 10px;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+/*
+ * ob-form-styles.js pins textBoxStyle to 'OBFormFieldInput_HeightHack OBFormFieldInput' and the
+ * stock CSS forces height: 17px !important on it. Matching that with our own !important is the
+ * only way to let fields breathe.
+ */
+.etskin-on .OBFormFieldInput_HeightHack {
+  height: auto !important;
+  min-height: var(--sk-field-height) !important;
+}
+
+.etskin-on [class^="OBFormFieldInput"][class*="Focused"],
+.etskin-on [class^="OBFormFieldSelectInput"][class*="Focused"],
+.etskin-on [class^="OBFormFieldDateInput"][class*="Focused"],
+.etskin-on [class^="OBFormFieldNumberInput"][class*="Focused"],
+.etskin-on [class^="OBFormFieldInput"]:focus,
+.etskin-on [class^="OBFormFieldSelectInput"]:focus,
+.etskin-on [class^="OBFormFieldDateInput"]:focus,
+.etskin-on [class^="OBFormFieldNumberInput"]:focus {
+  background-color: var(--sk-surface);
+  border-bottom-color: var(--sk-primary);
+  box-shadow: inset 0 -1px 0 var(--sk-primary);
+  outline: none;
+}
+
+/*
+ * Required fields used to carry a 3px navy bar down their left edge, which boxed the field and put
+ * a second mark on something the red asterisk in the label already says. The field itself now says
+ * nothing; the marker is in the label, where the eye reads the question rather than the answer.
+ */
+.etskin-on [class^="OBFormFieldInput"][class*="Required"],
+.etskin-on [class^="OBFormFieldSelectInput"][class*="Required"],
+.etskin-on [class^="OBFormFieldDateInput"][class*="Required"],
+.etskin-on [class^="OBFormFieldNumberInput"][class*="Required"] {
+  background-color: var(--sk-field-fill);
+}
+
+.etskin-on [class^="OBFormFieldInput"][class*="Error"],
+.etskin-on [class^="OBFormFieldSelectInput"][class*="Error"],
+.etskin-on [class^="OBFormFieldDateInput"][class*="Error"],
+.etskin-on [class^="OBFormFieldNumberInput"][class*="Error"] {
+  border-bottom-color: var(--sk-danger);
+  box-shadow: inset 0 -1px 0 var(--sk-danger);
+  color: var(--sk-text);
+}
+
+.etskin-on [class^="OBFormFieldInput"][class*="Disabled"],
+.etskin-on [class^="OBFormFieldSelectInput"][class*="Disabled"],
+.etskin-on [class^="OBFormFieldDateInput"][class*="Disabled"],
+.etskin-on [class^="OBFormFieldNumberInput"][class*="Disabled"] {
+  background-color: transparent;
+  border-bottom-color: var(--sk-border);
+  border-bottom-style: dashed;
+  color: var(--sk-text-muted);
+  -webkit-text-fill-color: var(--sk-text-muted);
+}
+
+/*
+ * The label cell of a form button is the button: SmartClient sizes the table around it. The stock
+ * sheet makes that cell display: block and relies on its 5px padding for height; with the padding
+ * taken off below, the fill shrank to a 16px strip in the middle of a 36px button. Back to a table
+ * cell, the fill takes the table's full height.
+ */
+.etskin-on td[class^="OBFormButton"] {
+  display: table-cell;
+}
+
+.etskin-on [class^="OBFormButton"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sk-on-primary);
+  background-color: var(--sk-primary);
+  border: 0 none;
+  border-radius: var(--sk-radius-sm);
+  padding: 0 16px;
+}
+
+.etskin-on [class^="OBFormButton"][class*="Over"] {
+  background-color: var(--sk-primary-hover);
+}
+
+.etskin-on [class^="OBFormButton"][class*="Disabled"] {
+  background-color: color-mix(in srgb, var(--sk-text) 10%, transparent);
+  color: var(--sk-text-faint);
+}
+
+/* ------------------------------------------------------------ form sections */
+
+/*
+ * A section header was a line of text with a 12px triangle at the far left and nothing behind it,
+ * so a long form read as one unbroken column of fields with the occasional slightly bolder line in
+ * it. Painting the header makes it a band: the eye can find where one group of fields ends.
+ *
+ * The header is an ImgButton, so its markup is a table of cap cells around a title cell and the
+ * only element that spans the whole control is the table itself. It carries no class of its own -
+ * the classes are on the cells - so it is reached through the wrapper div, which SmartClient stamps
+ * with the background canvas's ID in an eventproxy attribute. That attribute is the hook.
+ *
+ * The chevron is positioned against the table rather than against the title cell, so that it lands
+ * at the band's own right edge whatever the cap cells measure. That means the cell and the two
+ * nested divs inside it have to stop clipping: they are overflow:hidden with an ellipsis, for a
+ * title that is never long enough to need it, and they would cut an absolutely positioned child off
+ * at the end of the text.
+ */
+
+.etskin-on div[eventproxy*="OBSectionItemButton"] > table {
+  position: relative;
+  background-color: var(--sk-band);
+  border-radius: var(--sk-radius-sm);
+  box-shadow: var(--sk-shadow-sm);
+}
+
+.etskin-on div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"],
+.etskin-on div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"] div {
+  overflow: visible !important;
+}
+
+.etskin-on div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sk-text);
+  padding-block: 10px;
+  padding-inline-start: 12px;
+}
+
+/* The stock left-hand triangle. The chevron replaces it, at the edge the section opens against. */
+.etskin-on div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"] img {
+  display: none;
+}
+
+/*
+ * Two borders on an empty 8px box: rotated 45 degrees it points down, at -45 it points right. No
+ * character, no font, no image - so it inherits the band's colour and costs no request. The
+ * transition is what a chevron needs to read as a toggle rather than a jump cut between two glyphs.
+ */
+.etskin-on .etskin-section-chevron {
+  position: absolute;
+  inset-inline-end: 12px;
+  top: 50%;
+  margin-top: -6px;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--sk-text-muted);
+  border-bottom: 1.5px solid var(--sk-text-muted);
+  border-radius: 0 1px 0 0;
+  transform: rotate(45deg);
+  transition: transform 150ms ease;
+}
+
+.etskin-on td[class^="OBSectionItemButton_Title"][class$="closed"] .etskin-section-chevron {
+  transform: rotate(-45deg);
+  margin-top: -4px;
+}
+
+/* ---------------------------------------------------- navbar and app menu */
+
+/*
+ * No rule under the bar: GO's bar and side navigation are one grey frame, and the content below is
+ * already a different colour, which is edge enough.
+ */
+.etskin-on .OBTopLayout {
+  background-color: var(--sk-topbar-surface);
+  border-bottom: 0 none;
+}
+
+/*
+ * The strip is only as wide as the buttons it holds, so a border on it draws a rule that stops
+ * two thirds of the way across the screen. The full width separator belongs to OBTopLayout.
+ */
+.etskin-on .OBNavBarToolStrip {
+  background-color: transparent;
+  border: 0 none;
+}
+
+.etskin-on .OBNavBarComponent {
+  background-color: transparent;
+  color: var(--sk-text);
+  border-radius: var(--sk-radius-sm);
+  margin-inline-end: 2px;
+}
+
+/*
+ * Stock paints these labels in the Etendo navy at 14px bold - heavier than the window title
+ * directly below them, which inverts the hierarchy. A navbar holds secondary controls.
+ */
+.etskin-on .OBNavBarTextButton,
+.etskin-on .OBApplicationMenuButton {
+  font-family: var(--sk-font);
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0;
+  color: var(--sk-text-muted) !important;
+}
+
+.etskin-on [class^="OBNavBarTextButton"][class*="Over"],
+.etskin-on .OBNavBarTextButton:hover,
+.etskin-on .OBApplicationMenuButton:hover {
+  color: var(--sk-primary) !important;
+}
+
+.etskin-on .OBNavBarComponent:hover,
+.etskin-on .OBApplicationMenuButton:hover,
+.etskin-on .OBNavBarComponentSelected {
+  background-color: var(--sk-primary-soft);
+  border-radius: var(--sk-radius-sm);
+}
+
+/*
+ * iconCreateNew.png and iconQuickLaunch.png are drawn at their intrinsic size inside a 70x29 box,
+ * which is why they read as oversized next to everything else. Masking them to a fixed 20px puts
+ * them on the same footing as the toolbar icons, and lets them take the palette on hover.
+ */
+.etskin-on .OBNavBarCreateNew,
+.etskin-on .OBQuickLaunch {
+  background-image: none;
+  background-color: var(--sk-text-muted);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+  -webkit-mask-image: var(--sk-icon);
+  mask-image: var(--sk-icon);
+}
+
+.etskin-on .OBNavBarCreateNew:hover,
+.etskin-on .OBQuickLaunch:hover {
+  background-color: var(--sk-primary);
+}
+
+.etskin-on .OBNavBarCreateNew {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14 M5 12h14'/%3E%3C/svg%3E");
+}
+
+.etskin-on .OBQuickLaunch {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 4a7 7 0 1 0 0 14 7 7 0 1 0 0-14 M16.2 16.2L21 21'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------ navbar tray */
+
+/*
+ * The utility controls become one tray on the right: a soft pill of round buttons, which is how
+ * the React skin presents them and where it puts them. etendo-skin-topbar.js does the two things
+ * a stylesheet cannot - it re-orders the top layout so the logos lead and the tray trails, and it
+ * re-measures the buttons to 40x40, since SmartClient writes width and height inline. Everything
+ * below is the look.
+ *
+ * The tray itself is not drawn. An enclosing tint behind six controls that already read as six
+ * controls is one more edge to parse for no information: the chips carry the surface and the
+ * shadow, and the strip only has to hold them.
+ *
+ * The padding is load bearing rather than decorative. A ToolStrip is paddingAsLayoutMargin, so
+ * this is the inset the strip lays its members out inside - which is why etendo-skin-topbar.js
+ * keeps a copy of the 3 as TRAY_PAD and sizes the strip to the button plus twice it. Change one
+ * and change the other.
+ *
+ * The margin is reset for the same reason it is easy to miss: the stock rule puts 10px above the
+ * strip, and a margin on a member is height the layout has to find, so those 10px were the
+ * difference between a 55px bar and a 65px one while every measurement of the strip itself said
+ * 46. The gap it was providing on the right is now the top layout's right margin, which is the
+ * place that can also mirror it for a right-to-left reading.
+ */
+.etskin-on .OBNavBarToolStrip {
+  background-color: transparent;
+  border: 0 none;
+  border-radius: 999px;
+  padding: 3px 8px;
+  margin: 0;
+}
+
+/*
+ * The company logo and the Openbravo mark are <img>s core sizes from the uploaded file, so a
+ * 150x42 upload sets the height of the whole bar. Capping the height and letting the width follow
+ * keeps the proportions of whatever was uploaded; it is done here rather than in JavaScript
+ * because a measurement taken at install time is taken before the bar has been laid out, and an
+ * earlier version that computed the width from getVisibleWidth squashed a 150x42 logo to 28x28.
+ */
+.etskin-on img[src*="ShowImageLogo"],
+.etskin-on img[src*="PoweredByOpenbravo"] {
+  max-height: 28px;
+  width: auto;
+  vertical-align: middle;
+}
+
+/*
+ * Centring them in the bar. An earlier version did it on the image itself with top: 50% and a
+ * translateY(-50%), which clipped both marks: top resolves against the containing block, and the
+ * containing block here is not the 55px bar but the label div core wraps the image in, which is
+ * only as tall as the image. That offset and the baseline shift of an inline image compounded and
+ * pulled the logo ten pixels above the top of the page.
+ *
+ * So the line box does it instead. Giving the wrapper the height of the button cluster opposite it
+ * and centring the image in that line box lands both marks on the same axis as the cluster, and
+ * because a line box centres its content whatever that content measures, it stays centred if the
+ * uploaded logo is shorter than the 28px cap.
+ *
+ * Two wrappers, because the two marks are not built the same way: the company logo is a bare image
+ * in a div, and the Openbravo mark is wrapped in a link first.
+ */
+.etskin-on div:has(> img[src*="ShowImageLogo"]),
+.etskin-on div:has(> a > img[src*="PoweredByOpenbravo"]) {
+  line-height: 46px;
+}
+
+.etskin-on a:has(> img[src*="PoweredByOpenbravo"]) {
+  vertical-align: middle;
+}
+
+/*
+ * The chip is the OBNavBarComponent wrapper core puts around every navbar widget. It is also the
+ * element OBQuickRun swaps to OBNavBarComponentSelected while a flyout is open, which is why the
+ * open state is worth marking here rather than leaving to the widget.
+ */
+/*
+ * GO's utilities are glyphs, not chips: no surface and no shadow, a muted 20px glyph in a 40px square
+ * with GO's 8px corners, and a neutral fill only under the pointer or while the control's menu is
+ * open. The palette's primary is left to the content, where it means "act".
+ */
+.etskin-on .etskin-tray-item {
+  margin-inline-end: 0;
+  background-color: transparent;
+  border-radius: var(--sk-radius);
+  box-shadow: none;
+  --sk-icon-color: var(--sk-text-muted);
+  transition: background-color 130ms ease;
+}
+
+.etskin-on .etskin-tray-item:hover {
+  background-color: var(--sk-neutral-soft);
+  border-radius: var(--sk-radius);
+  --sk-icon-color: var(--sk-text);
+}
+
+.etskin-on .etskin-tray-item.OBNavBarComponentSelected {
+  background-color: var(--sk-border-hairline);
+  border-radius: var(--sk-radius);
+  --sk-icon-color: var(--sk-text);
+}
+
+/* The stock widgets bring their own artwork; inside a chip the mask below is the artwork. */
+.etskin-on .etskin-tray-item img {
+  visibility: hidden;
+}
+
+/*
+ * Three of these buttons are text - "Alerts (1)", "Help", "admin" - so the label has to go and an
+ * icon has to take its place. The label is not one element: SmartClient renders a button as a
+ * table and hands the styleName to the cell, to its spacer cells and to the icon slot alike, so
+ * masking "the cell" masks four overlapping copies of the icon. The wrapper is the one element per
+ * button that is exactly the button, so the icon is drawn there and the cells only lose their text.
+ * The Over and Down states append to the class name, hence the prefix match.
+ */
+.etskin-on .etskin-tray-alert [class^="OBNavBarTextButton"],
+.etskin-on .etskin-tray-help [class^="OBNavBarTextButton"],
+.etskin-on .etskin-tray-logout .OBNavBarImgButton {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  background-image: none;
+}
+
+/*
+ * SmartClient writes a z-index on the button inline, so the icon has to out-rank it. Both live
+ * inside the wrapper's own stacking context, so the number only ever competes with its siblings.
+ */
+.etskin-on .etskin-tray-alert::before,
+.etskin-on .etskin-tray-help::before,
+.etskin-on .etskin-tray-logout::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--sk-icon-color);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+  -webkit-mask-image: var(--sk-icon);
+  mask-image: var(--sk-icon);
+  pointer-events: none;
+  z-index: 999998;
+}
+
+.etskin-on .etskin-tray-alert::before {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9 M10.3 21a2 2 0 0 0 3.4 0'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-tray-help::before {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M9.2 9.3a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4 M12 17.4h.01'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-tray-logout::before {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9'/%3E%3C/svg%3E");
+}
+
+/*
+ * The bell carries a dot rather than the number, and the stock label - already translated, already
+ * counted - becomes the tooltip, which says more than "Alerts (1)" did and costs no width.
+ */
+.etskin-on .etskin-tray-alert-on::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  inset-inline-end: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background-color: var(--sk-danger);
+  box-shadow: 0 0 0 2px var(--sk-surface);
+  pointer-events: none;
+  z-index: 999999;
+}
+
+/*
+ * The profile button keeps its text, because in Classic this menu is where role, client and
+ * organisation are switched and the initials say which identity is loaded. Two letters in a tinted
+ * circle is the avatar every other application in the user's day already shows them.
+ */
+.etskin-on .etskin-tray-profile {
+  background-color: var(--sk-primary-soft);
+  box-shadow: none;
+}
+
+.etskin-on .etskin-tray-profile [class^="OBNavBarTextButton"] {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+  color: var(--sk-primary) !important;
+}
+
+/* Round, and it stays the same tint family under the pointer: a quiet control like the rest. */
+.etskin-on .etskin-tray-profile,
+.etskin-on .etskin-tray-profile:hover,
+.etskin-on .etskin-tray-profile.OBNavBarComponentSelected {
+  border-radius: 999px;
+}
+
+.etskin-on .etskin-tray-profile:hover,
+.etskin-on .etskin-tray-profile.OBNavBarComponentSelected {
+  background-color: color-mix(in srgb, var(--sk-primary) 18%, var(--sk-surface));
+}
+
+/*
+ * The profile form: role, client, organization, warehouse and language. Its lists are built by core
+ * from the stock combo properties rather than from the field classes etendo-skin.js resizes, so
+ * each one was a 32px input with a 21px arrow floating 18px beyond its end, and the read-only client
+ * was a different width from the lists around it. Every field here is now one box the width of the
+ * form, the arrow inside it, drawn the way GO draws a field; the tab set container is the one
+ * element that holds this form and nothing else.
+ */
+.etskin-on .OBNavBarComponentFormTabSetContainer [class^="OBFormFieldLabel"] {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sk-text);
+}
+
+.etskin-on .OBNavBarComponentFormTabSetContainer table[class^="OBFormFieldSelectControl"],
+.etskin-on .OBNavBarComponentFormTabSetContainer input[class^="OBFormFieldInput"] {
+  box-sizing: border-box;
+  background-color: var(--sk-surface);
+  border: 1px solid var(--sk-nav-border);
+  border-radius: var(--sk-radius);
+  box-shadow: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+/*
+ * The list keeps the width core measured for it, and a fixed layout holds it there: the value is one
+ * unwrapped line, and in an automatic table a long role name would widen the list, the form and the
+ * flyout with it. The read-only client takes the same width from the column the lists set.
+ */
+.etskin-on .OBNavBarComponentFormTabSetContainer table[class^="OBFormFieldSelectControl"] {
+  table-layout: fixed;
+}
+
+.etskin-on .OBNavBarComponentFormTabSetContainer input[class^="OBFormFieldInput"] {
+  width: 100% !important;
+}
+
+.etskin-on .OBNavBarComponentFormTabSetContainer [class^="OBFormFieldSelectInput"] {
+  box-sizing: border-box;
+  width: 100% !important;
+  min-height: calc(var(--sk-field-height) - 2px);
+  background-color: transparent;
+  border: 0 none;
+  border-radius: 0;
+  box-shadow: none;
+  line-height: 18px;
+}
+
+.etskin-on .OBNavBarComponentFormTabSetContainer td[class^="selectItemPickerIcon"] {
+  width: 21px;
+  padding-inline-end: 6px;
+  vertical-align: middle;
+}
+
+.etskin-on .OBNavBarComponentFormTabSetContainer table[class^="OBFormFieldSelectControl"]:hover {
+  border-color: var(--sk-border-strong);
+}
+
+.etskin-on .OBNavBarComponentFormTabSetContainer table[class^="OBFormFieldSelectControl"]:focus-within,
+.etskin-on .OBNavBarComponentFormTabSetContainer table[class^="OBFormFieldSelectControl"][class*="Focused"],
+.etskin-on .OBNavBarComponentFormTabSetContainer input[class^="OBFormFieldInput"]:focus {
+  border-color: var(--sk-primary);
+  box-shadow: 0 0 0 2px var(--sk-focus-ring);
+}
+
+.etskin-on .OBNavBarComponentFormTabSetContainer [class^="OBFormFieldSelectInput"]:focus {
+  box-shadow: none;
+}
+
+.etskin-on .OBNavBarComponentFormTabSetContainer input[class^="OBFormFieldInput"][class*="Disabled"] {
+  background-color: var(--sk-go-fill-soft);
+  border-style: solid;
+  border-color: var(--sk-nav-border);
+}
+
+/* Apply and Cancel: the form's two actions, at the height of a field and on the primary. */
+.etskin-on .OBNavBarComponentFormTabSetContainer td[class^="OBFormButton"] {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  border-radius: var(--sk-radius);
+}
+
+/* Reached by Tab, the button had no mark at all; it takes the ring the fields above it show. */
+.etskin-on .OBNavBarComponentFormTabSetContainer td[class^="OBFormButton"][class*="Focused"] {
+  box-shadow: 0 0 0 2px var(--sk-surface), 0 0 0 4px var(--sk-focus-ring);
+}
+
+/*
+ * The open list of any form field. The stock list was 11px grey on white with a grey band for the
+ * current entry; it now uses the fields' own type, the pointer fill of the GO table, and the
+ * primary's soft tint for the value already chosen. Row heights stay SmartClient's.
+ */
+.etskin-on .OBPickListBody,
+.etskin-on .OBPickListBodyFocused {
+  background-color: var(--sk-surface);
+  border: 1px solid var(--sk-nav-border);
+  border-radius: var(--sk-radius-sm);
+  box-shadow: var(--sk-shadow-md);
+}
+
+.etskin-on td[class^="OBFormFieldPickListCell"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  color: var(--sk-text);
+  background-color: transparent;
+  /* Not more: a multiple choice list opens with a 28px column holding a 13px tick. */
+  padding-inline: 6px 4px;
+}
+
+/*
+ * SmartClient fits the list to its longest entry from a measurement rounded down to the pixel, so
+ * that entry lost its last fraction of a pixel to an ellipsis. Two pixels of padding on the text
+ * are measured with it.
+ */
+.etskin-on td[class^="OBFormFieldPickListCell"] nobr {
+  padding-inline-end: 2px;
+}
+
+.etskin-on td[class^="OBFormFieldPickListCell"][class*="Over"] {
+  background-color: var(--sk-go-fill);
+}
+
+.etskin-on td[class^="OBFormFieldPickListCell"][class*="Selected"] {
+  background-color: var(--sk-primary-soft);
+  font-weight: 500;
+}
+
+.etskin-on td[class^="OBFormFieldPickListCell"][class*="Disabled"] {
+  color: var(--sk-text-faint);
+}
+
+/*
+ * A chip another module hands to OB.ETSkin.topBar.chip() keeps the round shape that API has always
+ * drawn: its look and its states belong to that module, and only the square corners of the shell's
+ * own glyphs are new here.
+ */
+.etskin-on .etskin-tray-chip,
+.etskin-on .etskin-tray-chip:hover,
+.etskin-on .etskin-tray-chip.OBNavBarComponentSelected {
+  border-radius: 999px;
+}
+
+/* ------------------------------------------------------------ top search */
+
+/*
+ * The search field is the stock Quick Launch, moved by etendo-skin-topbar.js to the middle of the
+ * bar and sized as GO's 44px pill. The button fills the wrapper, so the whole field is the click
+ * target, and the flyout it opens is core's own. The glyph is the button's mask, moved to the start;
+ * the placeholder is the launcher's own translated tooltip, which the script writes into
+ * --sk-search-label.
+ */
+.etskin-on .etskin-tray-search {
+  position: relative;
+  margin: 0;
+  background-color: var(--sk-search-fill);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color 130ms ease, border-color 130ms ease, box-shadow 130ms ease;
+}
+
+.etskin-on .etskin-tray-search:hover {
+  background-color: color-mix(in srgb, var(--sk-search-fill) 80%, var(--sk-topbar-surface));
+  border-radius: 999px;
+}
+
+.etskin-on .etskin-tray-search.OBNavBarComponentSelected {
+  background-color: var(--sk-search-fill);
+  border-color: var(--sk-primary);
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px var(--sk-focus-ring);
+}
+
+.etskin-on .etskin-tray-search .OBQuickLaunch,
+.etskin-on .etskin-tray-search .OBQuickLaunch:hover {
+  background-color: var(--sk-text-muted);
+  -webkit-mask-position: 16px center;
+  mask-position: 16px center;
+}
+
+.etskin-on .etskin-tray-search::after {
+  content: var(--sk-search-label, "");
+  position: absolute;
+  inset-inline-start: 46px;
+  inset-inline-end: 16px;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  font-family: var(--sk-font);
+  font-size: 14px;
+  line-height: 42px;
+  color: var(--sk-text-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------- top title */
+
+/*
+ * The title of the open view, as GO sets it: 20px semibold, truncated, with where it sits in the
+ * menu under it in 12px muted text. The column starts over the content because the brand column to
+ * its left is exactly as wide as the side navigation.
+ */
+.etskin-on .etskinTopTitle {
+  background: transparent;
+}
+
+.etskin-on .etskin-top-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  min-width: 0;
+  padding-inline-start: 24px;
+  box-sizing: border-box;
+  font-family: var(--sk-font);
+}
+
+.etskin-on .etskin-top-title-main,
+.etskin-on .etskin-top-title-crumb {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.etskin-on .etskin-top-title-main {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  color: var(--sk-text);
+}
+
+.etskin-on .etskin-top-title-crumb {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--sk-text-muted);
+}
+
+/*
+ * A navigation bar component from a module this skin knows nothing about. It keeps whatever width
+ * it measured for itself - it may be a text button - and only takes the pill and the palette.
+ */
+.etskin-on .etskin-tray-wide [class^="OBNavBarTextButton"],
+.etskin-on .etskin-tray-wide .OBNavBarImgButton {
+  font-family: var(--sk-font);
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--sk-icon-color) !important;
+}
+
+/* The two quick launch buttons are masked further up; in a chip they only need to be centred. */
+.etskin-on .etskin-tray-item .OBNavBarCreateNew,
+.etskin-on .etskin-tray-item .OBQuickLaunch {
+  background-color: var(--sk-icon-color);
+}
+
+.etskin-on .etskin-tray-item .OBNavBarCreateNew:hover,
+.etskin-on .etskin-tray-item .OBQuickLaunch:hover {
+  background-color: var(--sk-icon-color);
+}
+
+.etskin-on [class^="OBApplicationMenuTreeItemCell"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  color: var(--sk-text);
+}
+
+.etskin-on [class^="OBApplicationMenuTreeItemCell"][class*="Over"],
+.etskin-on [class^="OBApplicationMenuTreeItemCell"][class*="Selected"] {
+  background-color: var(--sk-primary-soft);
+  color: var(--sk-primary);
+}
+
+.etskin-on .OBApplicationMenuTreeBody,
+.etskin-on .OBApplicationMenuTree,
+.etskin-on .OBApplicationMenuTreeTable {
+  background-color: var(--sk-surface);
+}
+
+/* -------------------------------------------------------------- workspace */
+
+.etskin-on .OBMyOpenbravo,
+.etskin-on .OBMyOBPortal {
+  background-color: transparent;
+}
+
+/*
+ * Stock fills this column with #dddff6, a fixed lilac chosen to sit under the stock navy. It is
+ * the one panel that visibly disagrees with any other palette, so it becomes a plain surface and
+ * earns its separation from a border instead of a tint.
+ */
+.etskin-on .OBMyOBLeftColumn {
+  background-color: var(--sk-surface);
+  /*
+   * The column is now a drawer on the trailing edge, opened by Manage workspace and closed the
+   * rest of the time, so the rule that separated it from the portal moves to the side it is
+   * actually on.
+   */
+  border-inline-start: 1px solid var(--sk-border);
+}
+
+/*
+ * Section headings become the same micro label used by the grid headers. Stock underlines them
+ * with 3px of the Etendo navy, which is heavier than any rule elsewhere in the application and
+ * reads as a divider between panels rather than a heading.
+ */
+.etskin-on .OBMyOBRecentViews {
+  font-family: var(--sk-font);
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sk-text-muted) !important;
+  border-bottom: 1px solid var(--sk-border) !important;
+  padding-bottom: 6px;
+}
+
+/*
+ * The stock separator is a fixed lilac that only agrees with the stock navy; the entries carry
+ * their own shape instead. Not chips, though the React skin uses them here: SmartClient sizes
+ * these rows to the column, not to their text, so a filled pill would be a full width lozenge
+ * with the drag handle and the add button sitting outside it.
+ */
+.etskin-on .OBMyOBRecentViewsEntry {
+  border-bottom: 0 none !important;
+}
+
+.etskin-on .OBMyOBRecentViewsEntry,
+.etskin-on .OBMyOBRecentDocumentsEntry,
+.etskin-on .OBMyOBLeftColumnLink {
+  font-family: var(--sk-font);
+  font-size: 13px !important;
+  font-weight: 500;
+  color: var(--sk-text) !important;
+  border-radius: var(--sk-radius-sm);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.etskin-on .OBMyOBRecentDocumentsEntry {
+  font-size: 12px !important;
+  color: var(--sk-text-muted) !important;
+}
+
+.etskin-on .OBMyOBLeftColumnLink {
+  font-size: 12px !important;
+  color: var(--sk-primary) !important;
+}
+
+.etskin-on .OBMyOBRecentViewsEntry:hover,
+.etskin-on .OBMyOBRecentDocumentsEntry:hover,
+.etskin-on .OBMyOBLeftColumnLink:hover {
+  background-color: var(--sk-primary-soft);
+  color: var(--sk-primary) !important;
+}
+
+.etskin-on .OBMyOBCreateNew {
+  background-image: none;
+  background-color: var(--sk-primary);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 14px 14px;
+  mask-size: 14px 14px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14 M5 12h14'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14 M5 12h14'/%3E%3C/svg%3E");
+}
+
+/*
+ * Widget chrome. The widgets themselves are the framework's - a widget is a class registered in
+ * the application dictionary and it keeps every behaviour it has - but it has to read as the same
+ * kind of object as the cards an application may draw above it. Stock outlines it in 1px
+ * of the Etendo navy with a 16px navy title, which is the heaviest border on any screen, and
+ * leaves the header transparent so the desk colour shows through it.
+ */
+.etskin-on .OBWidgetHeader {
+  background-color: var(--sk-surface);
+  border-color: var(--sk-border);
+  border-width: 1px 1px 0 1px;
+  border-radius: var(--sk-radius) var(--sk-radius) 0 0;
+}
+
+.etskin-on .OBWidgetBody {
+  background-color: var(--sk-surface);
+  border-color: var(--sk-border);
+  border-width: 0 1px 1px 1px;
+  border-radius: 0 0 var(--sk-radius) var(--sk-radius);
+  margin-bottom: 0;
+}
+
+.etskin-on .OBWidgetHeaderText {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--sk-text);
+  padding-left: 14px;
+}
+
+/* Stock gives the header icons a green outline and the close icon an orange one. */
+.etskin-on [class^="OBWidgetIcon"] {
+  border-color: transparent !important;
+}
+
+.etskin-on .OBWidgetMenu {
+  background-color: var(--sk-surface);
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius-sm);
+  box-shadow: var(--sk-shadow-md);
+}
+
+/* -------------------------------------------------------------- statusbar */
+
+.etskin-on .OBStatusBar {
+  background-color: var(--sk-canvas-tint);
+  border-bottom: 1px solid var(--sk-border);
+}
+
+.etskin-on [class^="OBStatusBarTextLabel"],
+.etskin-on [class^="OBStatusBarTextLink"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  color: var(--sk-text-muted);
+}
+
+/*
+ * Core writes every field caption on the status bar in bold and the pipes between them in bold too,
+ * which put more weight on a divider than on the values it divides. Captions step down to the same
+ * 600 the rest of the skin uses for emphasis, and the dividers stop being emphasis at all.
+ */
+.etskin-on .OBStatusBarTextLabel_Title,
+.etskin-on .OBStatusBarTextLink_Title {
+  color: var(--sk-text);
+  font-weight: 600;
+}
+
+.etskin-on .OBStatusBarTextLabel_Separator {
+  font-weight: 400;
+  color: var(--sk-text-faint);
+}
+
+/*
+ * The record's own name, put at the head of the status bar by etendo-skin-form.js. A form has no
+ * other heading - the window's tab says which window, not which record - so this is the largest
+ * text on the screen and everything else on the bar is its subtitle.
+ */
+.etskin-on .etskin-record-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--sk-text);
+  letter-spacing: -0.01em;
+  padding-inline-end: 14px;
+}
+
+/* --------------------------------------------------- dialogs and messages */
+
+/*
+ * Stock paints the info bar #9bcdff with #3366cc text - a 2014 blue that belongs to no palette.
+ * Each severity becomes a tinted band with a solid rule on the leading edge, the pattern every
+ * current UI uses for an inline alert, and the tints are mixed from the tokens so they follow the
+ * theme instead of fighting it.
+ */
+.etskin-on [class^="OBMessageBar"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  border-radius: var(--sk-radius-sm);
+}
+
+.etskin-on .OBMessageBar_info,
+.etskin-on .OBMessageBar_tip,
+.etskin-on .OBMessageBar_warning,
+.etskin-on .OBMessageBar_success,
+.etskin-on .OBMessageBar_error {
+  background-color: color-mix(in srgb, var(--sk-msg) 9%, var(--sk-surface));
+  border-inline-start: 3px solid var(--sk-msg);
+  color: color-mix(in srgb, var(--sk-msg) 72%, black);
+}
+
+.etskin-on .OBMessageBar_info,
+.etskin-on .OBMessageBar_tip {
+  --sk-msg: var(--sk-info);
+}
+
+.etskin-on .OBMessageBar_warning {
+  --sk-msg: var(--sk-warning);
+}
+
+.etskin-on .OBMessageBar_success {
+  --sk-msg: var(--sk-success);
+}
+
+.etskin-on .OBMessageBar_error {
+  --sk-msg: var(--sk-error);
+}
+
+/* The text nodes carry their own colour, so the band alone is not enough. */
+.etskin-on [class^="OBMessageBarDescriptionText"],
+.etskin-on [class^="OBMessageBarLeftMsg"],
+.etskin-on [class^="OBMessageBarRightMsg"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  color: inherit;
+}
+
+/*
+ * mainIcon-info.png and its siblings are 47x40 glyphs in the same 2014 blue as the stock band, and
+ * they cannot be retinted because they are <img> content rather than a background. The leading
+ * rule already states the severity, so the badge goes and the text starts at the edge of the band.
+ */
+.etskin-on [class^="OBMessageBar"] i,
+.etskin-on [class^="OBMessageBar"] b,
+.etskin-on [class^="OBMessageBar"] em,
+.etskin-on [class^="OBMessageBar"] strong {
+  font-style: normal;
+  font-weight: 400;
+}
+
+/*
+ * The transactional filter notice is the one message bar that is always there rather than a reply
+ * to something the user did, and it was two bold lines across the full width of the view. It stays
+ * as one quiet line: the band tells you it is a notice, the filter button carries a dot, and the
+ * sentence explains it once.
+ */
+.etskin-on [class^="OBMessageBar"] {
+  padding-block: 0;
+}
+
+.etskin-on [class^="OBMessageBarDescriptionText"],
+.etskin-on [class^="OBMessageBarLeftMsgContainer"],
+.etskin-on [class^="OBMessageBarRightMsgContainer"],
+.etskin-on [class^="OBMessageBarLeftMsgText"],
+.etskin-on [class^="OBMessageBarRightMsgText"] {
+  font-weight: 400;
+  line-height: 26px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.etskin-on [class^="OBMessageBar"] img[src*="mainIcon"] {
+  display: none;
+}
+
+.etskin-on .OBMessageBarCloseIcon {
+  opacity: 0.55;
+  transition: opacity 120ms ease;
+}
+
+.etskin-on .OBMessageBarCloseIcon:hover {
+  opacity: 1;
+}
+
+/* ------------------------------------------------- grid filters and tools */
+
+/*
+ * The filter row sits directly under the header, so it reads as part of it: same canvas tint, a
+ * single rule underneath, and no per cell borders.
+ */
+.etskin-on .OBGridFilterBase {
+  background-color: var(--sk-canvas-tint);
+  border-bottom: 1px solid var(--sk-border);
+  color: var(--sk-text);
+}
+
+.etskin-on .OBGridFilterCell {
+  background-color: transparent;
+  border: 0 none;
+  border-inline-end: 1px solid color-mix(in srgb, var(--sk-border) 55%, transparent);
+}
+
+/*
+ * One box per filter, inset 4px into its column and 2px into the row, so every field - text, list or
+ * date - reads as a field and none of them touches its neighbour. They used to have no box at all,
+ * which left a text filter invisible beside a list filter that the GO window did box, and each filled
+ * its cell edge to edge. etendo-skin.js makes the row fieldHeight + 4px tall to hold them.
+ *
+ * A filter's markup is the cell's clip div, then a span holding either the input itself or the table
+ * that pairs it with its picker or its calendar. The box goes on whichever the span holds, sized to
+ * the clip div; SmartClient's measured inline widths are overridden for that, since they assume the
+ * box fills the cell. The ring is drawn inside the border because the cell clips.
+ */
+.etskin-on .OBGridFilterBase div[cellclipdiv] {
+  box-sizing: border-box;
+  padding: 2px 4px;
+}
+
+.etskin-on .OBGridFilterBase span > input[class^="OBFormField"],
+.etskin-on .OBGridFilterBase span > table {
+  box-sizing: border-box;
+  width: 100% !important;
+  height: var(--sk-field-height) !important;
+  min-height: 0 !important;
+  background-color: var(--sk-surface) !important;
+  border: 1px solid var(--sk-nav-border) !important;
+  border-radius: var(--sk-radius-sm) !important;
+  box-shadow: none !important;
+  color: var(--sk-text);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.etskin-on .OBGridFilterBase span > table td:first-child > input[class^="OBFormField"] {
+  box-sizing: border-box;
+  width: 100% !important;
+  height: calc(var(--sk-field-height) - 2px) !important;
+  min-height: 0 !important;
+  background-color: transparent !important;
+  border: 0 none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.etskin-on .OBGridFilterBase span > input[class^="OBFormField"]:hover,
+.etskin-on .OBGridFilterBase span > table:hover {
+  background-color: var(--sk-go-fill-soft) !important;
+}
+
+.etskin-on .OBGridFilterBase span > input[class^="OBFormField"]:focus,
+.etskin-on .OBGridFilterBase span > table:focus-within {
+  background-color: var(--sk-surface) !important;
+  border-color: var(--sk-primary) !important;
+  box-shadow: inset 0 0 0 1px var(--sk-primary) !important;
+}
+
+.etskin-on .OBGridFilterBase input[class^="OBFormField"]::placeholder {
+  color: var(--sk-text-faint);
+}
+
+/*
+ * The list arrow is the field's 21px image drawn at the 32px the picker is sized to, and the
+ * calendar sat flush against the border. Both end 6px short of the box, at the stock image size.
+ */
+.etskin-on .OBGridFilterBase td[class^="OBFormFieldSelectPickerIcon"] img {
+  width: 20px !important;
+  height: 20px !important;
+  margin-block: 0 !important;
+  margin-inline: 2px 6px !important;
+}
+
+.etskin-on .OBGridFilterBase span > table td.OBFormField img {
+  margin-block: 0 !important;
+  margin-inline: 2px 6px !important;
+}
+
+.etskin-on .OBGridFilterStaticText,
+.etskin-on .OBGridFilterStaticTextLink {
+  font-family: var(--sk-font);
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--sk-text-muted) !important;
+}
+
+.etskin-on .OBGridFilterStaticTextLink {
+  color: var(--sk-primary) !important;
+  cursor: pointer;
+}
+
+.etskin-on .OBGridToolStrip {
+  background-color: transparent;
+}
+
+.etskin-on .OBGridToolStripSeparator {
+  background-color: var(--sk-border);
+}
+
+.etskin-on .OBGridToolStripIcon {
+  border-radius: var(--sk-radius-sm);
+  opacity: 0.6;
+  transition: opacity 120ms ease, background-color 120ms ease;
+}
+
+.etskin-on .OBGridToolStripIcon:hover {
+  opacity: 1;
+  background-color: var(--sk-primary-soft);
+}
+
+/* ---------------------------------------------------------- active view */
+
+/*
+ * The split view marker is a 6px band of #fad614 down the full height of the view. Three rounded
+ * pixels of the marker colour say "focus is here" just as clearly at a fraction of the weight, and
+ * keeping it yellow rather than folding it into the primary leaves the primary meaning selection.
+ *
+ * Three rather than four so that it is exactly the width of the inactive marker beside it: the two
+ * are drawn in the same slot, and a marker that changed width as well as colour moved every pane in
+ * the window by a pixel each time focus crossed the split.
+ */
+.etskin-on .OBViewActive {
+  background-color: var(--sk-marker);
+  width: 3px !important;
+  min-width: 3px !important;
+  border-radius: 3px;
+}
+
+.etskin-on .OBViewInActive {
+  background-color: transparent;
+  width: 3px !important;
+  min-width: 3px !important;
+}
+
+.etskin-on [class^="OBPopup"],
+.etskin-on [class^="OBDialog"] {
+  font-family: var(--sk-font);
+}
+
+.etskin-on .OBLoadingPromptLabel {
+  font-family: var(--sk-font);
+  color: var(--sk-primary);
+}
+
+/* ----------------------------------------------------------- boot screen */
+
+/*
+ * index.jsp paints a boot screen before a single line of our JavaScript has run: a white sheet,
+ * the word LOADING in 12px Arial and a 220x16 animated GIF from the SmartClient skin folder. It is
+ * the first thing anyone sees and it belonged to a different decade.
+ *
+ * Two things follow from when it renders. It cannot be scoped under .etskin-on, because the script
+ * that adds that class is the very last thing the page loads - so, like the login page, the boot
+ * screen is not per client and takes the default palette. And it has to be addressed through
+ * #OBLoadingDiv: .OBLoadingPromptModalMask and .OBLoadingPromptLabel are also SmartClient's
+ * mainLayoutStyleName and loadingTextStyleName for the in-application loading prompt (see
+ * ob-application-styles.js), and that one must keep behaving as it does.
+ *
+ * index.jsp declares its own copy of these rules in an inline <style> after our <link>, so equal
+ * specificity would lose. The id carries the weight; nothing here needs !important.
+ *
+ * The markup is untouched. The table holding LOADING and the GIF is simply not displayed, and the
+ * mark and the progress bar are two pseudo elements on the box that held it. Hiding rather than
+ * rewording also sidesteps a small trap: that string is hardcoded English in the template, so any
+ * label we put back through content: would be untranslatable.
+ */
+
+#OBLoadingDiv {
+  position: fixed;
+  inset: 0;
+  /* Stock leaves the mask at the default stacking level and only lifts the box inside it, which
+     works right up to the moment OB.Layout.draw() starts creating canvases with six figure
+     z-indexes - the half drawn application then shows through the mask it is supposed to be
+     hidden behind. One below the box it contains is enough to close that window. */
+  z-index: 999999;
+  background-color: var(--sk-canvas-tint);
+  background-image: linear-gradient(var(--sk-canvas) 0%, var(--sk-canvas-tint) 82%);
+}
+
+#OBLoadingDiv .OBCenteredBox {
+  /* The stock box is 300x50 centred by a negative margin. Nothing goes in it any more, so it
+     shrinks to its content and centres on the transform instead. */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: auto;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+#OBLoadingDiv table {
+  display: none;
+}
+
+/* The same mark the login page shows, so the two screens are one sequence. */
+#OBLoadingDiv .OBCenteredBox::before {
+  content: "";
+  width: 191px;
+  height: 43px;
+  background-image: url(./../../images/etendo/EtendoWithVersion_Logo.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+/*
+ * An indeterminate bar rather than a spinner: boot takes a few seconds and a bar reads as progress
+ * where a spinner reads as a stall. It is one element - the track is the background colour, the
+ * head is a gradient 45% as wide sliding across it.
+ */
+#OBLoadingDiv .OBCenteredBox::after {
+  content: "";
+  width: 208px;
+  height: 3px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--sk-primary) 15%, transparent);
+  background-image: linear-gradient(90deg, transparent 0%, var(--sk-primary) 50%, transparent 100%);
+  background-repeat: no-repeat;
+  background-size: 45% 100%;
+  animation: etskin-loading-bar 1150ms ease-in-out infinite;
+}
+
+@keyframes etskin-loading-bar {
+  from {
+    background-position: -60% 0;
+  }
+
+  to {
+    background-position: 160% 0;
+  }
+}
+
+/* ------------------------------------------------ in-application loading */
+
+/*
+ * The boot screen is not the only place the old loading art shows up. Opening a window, switching
+ * to a tab whose pane has not been built yet, the calendar and the branding widget all call
+ * OB.Utilities.createLoadingLayout, which lays a label next to
+ * OB.Styles.LoadingPrompt.loadingImage - the same 220x16 animated GIF index.jsp used. Deleting
+ * records calls isc.showPrompt with the same file. So the second half of the fix lives here.
+ *
+ * The image is replaced rather than hidden. A 1x1 transparent GIF in `content:` empties the
+ * element while leaving it a box we can paint, and the bar is then the boot bar's own declarations
+ * on that box. Hiding the img instead would take its background with it, and removing it in JS
+ * would mean overriding a core function that another module (com.smf.smartclient.boostedui) also
+ * overrides.
+ *
+ * Matching on the file name rather than on a class is deliberate: the img carries no class of its
+ * own, and this way the rule holds for both call sites and for anything else that reuses
+ * OB.Styles.LoadingPrompt.loadingImage.
+ *
+ * The base64 payload is safe to send through the CSS pipeline: it has no ")" to cut the rewriter's
+ * url() scan short, and no "." so the data-uri pass reads its extension as the whole string, fails
+ * the jpg/png/gif test and leaves the declaration alone.
+ */
+.etskin-on img[src$="windowLoading.gif"] {
+  content: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
+  /* SmartClient has already measured the 220x16 wrapper this sits in and positioned it absolutely.
+     A relative offset re-centres the smaller bar inside that box without moving the box. */
+  position: relative;
+  top: 6px;
+  left: 6px;
+  width: 208px;
+  height: 3px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--sk-primary) 15%, transparent);
+  background-image: linear-gradient(90deg, transparent 0%, var(--sk-primary) 50%, transparent 100%);
+  background-repeat: no-repeat;
+  background-size: 45% 100%;
+  animation: etskin-loading-bar 1150ms ease-in-out infinite;
+}
+
+/* Stock is a flat #ffffff; tokenised so a themed surface takes the loading pane with it. */
+.etskin-on .OBLoadingPromptModalMask {
+  background-color: var(--sk-surface);
+}
+
+/*
+ * Unlike the boot screen's hardcoded "LOADING...", this label is OBUIAPP_LOADING and is
+ * translated, so it is worth keeping - it is the only thing here a screen reader can read. It just
+ * stops looking like a heading.
+ */
+.etskin-on .OBLoadingPromptLabel {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--sk-text-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #OBLoadingDiv .OBCenteredBox::after,
+  .etskin-on img[src$="windowLoading.gif"] {
+    animation: none;
+    background-image: none;
+    background-color: color-mix(in srgb, var(--sk-primary) 40%, transparent);
+  }
+}
+
+/* ------------------------------------------------------- side navigation */
+
+/*
+ * The panel etendo-skin-nav.js builds when ETSKIN_Navigation is 'sidebar'. It is plain markup
+ * inside one isc.Canvas, so unlike the rest of this file it is styled with ordinary CSS layout
+ * rather than around SmartClient's inline geometry - the only thing SmartClient decides here is
+ * the width of the canvas.
+ *
+ * The class names are ours, so no attribute matching and no specificity games are needed. They
+ * still live under .etskin-on for one reason: if the skin is off the script never runs, and a
+ * stray .etskin-nav rule would then be dead weight the browser still has to match.
+ *
+ * The look is Etendo GO's side navigation restated for Classic: a pale grey panel with a hairline
+ * edge, 32px rows, thin 20px glyphs on the sections only, the entries of a section hanging off a
+ * guide line under its glyph, and the brand yellow as the one fill that says "you are here". The
+ * measurements are GO's own: 240px open and 56px collapsed, the glyph's centre and the guide line
+ * both at 33px, and every label - section or entry - starting at 52px.
+ */
+
+.etskin-on .etskin-nav {
+  /* The canvas handle is absolutely positioned and sized by SmartClient; this fills it. */
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--sk-font);
+  background-color: var(--sk-nav-surface);
+  border-inline-end: 1px solid var(--sk-nav-border);
+}
+
+/* -------------------------------------------------------------- nav head */
+
+/*
+ * GO's head is 62px with a hairline under it that stops 12px short of either edge. Classic has no
+ * company switcher to put there, and its filter box is a real way into a 277 entry menu, so the
+ * box takes that place, next to the same "close panel" glyph.
+ */
+.etskin-on .etskin-nav-head {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 62px;
+  box-sizing: border-box;
+  padding: 0 12px;
+}
+
+.etskin-on .etskin-nav-head::after {
+  content: "";
+  position: absolute;
+  inset-inline: 12px;
+  bottom: 0;
+  border-top: 1px solid var(--sk-nav-border);
+}
+
+.etskin-on .etskin-nav-search {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  box-sizing: border-box;
+  padding-inline: 10px;
+  background-color: var(--sk-surface);
+  border: 1px solid var(--sk-nav-border);
+  border-radius: var(--sk-radius-sm);
+  transition: border-color 130ms ease, box-shadow 130ms ease;
+}
+
+.etskin-on .etskin-nav-search:focus-within {
+  border-color: var(--sk-primary);
+  box-shadow: 0 0 0 3px var(--sk-focus-ring);
+}
+
+.etskin-on .etskin-nav-search-icon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 8px;
+  background-color: var(--sk-text-muted);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
+  mask-size: 16px 16px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z M20 20l-4.3-4.3'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z M20 20l-4.3-4.3'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--sk-font);
+  font-size: 13px;
+  color: var(--sk-text);
+  background: transparent;
+  border: 0 none;
+  outline: none;
+}
+
+.etskin-on .etskin-nav-search-input::placeholder {
+  color: var(--sk-text-muted);
+}
+
+/* The glyph is drawn by ::before so the button itself can take a hover fill, as GO's does. */
+.etskin-on .etskin-nav-toggle {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--sk-text-muted);
+  background: transparent;
+  border: 0 none;
+  border-radius: var(--sk-radius-sm);
+  cursor: pointer;
+  transition: background-color 130ms ease, color 130ms ease;
+}
+
+.etskin-on .etskin-nav-toggle::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
+  mask-size: 16px 16px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z M9 3v18 M16 15l-3-3 3-3'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z M9 3v18 M16 15l-3-3 3-3'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-toggle:hover {
+  color: var(--sk-text);
+  background-color: var(--sk-neutral-soft);
+}
+
+.etskin-on .etskin-nav-toggle:focus-visible,
+.etskin-on .etskin-nav-tile:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--sk-focus-ring);
+}
+
+/* -------------------------------------------------------------- nav body */
+
+.etskin-on .etskin-nav-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 0 12px 0;
+}
+
+/* ---------------------------------------------------------- group titles */
+
+/*
+ * GO's group titles: 12px, regular weight, muted, 16px in from the edge, 16px above and 4px below.
+ * Discreet on purpose - they separate, they do not compete with the entries.
+ */
+.etskin-on .etskin-nav-recents-title,
+.etskin-on .etskin-nav-section-title {
+  padding: 16px 16px 4px 16px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--sk-text-muted);
+}
+
+/* -------------------------------------------------------------- recents */
+
+/*
+ * The recent views read as the entries of a section: the same 32px rows, the same guide line, the
+ * same 52px label start. The chips they used to be were a second visual language in the panel.
+ */
+.etskin-on .etskin-nav-chips {
+  position: relative;
+  padding-block: 2px;
+}
+
+.etskin-on .etskin-nav-chips::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 33px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--sk-nav-border);
+}
+
+.etskin-on .etskin-nav-chip {
+  display: block;
+  width: 100%;
+  height: 32px;
+  padding: 0 16px 0 52px;
+  font-family: var(--sk-font);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 32px;
+  text-align: start;
+  color: var(--sk-text);
+  background: transparent;
+  border: 0 none;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: background-color 110ms ease;
+}
+
+.etskin-on .etskin-nav-chip:hover {
+  background-color: var(--sk-neutral-soft);
+}
+
+.etskin-on .etskin-nav-chip:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--sk-focus-ring);
+}
+
+/* ----------------------------------------------------------------- rows */
+
+/*
+ * An entry row: 32px, full width, its label 52px in for the first level and 16px further for each
+ * level below. --d is the node's depth, written inline by the script, so one expression covers all
+ * four levels. Square corners: GO's rows are bands, not pills.
+ */
+.etskin-on .etskin-nav-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 32px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 16px 0 calc(52px + (var(--d) - 1) * 16px);
+  font-family: var(--sk-font);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: start;
+  color: var(--sk-text);
+  background: transparent;
+  border: 0 none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background-color 110ms ease, color 110ms ease;
+}
+
+/*
+ * A section row: 8px in from each edge, a 3px start border that is transparent until the section
+ * holds the open view, 12px of padding, the 20px glyph and a 10px gap - which puts the glyph's
+ * centre at 33px and the label at 52px, exactly where GO puts them.
+ */
+.etskin-on .etskin-nav-row-top {
+  width: calc(100% - 16px);
+  margin: 2px 8px;
+  padding: 0 12px;
+  border-inline-start: 3px solid transparent;
+}
+
+.etskin-on .etskin-nav-row:hover {
+  background-color: var(--sk-neutral-soft);
+}
+
+.etskin-on .etskin-nav-row:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--sk-focus-ring);
+}
+
+.etskin-on .etskin-nav-label {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/*
+ * The open view. A section row that carries the mark - its entry is inside a closed section - is
+ * filled yellow edge to edge, border included. An entry that carries it gets a yellow band that
+ * starts at its own guide line and stops 8px short of the edge, so the line reads as running into
+ * the band. The label takes the medium or semibold weight GO uses; the text colour stays the text
+ * colour, which on this yellow is the most legible there is.
+ */
+.etskin-on .etskin-nav-row-top.etskin-nav-current,
+.etskin-on .etskin-nav-row-top.etskin-nav-current:hover {
+  --sk-icon-color: var(--sk-nav-on-highlight);
+  font-weight: 500;
+  color: var(--sk-nav-on-highlight);
+  background-color: var(--sk-nav-highlight);
+  border-inline-start-color: var(--sk-nav-highlight);
+}
+
+.etskin-on .etskin-nav-row:not(.etskin-nav-row-top).etskin-nav-current,
+.etskin-on .etskin-nav-row:not(.etskin-nav-row-top).etskin-nav-current:hover {
+  font-weight: 600;
+  color: var(--sk-nav-on-highlight);
+  background-color: transparent;
+}
+
+.etskin-on .etskin-nav-row:not(.etskin-nav-row-top).etskin-nav-current::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(33px + (var(--d) - 1) * 16px);
+  inset-inline-end: 8px;
+  top: 0;
+  bottom: 0;
+  background-color: var(--sk-nav-highlight);
+}
+
+/*
+ * An open section holding the open view keeps its yellow start border and goes medium, as GO does,
+ * so the eye can travel from the section to the band below it. A folder inside the section that
+ * holds it just goes medium.
+ */
+.etskin-on .etskin-nav-group:has(.etskin-nav-current) > .etskin-nav-row-top.etskin-nav-row-folder:not(.etskin-nav-current) {
+  font-weight: 500;
+  border-inline-start-color: var(--sk-nav-highlight);
+}
+
+.etskin-on .etskin-nav-group:has(.etskin-nav-current) > .etskin-nav-row-folder:not(.etskin-nav-row-top):not(.etskin-nav-current) {
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------------- icons */
+
+/* Thin, 20px and muted, as GO draws them; full text colour on the yellow. */
+.etskin-on .etskin-nav-icon {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  background-color: var(--sk-text-muted);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+  -webkit-mask-image: var(--sk-icon);
+  mask-image: var(--sk-icon);
+}
+
+.etskin-on .etskin-nav-current .etskin-nav-icon {
+  background-color: var(--sk-icon-color);
+}
+
+/*
+ * Per section artwork, when a provider supplies it. It is a real image rather than a masked shape,
+ * so it keeps its own colours and is left alone by the palette - which is the point of shipping
+ * artwork instead of a glyph.
+ */
+.etskin-on .etskin-nav-art {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/*
+ * Section glyphs. One per top level section, assigned by etendo-skin-nav.js so that no two
+ * sections in a menu ever carry the same one. They are declared as --sk-icon and nothing else,
+ * because both the things that draw them - the row's .etskin-nav-icon and the rail tile's ::before
+ * - are already masks over that variable, at their own sizes.
+ */
+
+.etskin-on .etskin-nav-icon-sec-sliders {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16 M4 12h16 M4 17h16 M9 5v4 M15 10v4 M7 15v4'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-layers {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l9 5-9 5-9-5z M3 13l9 5 9-5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-inbound {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v10 M8 9l4 4 4-4 M4 17v3h16v-3'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-package {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7l9-4 9 4v10l-9 4-9-4z M3 7l9 4 9-4 M12 11v10'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-factory {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 20V10l5 3V10l5 3V9l5 3v8z M7 17h2 M13 17h2'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-clipboard {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4h6v3H9z M9 5H6v15h12V5h-3 M9 11h6 M9 15h4'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-trend {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 17l5-5 3 3 7-7 M15 8h5v5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-briefcase {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h18v12H3z M9 8V5h6v3 M3 13h18'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-card {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18v12H3z M3 10h18 M7 15h4'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-star {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4l2.4 5.2 5.6.7-4.2 3.9 1.1 5.6-4.9-2.8-4.9 2.8 1.1-5.6L4 9.9l5.6-.7z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-tag {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h7l9 9-7 7-9-9z M8 8v0'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-flag {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4 M5 5h13l-3 4 3 4H5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-compass {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M15 9l-2 4-4 2 2-4z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-grid {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h7v7H4z M13 4h7v7h-7z M4 13h7v7H4z M13 13h7v7h-7z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-bolt {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 3L5 14h6l-1 7 8-11h-6z'/%3E%3C/svg%3E");
+}
+
+/*
+ * The glyphs of GO's categories that none of the above means: Home, Partners, Accounting, Assets,
+ * Analysis, Security and Integrations. etendo-skin-nav.js names them per category.
+ */
+.etskin-on .etskin-nav-icon-sec-home {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11l8-7 8 7 M6 9v11h12V9 M10 20v-6h4v6'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-users {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6 M16 4.5a3.5 3.5 0 0 1 0 6.5 M18 14c2 .7 3 3 3 6'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-book {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z M5 17a3 3 0 0 1 3-3h11 M9 8h6'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-building {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h16 M6 20V5h8v15 M14 9h4v11 M9 8h2 M9 12h2 M9 16h2'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-chart {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h16 M7 20v-6 M12 20V8 M17 20v-9'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-shield {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z M9 12l2 2 4-4'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-sec-plug {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 3v5 M15 3v5 M6 8h12v3a6 6 0 0 1-12 0z M12 17v4'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-chevron {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  background-color: var(--sk-text-muted);
+  transition: transform 200ms ease;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 14px 14px;
+  mask-size: 14px 14px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-open > .etskin-nav-row .etskin-nav-chevron {
+  transform: rotate(180deg);
+}
+
+/* ------------------------------------------------------- open and filter */
+
+/*
+ * The entries of an open folder, with the guide line they hang from. The line is drawn by the list
+ * rather than by each row, so it runs unbroken through nested folders, and each level adds its own
+ * 16px further in: a section's entries hang from 33px, the entries of a folder inside it from 49px.
+ */
+.etskin-on .etskin-nav-sub {
+  display: none;
+  position: relative;
+  padding-block: 2px;
+}
+
+.etskin-on .etskin-nav-sub::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(33px + (var(--d) - 1) * 16px);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--sk-nav-border);
+}
+
+.etskin-on .etskin-nav-group.etskin-nav-open > .etskin-nav-sub {
+  display: block;
+}
+
+/*
+ * While the box has text in it every subtree is open, so a match four levels down is visible
+ * without the user expanding anything, and every group with no match anywhere under it is out of
+ * the flow. Clearing the box drops both classes and the panel is back to whatever the user had
+ * expanded - the open state was never thrown away.
+ */
+/*
+ * While filtering, the matches are what matters: the group titles and the recent views would only
+ * stand between them.
+ */
+.etskin-on .etskin-nav-filtering .etskin-nav-tree > .etskin-nav-section-title,
+.etskin-on .etskin-nav-filtering .etskin-nav-tree > .etskin-nav-recents-slot {
+  display: none;
+}
+
+.etskin-on .etskin-nav-filtering .etskin-nav-sub {
+  display: block;
+}
+
+/* Every subtree is open while filtering, so no chevron may still be pointing at a closed one. */
+.etskin-on .etskin-nav-filtering .etskin-nav-chevron {
+  transform: rotate(180deg);
+}
+
+.etskin-on .etskin-nav-group.etskin-nav-off {
+  display: none;
+}
+
+/* ------------------------------------------------------------- collapsed */
+
+/*
+ * Collapsed, GO is a 56px column of 40px tiles on the same grey: the "open panel" glyph at the top
+ * over a 40px hairline, then one tile per section, 12px apart. Classic keeps its filter as a tile
+ * under the toggle, since it is the fastest way into the menu and expands the panel onto itself.
+ */
+.etskin-on .etskin-nav-collapsed .etskin-nav-head {
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 12px;
+  height: auto;
+  padding: 11px 8px 0 8px;
+}
+
+.etskin-on .etskin-nav-collapsed .etskin-nav-head::after {
+  position: static;
+  order: 1;
+  width: 40px;
+}
+
+.etskin-on .etskin-nav-collapsed .etskin-nav-toggle {
+  order: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--sk-radius);
+}
+
+.etskin-on .etskin-nav-collapsed .etskin-nav-toggle::before {
+  width: 20px;
+  height: 20px;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z M9 3v18 M14 9l3 3-3 3'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z M9 3v18 M14 9l3 3-3 3'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-collapsed .etskin-nav-search {
+  order: 2;
+  flex: 0 0 auto;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding-inline: 0;
+  background: transparent;
+  border: 0 none;
+  border-radius: var(--sk-radius);
+  box-shadow: none;
+  cursor: pointer;
+  transition: background-color 130ms ease;
+}
+
+.etskin-on .etskin-nav-collapsed .etskin-nav-search:hover {
+  background-color: var(--sk-neutral-soft);
+}
+
+.etskin-on .etskin-nav-collapsed .etskin-nav-search-icon {
+  width: 20px;
+  height: 20px;
+  margin-inline-end: 0;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+}
+
+.etskin-on .etskin-nav-collapsed .etskin-nav-search-input,
+.etskin-on .etskin-nav-collapsed .etskin-nav-body {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ rail */
+
+/*
+ * Collapsed, the panel is the top level of the menu and nothing else. Railing the whole tree would
+ * be four levels of glyphs with no titles; railing the sections is a real index - nine targets,
+ * each of which expands the panel onto itself.
+ *
+ * The mark on each tile is the section's glyph, assigned in etendo-skin-nav.js. An <img> replaces
+ * the glyph for any section a provider supplies artwork for, and the tile is sized for both.
+ */
+.etskin-on .etskin-nav-rail {
+  display: none;
+}
+
+/* Between two groups of tiles, the rail's stand-in for a group title. */
+.etskin-on .etskin-nav-rail-gap {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 1px;
+  background-color: var(--sk-nav-border);
+}
+
+.etskin-on .etskin-nav-collapsed .etskin-nav-rail {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.etskin-on .etskin-nav-tile {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-family: var(--sk-font);
+  color: var(--sk-text-muted);
+  background: transparent;
+  border: 0 none;
+  border-radius: var(--sk-radius);
+  cursor: pointer;
+  transition: background-color 130ms ease, color 130ms ease;
+}
+
+.etskin-on .etskin-nav-tile:hover {
+  color: var(--sk-text);
+  background-color: var(--sk-neutral-soft);
+}
+
+.etskin-on .etskin-nav-tile.etskin-nav-tile-current,
+.etskin-on .etskin-nav-tile.etskin-nav-tile-current:hover {
+  color: var(--sk-nav-on-highlight);
+  background-color: var(--sk-nav-highlight);
+}
+
+/*
+ * The glyph rides currentColor rather than a token of its own, so it turns over with the tile when
+ * it is filled - one rule instead of one per state. The selector asks for the glyph class that
+ * etendo-skin-nav.js writes: a tile showing artwork has no --sk-icon, and an unresolved mask is no
+ * mask at all, which would paint a solid square over the drawing.
+ */
+.etskin-on .etskin-nav-tile[class*="etskin-nav-icon-sec-"]::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background-color: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+  -webkit-mask-image: var(--sk-icon);
+  mask-image: var(--sk-icon);
+}
+
+/*
+ * The section title, kept out of the picture and kept in the accessibility tree. Neither
+ * display:none nor visibility:hidden would do: both remove it from the accessibility tree as well,
+ * and the rail would be nine unnamed buttons. The size and weight are stated rather than inherited
+ * so that a string nobody can see cannot add a step to the type scale.
+ */
+.etskin-on .etskin-nav-tile-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.etskin-on .etskin-nav-tile .etskin-nav-art {
+  width: 20px;
+  height: 20px;
+}
+
+/* -------------------------------------------------------- toolbar groups */
+
+/*
+ * The strip is arranged by etendo-skin-toolbar.js, which marks each wrapper with the group it
+ * belongs to. Everything below is the appearance of that arrangement: the hairlines between
+ * groups, the one filled action, the overflow and Actions menus.
+ *
+ * The marks sit on the wrapper because a SmartClient button is a table and a styleName lands on
+ * every cell of it - the label, the spacers and the icon slot alike. The wrapper is the only
+ * element that is exactly one button, which is what makes "one primary action" both true and
+ * checkable.
+ */
+
+.etskin-on .etskin-tb-divider {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    var(--sk-border) 2px,
+    var(--sk-border) 18px,
+    transparent 18px
+  );
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1px 100%;
+}
+
+/*
+ * Save is the only filled control on the screen. Everything else on the strip is a glyph on the
+ * surface, which is what lets one solid circle carry the meaning "this is the thing you came to
+ * do" without a single word of instruction.
+ */
+.etskin-on .etskin-tb-primary {
+  --sk-icon-color: var(--sk-on-primary);
+  background-color: var(--sk-primary);
+  border-radius: 999px;
+  box-shadow: var(--sk-shadow-sm);
+  transition: background-color 120ms ease;
+}
+
+.etskin-on .etskin-tb-primary:hover {
+  background-color: var(--sk-primary-hover);
+}
+
+/*
+ * A disabled primary must stop being primary, or an unsaved-nothing form shows a confident blue
+ * button that does not respond. SmartClient puts the disabled state on the cells rather than on
+ * the wrapper, so the wrapper has to ask its own contents.
+ */
+.etskin-on .etskin-tb-primary:has([class*="Disabled"]) {
+  --sk-icon-color: var(--sk-text);
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* The overflow trigger. Three dots is the one glyph everybody already reads as "and the rest". */
+/*
+ * "Save View" is an icon button that never got an icon: the framework styles it as a menu button
+ * and leaves the words in place, which a 32px slot clips to "S...". The word is folded away and a
+ * bookmark drawn in its place, so the three view controls read as one set. The title survives as
+ * the tooltip, set alongside the class in etendo-skin-toolbar.js.
+ */
+/*
+ * A filter that is on is a state, and a state belongs on the control that owns it. The dot sits on
+ * the funnel instead of a sentence sitting across the top of the view, and it is 8px because it has
+ * one thing to say.
+ */
+.etskin-on .etskin-toolbar-filtered {
+  position: relative;
+}
+
+.etskin-on .etskin-toolbar-filtered::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  inset-inline-end: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background-color: var(--sk-primary);
+  box-shadow: 0 0 0 2px var(--sk-surface);
+  pointer-events: none;
+}
+
+.etskin-on .etskin-tb-saveview,
+.etskin-on .etskin-tb-saveview td,
+.etskin-on .etskin-tb-saveview div {
+  font-size: 0;
+}
+
+.etskin-on .etskin-tb-saveview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  background-color: var(--sk-text-muted);
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.5 3.5h11v17l-5.5-3.4-5.5 3.4z'/%3E%3C/svg%3E");
+  -webkit-mask-image: var(--sk-icon);
+  mask-image: var(--sk-icon);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 18px 18px;
+  mask-size: 18px 18px;
+}
+
+/* The menuButton style paints a raised box the other two view controls do not have. */
+.etskin-on .etskin-tb-saveview table,
+.etskin-on .etskin-tb-saveview td {
+  background: transparent;
+  background-image: none;
+  border: 0;
+}
+
+.etskin-on .etskin-tb-saveview:hover::before {
+  background-color: var(--sk-primary);
+}
+
+.etskin-on .OBToolbarIconButton_icon_etskinMore {
+  background-image: none;
+  background-color: var(--sk-icon-color);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 19px 19px;
+  mask-size: 19px 19px;
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000'%3E%3Ccircle cx='5' cy='12' r='1.8'/%3E%3Ccircle cx='12' cy='12' r='1.8'/%3E%3Ccircle cx='19' cy='12' r='1.8'/%3E%3C/svg%3E");
+  -webkit-mask-image: var(--sk-icon);
+  mask-image: var(--sk-icon);
+}
+
+/*
+ * Actions keeps its word. The processes behind it - Complete, Post, Create Lines From Order - are
+ * the reason most people open the window at all, and an unlabelled glyph would have buried them
+ * as thoroughly as the off-screen buttons it replaces.
+ */
+.etskin-on .etskin-tb-actions {
+  border: 1px solid var(--sk-border-strong);
+  border-radius: 999px;
+  background-color: var(--sk-surface);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.etskin-on .etskin-tb-actions:hover {
+  border-color: var(--sk-primary);
+  background-color: var(--sk-primary-softer);
+}
+
+/*
+ * The label cell is left-aligned inline by the framework and starts flush against the pill's
+ * border, so the inset is put back here; the end padding is the chevron's room plus the gap that
+ * keeps the word off it.
+ */
+.etskin-on .etskin-tb-actions [class^="OBToolbarIconButton"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sk-text);
+  padding-inline-start: 14px;
+  padding-inline-end: 24px;
+}
+
+/* The chevron, drawn on the wrapper so it does not disturb the label cell's centring. */
+.etskin-on .etskin-tb-actions::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: 12px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -5px;
+  border-inline-end: 1.5px solid var(--sk-text-muted);
+  border-block-end: 1.5px solid var(--sk-text-muted);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+/*
+ * The record count, back from the blank column it used to sit in. Muted and unboxed: it is a
+ * readout, and nothing on the strip should invite a click except the things that take one.
+ */
+.etskin-on .etskin-tb-count {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--sk-text-muted);
+  white-space: nowrap;
+  padding-inline-end: 12px;
+}
+
+/* ---------------------------------------------------------- toolbar menus */
+
+/*
+ * A SmartClient menu is a grid, and the class given to it lands on the outer element that merely
+ * positions the thing - never on what is seen. The panel is the grid's body, named through
+ * bodyStyleName, and the rows are its cells, which keep the framework's own class no matter what
+ * the menu is called. So the outer element is emptied, the body is given the card, and the cells
+ * are addressed by the framework's name for them, scoped inside the body so that only the menus
+ * this skin opens are touched and the ones the platform opens elsewhere are left alone.
+ */
+.etskin-on .etskin-menu {
+  background: transparent none;
+  border: 0 none;
+  box-shadow: none;
+}
+
+.etskin-on .etskin-menuBody {
+  background-color: var(--sk-surface);
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius);
+  box-shadow: var(--sk-shadow-md);
+  padding: 4px 0;
+  overflow: hidden;
+}
+
+.etskin-on .etskin-menuBody table {
+  border-collapse: collapse;
+  background: transparent none;
+}
+
+/*
+ * menuTitleField is the framework's name for the label column; the suffixes it appends carry the
+ * row's state - Over, Disabled, Selected - so the prefix catches every one of them. The stock skin
+ * paints those states with gradient images, inset shadows and a border, all of which have to be
+ * named to be undone.
+ */
+.etskin-on .etskin-menuBody [class^="menuTitleField"],
+.etskin-on .etskin-menuBody [class^="menuIconField"],
+.etskin-on .etskin-menuBody [class^="menuKeyField"],
+.etskin-on .etskin-menuBody [class^="menuSubmenuField"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--sk-text);
+  background: transparent none;
+  border: 0 none;
+  box-shadow: none;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.etskin-on .etskin-menuBody [class^="menuTitleField"]:hover,
+.etskin-on .etskin-menuBody [class$="Over"] {
+  background: var(--sk-primary-soft) none;
+  color: var(--sk-text);
+}
+
+/*
+ * A process the record does not allow yet is still worth showing, because its absence is harder
+ * to read than its presence: greyed out says not now, while nothing at all says never.
+ */
+.etskin-on .etskin-menuBody [class$="Disabled"],
+.etskin-on .etskin-menuBody [class$="DisabledOver"] {
+  color: var(--sk-text-faint);
+  background: transparent none;
+  cursor: default;
+}
+
+/* ------------------------------------------------------------ status badge */
+
+/*
+ * The document status, wherever it is shown: a grid cell here, or any screen that asks
+ * OB.ETSkin.statusBadge for one. Five tones,
+ * one rule each, and the tone is decided in JavaScript from the status value - see STATUS_TONES in
+ * etendo-skin.js for which value takes which tone and why.
+ *
+ * The badge is sized to sit inside a 38px grid row without changing it, and it is allowed to
+ * ellipsize rather than to widen its column: Closed - Order Created is a long name and a status
+ * column that grew to fit it would take the room from the columns that carry the document.
+ */
+.etskin-on .etskin-status {
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 15px;
+  letter-spacing: 0.01em;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid transparent;
+  border-radius: 999px;
+}
+
+/* Not started, or not a state anybody acts on. */
+.etskin-on .etskin-status-neutral {
+  color: var(--sk-text-muted);
+  background-color: var(--sk-neutral-soft);
+  border-color: var(--sk-border);
+}
+
+/* Under way. The working state is the primary tone rather than green, so that green is left to
+   mean finished and the two cannot be confused down a column. */
+.etskin-on .etskin-status-active {
+  color: var(--sk-primary);
+  background-color: var(--sk-primary-soft);
+  border-color: color-mix(in srgb, var(--sk-primary) 30%, transparent);
+}
+
+/* Finished. */
+.etskin-on .etskin-status-done {
+  color: var(--sk-success);
+  background-color: color-mix(in srgb, var(--sk-success) 12%, var(--sk-surface));
+  border-color: color-mix(in srgb, var(--sk-success) 32%, transparent);
+}
+
+/* Wants attention but is not a failure. */
+.etskin-on .etskin-status-warn {
+  color: var(--sk-warning);
+  background-color: color-mix(in srgb, var(--sk-warning) 14%, var(--sk-surface));
+  border-color: color-mix(in srgb, var(--sk-warning) 34%, transparent);
+}
+
+/* Voided, rejected, refused or in error. */
+.etskin-on .etskin-status-bad {
+  color: var(--sk-danger);
+  background-color: color-mix(in srgb, var(--sk-danger) 11%, var(--sk-surface));
+  border-color: color-mix(in srgb, var(--sk-danger) 32%, transparent);
+}
+
+/* A selected grid row inverts its own text colour, and a badge inside it must not be left reading
+   its tone against the selection fill. */
+.etskin-on .OBGridRowSelected .etskin-status,
+.etskin-on .OBGridRowSelectedOver .etskin-status {
+  background-color: var(--sk-surface);
+}
+
+/* ----------------------------------------------------------- accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  .etskin-on * {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}
+
+/* ------------------------------------------------------- GO windows */
+
+/*
+ * Window 143 in Etendo GO's language: the near-black ink as its accent, GO's pale fills and hairline,
+ * 8px corners, fields drawn as boxes. Every rule here is written under .etskin-go, the class
+ * etendo-skin-form.js gives that window's root and nothing else - so no other window, and no EMOS
+ * view, which is never an OBStandardWindow, can match one.
+ *
+ * The accent is redefined on the window rather than changed on :root. The tokens a UIKit view reads
+ * are resolved on :root and are left exactly as they were; these values only reach what sits inside
+ * a standard window. The derived shades are restated with it, because a custom property built with
+ * color-mix is resolved where it is declared and would otherwise keep the old accent.
+ */
+.etskin-on .etskin-go {
+  --sk-primary: var(--sk-go-ink);
+  --sk-on-primary: var(--sk-surface);
+  --sk-primary-hover: var(--sk-go-ink-hover);
+  --sk-primary-soft: var(--sk-go-fill);
+  --sk-primary-softer: var(--sk-go-fill-soft);
+  --sk-focus-ring: color-mix(in srgb, var(--sk-go-ink) 18%, transparent);
+}
+
+/* ---------------------------------------------------------------- GO toolbar */
+
+/* GO's action bar: muted glyphs in 8px squares, a neutral fill under the pointer. */
+.etskin-on .etskin-go .OBToolbar {
+  --sk-icon-color: var(--sk-go-icon);
+  border-bottom-color: var(--sk-nav-border);
+}
+
+.etskin-on .etskin-go [class^="OBToolbarIconButton"] {
+  border-radius: var(--sk-radius);
+}
+
+/* The glyph cell carries the button's state classes too, and its background is the glyph itself. */
+.etskin-on .etskin-go [class^="OBToolbarIconButton"][class*="Over"]:not([class*="_icon_"]) {
+  background-color: var(--sk-go-fill);
+}
+
+.etskin-on .etskin-go [class^="OBToolbarIconButton"][class*="Over"] {
+  --sk-icon-color: var(--sk-text);
+}
+
+/* Save is GO's primary button: the ink, filled, with the same corners as everything else. */
+.etskin-on .etskin-go .etskin-tb-primary {
+  border-radius: var(--sk-radius);
+  box-shadow: none;
+}
+
+.etskin-on .etskin-go .etskin-tb-actions {
+  border-color: var(--sk-nav-border);
+  border-radius: var(--sk-radius);
+}
+
+.etskin-on .etskin-go .etskin-tb-actions:hover {
+  border-color: var(--sk-border-strong);
+  background-color: var(--sk-go-fill-soft);
+}
+
+/*
+ * The field menu's button: an outlined 8px button holding its glyph and its word. The word is the
+ * script's label, written into --sk-fields-label and drawn after the glyph.
+ */
+.etskin-on .etskin-tb-fields {
+  border: 1px solid var(--sk-nav-border);
+  border-radius: var(--sk-radius);
+  background-color: var(--sk-surface);
+  box-sizing: border-box;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.etskin-on .etskin-tb-fields:hover,
+.etskin-on .etskin-tb-fields[aria-expanded="true"] {
+  border-color: var(--sk-border-strong);
+  background-color: var(--sk-go-fill-soft);
+}
+
+.etskin-on .etskin-tb-fields[data-mode="columns"]::after {
+  content: var(--sk-columns-label, "");
+}
+
+.etskin-on .etskin-tb-fields::after {
+  content: var(--sk-fields-label, "");
+  position: absolute;
+  inset-inline-start: 34px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sk-text);
+  pointer-events: none;
+}
+
+.etskin-on .OBToolbarIconButton_icon_etskinFields {
+  background-image: none;
+  background-color: var(--sk-go-icon);
+  -webkit-mask-position: 10px center;
+  mask-position: 10px center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 18px 18px;
+  mask-size: 18px 18px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 6h10 M10 12h10 M10 18h10 M3.5 6l1.5 1.5 2.5-2.5 M3.5 12l1.5 1.5 2.5-2.5 M4 18h2'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 6h10 M10 12h10 M10 18h10 M3.5 6l1.5 1.5 2.5-2.5 M3.5 12l1.5 1.5 2.5-2.5 M4 18h2'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------ GO grid */
+
+/* GO's table: 14px rows on a hairline, a quiet header, neutral hover and selection. */
+.etskin-on .etskin-go td[class^="OBGridCell"],
+.etskin-on .etskin-go td[class^="OBGridLinkCell"] {
+  font-size: 14px;
+  border-color: var(--sk-nav-border);
+  padding: 0 12px;
+}
+
+.etskin-on .etskin-go td[class^="OBGridCell"][class*="Over"] {
+  background-color: var(--sk-go-fill-soft);
+}
+
+.etskin-on .etskin-go td[class^="OBGridCell"][class*="Selected"] {
+  background-color: var(--sk-go-fill);
+}
+
+.etskin-on .etskin-go .OBGridHeaderBar {
+  border-color: var(--sk-nav-border);
+}
+
+.etskin-on .etskin-go [class^="OBGridHeaderCellTitle"] {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sk-text);
+  padding: 0 12px;
+}
+
+/* ------------------------------------------------------------ GO child tabs */
+
+/*
+ * Underlined tabs on white instead of chips on the tinted band: the selected one in the ink with a
+ * 2px rule under it, the rest muted, all on one hairline.
+ */
+.etskin-on .etskin-go .OBTabBarChild {
+  background-color: var(--sk-surface);
+  border-bottom: 1px solid var(--sk-nav-border);
+}
+
+.etskin-on .etskin-go [class^="OBTabBarButtonChildTop"]::before {
+  content: none;
+}
+
+.etskin-on .etskin-go [class^="OBTabBarButtonChildTop"][class*="Selected"] {
+  box-shadow: inset 0 -2px 0 0 var(--sk-go-ink);
+}
+
+.etskin-on .etskin-go [class^="OBTabBarButtonChildTitle"] {
+  color: var(--sk-text-muted);
+}
+
+.etskin-on .etskin-go [class^="OBTabBarButtonChildTitle"][class*="Over"] {
+  color: var(--sk-text);
+}
+
+.etskin-on .etskin-go [class^="OBTabBarButtonChildTitle"][class*="Selected"] {
+  color: var(--sk-text);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ GO form */
+
+/*
+ * Fields as GO draws them: a box with a hairline and 8px corners on the pale fill, the ink and a
+ * ring when focused, the danger colour when wrong, no fill when read-only. The combos and the
+ * pickers are two cells - the input and its button - so the box goes on the control that holds
+ * both, and the input inside it gives up its own.
+ */
+.etskin-on .etskin-go [class^="OBFormFieldInput"],
+.etskin-on .etskin-go [class^="OBFormFieldDateInput"],
+.etskin-on .etskin-go [class^="OBFormFieldNumberInput"],
+.etskin-on .etskin-go [class^="OBFormFieldSelectControl"] {
+  background-color: var(--sk-surface);
+  border: 1px solid var(--sk-nav-border);
+  border-radius: var(--sk-radius);
+  box-shadow: none;
+}
+
+.etskin-on .etskin-go [class^="OBFormFieldSelectControl"] [class^="OBFormFieldSelectInput"] {
+  background-color: transparent;
+  border: 0 none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.etskin-on .etskin-go [class^="OBFormFieldInput"][class*="Focused"],
+.etskin-on .etskin-go [class^="OBFormFieldDateInput"][class*="Focused"],
+.etskin-on .etskin-go [class^="OBFormFieldNumberInput"][class*="Focused"],
+.etskin-on .etskin-go [class^="OBFormFieldInput"]:focus,
+.etskin-on .etskin-go [class^="OBFormFieldDateInput"]:focus,
+.etskin-on .etskin-go [class^="OBFormFieldNumberInput"]:focus,
+.etskin-on .etskin-go [class^="OBFormFieldSelectControl"]:focus-within {
+  background-color: var(--sk-surface);
+  border-color: var(--sk-go-ink);
+  box-shadow: 0 0 0 2px var(--sk-focus-ring);
+}
+
+.etskin-on .etskin-go [class^="OBFormFieldInput"][class*="Error"],
+.etskin-on .etskin-go [class^="OBFormFieldDateInput"][class*="Error"],
+.etskin-on .etskin-go [class^="OBFormFieldNumberInput"][class*="Error"],
+.etskin-on .etskin-go [class^="OBFormFieldSelectControl"][class*="Error"] {
+  border-color: var(--sk-danger);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sk-danger) 16%, transparent);
+}
+
+.etskin-on .etskin-go [class^="OBFormFieldInput"][class*="Disabled"],
+.etskin-on .etskin-go [class^="OBFormFieldDateInput"][class*="Disabled"],
+.etskin-on .etskin-go [class^="OBFormFieldNumberInput"][class*="Disabled"],
+.etskin-on .etskin-go [class^="OBFormFieldSelectControl"][class*="Disabled"] {
+  background-color: transparent;
+  border-style: solid;
+  border-color: var(--sk-nav-border);
+}
+
+.etskin-on .etskin-go [class^="OBFormFieldLabel"] {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sk-text);
+}
+
+/*
+ * Sections: a grey title over a line of the same grey that fades out towards the far edge, no band.
+ * At 14px in the same ink as 13px labels the title read as one more label; it keeps its 14px, and the
+ * fields step down instead (see GO form density below), so the group is the larger thing on the form.
+ * The line is a 1px gradient, not a border, so it can fade.
+ *
+ * SmartClient draws the header 12px into the form and the fields 8px, so every title stood 4px to
+ * the right of the column it heads. The header is moved back and widened to match; SmartClient
+ * does not measure it again after drawing it.
+ *
+ * The line is painted on that same slot rather than on the table inside it: the slot is exactly the
+ * height SmartClient gave the header and clips, while the table grows with its title line and pushed
+ * a line at its own bottom just out of sight. SmartClient stacks a second, empty layer under the same
+ * name, 12px further out; only the one holding the title is touched.
+ */
+.etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table) {
+  margin-inline-start: -4px;
+  width: calc(100% - 16px) !important;
+  background-image: linear-gradient(to right, var(--sk-section-title), transparent);
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  /* Half the form's width, the fade included: a rule under a heading, not a divider across the form. */
+  background-size: 50% 1px;
+}
+
+[dir="rtl"] .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table),
+.etskin-on[dir="rtl"] .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table) {
+  background-image: linear-gradient(to left, var(--sk-section-title), transparent);
+  background-position: right bottom;
+}
+
+.etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] > table {
+  width: 100% !important;
+  background-color: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  border: 0 none;
+}
+
+.etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"] {
+  font-size: 14px;
+  color: var(--sk-section-title);
+  padding-inline-start: 0;
+}
+
+.etskin-on .etskin-go .etskin-section-chevron {
+  border-color: var(--sk-section-title);
+}
+
+/*
+ * GO form density: 12px labels over 28px fields, one step below the 13px and 32px the rest of the
+ * skin uses, so a section title is no longer the same size as what it groups. Only the record form
+ * of a standard window; grids, filters and popups keep the configured density. The arrow is the
+ * 21px list image SmartClient draws at 32px, brought back to its size.
+ */
+.etskin-on .etskin-go .OBViewForm {
+  --sk-field-height: 28px;
+}
+
+.etskin-on .etskin-go .OBViewForm [class^="OBFormFieldLabel"] {
+  font-size: 12px;
+}
+
+.etskin-on .etskin-go .OBViewForm [class^="OBFormFieldInput"],
+.etskin-on .etskin-go .OBViewForm [class^="OBFormFieldDateInput"],
+.etskin-on .etskin-go .OBViewForm [class^="OBFormFieldNumberInput"] {
+  padding-block: 4px;
+}
+
+.etskin-on .etskin-go .OBViewForm [class^="OBFormFieldSelectControl"] [class^="OBFormFieldInput"],
+.etskin-on .etskin-go .OBViewForm [class^="OBFormFieldSelectControl"] [class^="OBFormFieldSelectInput"] {
+  min-height: calc(var(--sk-field-height) - 2px);
+}
+
+.etskin-on .etskin-go .OBViewForm td[class^="OBFormFieldSelectPickerIcon"] img {
+  width: 20px !important;
+  height: 20px !important;
+  margin-block: 0 !important;
+  margin-inline: 2px 6px !important;
+}
+
+/* The record's heading and its facts, on white rather than on the tint. */
+.etskin-on .etskin-go .OBStatusBar {
+  background-color: var(--sk-surface);
+  border-bottom-color: var(--sk-nav-border);
+}
+
+.etskin-on .etskin-go .etskin-record-title {
+  font-size: 16px;
+}
+
+/* ------------------------------------------------------------- field menu */
+
+/*
+ * The "Fields" menu. It is drawn at page level, outside the window, so its classes are its own and
+ * it is written without the window class; it only ever opens from a standard window's toolbar.
+ */
+.etskin-on .etskinFieldsCanvas {
+  background: transparent;
+}
+
+.etskin-on .etskin-fields {
+  box-sizing: border-box;
+  width: 320px;
+  padding: 8px 0 8px 0;
+  font-family: var(--sk-font);
+  color: var(--sk-text);
+  background-color: var(--sk-surface);
+  border: 1px solid var(--sk-nav-border);
+  border-radius: var(--sk-radius);
+  box-shadow: var(--sk-shadow-md);
+}
+
+.etskin-on .etskin-fields-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 6px 14px;
+}
+
+.etskin-on .etskin-fields-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.etskin-on .etskin-fields-count {
+  margin-inline-start: auto;
+  font-size: 12px;
+  color: var(--sk-text-muted);
+}
+
+/* The menu stays open through every tick; this closes it, as do a click outside and Escape. */
+.etskin-on .etskin-fields-close {
+  position: relative;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 0 none;
+  border-radius: var(--sk-radius);
+  cursor: pointer;
+}
+
+.etskin-on .etskin-fields-close::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--sk-go-icon);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 14px 14px;
+  mask-size: 14px 14px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12 M18 6L6 18'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12 M18 6L6 18'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-fields-close:hover {
+  background-color: var(--sk-go-fill);
+}
+
+.etskin-on .etskin-fields-close:hover::before {
+  background-color: var(--sk-text);
+}
+
+.etskin-on .etskin-fields-search {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  margin: 0 10px 6px 10px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  background-color: var(--sk-go-fill);
+  border: 1px solid var(--sk-nav-border);
+  border-radius: var(--sk-radius);
+}
+
+.etskin-on .etskin-fields-search:focus-within {
+  background-color: var(--sk-surface);
+  border-color: var(--sk-go-ink);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sk-go-ink) 18%, transparent);
+}
+
+.etskin-on .etskin-fields-search-icon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 8px;
+  background-color: var(--sk-text-muted);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
+  mask-size: 16px 16px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z M20 20l-4.3-4.3'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z M20 20l-4.3-4.3'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-fields-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--sk-font);
+  font-size: 13px;
+  color: var(--sk-text);
+  background: transparent;
+  border: 0 none;
+  outline: none;
+}
+
+.etskin-on .etskin-fields-list {
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 2px 0;
+}
+
+.etskin-on .etskin-fields-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 32px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  font-family: var(--sk-font);
+  font-size: 13px;
+  text-align: start;
+  color: var(--sk-text);
+  background: transparent;
+  border: 0 none;
+  cursor: pointer;
+}
+
+.etskin-on .etskin-fields-row:hover {
+  background-color: var(--sk-go-fill-soft);
+}
+
+.etskin-on .etskin-fields-row:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--sk-go-ink) 18%, transparent);
+}
+
+.etskin-on .etskin-fields-box {
+  position: relative;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--sk-border-strong);
+  border-radius: 4px;
+  background-color: var(--sk-surface);
+}
+
+.etskin-on .etskin-fields-row[aria-checked="true"] .etskin-fields-box {
+  background-color: var(--sk-go-ink);
+  border-color: var(--sk-go-ink);
+}
+
+.etskin-on .etskin-fields-row[aria-checked="true"] .etskin-fields-box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--sk-surface);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 12px 12px;
+  mask-size: 12px 12px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-fields-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.etskin-on .etskin-fields-tag {
+  flex: 0 0 auto;
+  padding: 1px 7px;
+  font-size: 11px;
+  color: var(--sk-text-muted);
+  background-color: var(--sk-go-fill);
+  border-radius: 999px;
+}
+
+.etskin-on .etskin-fields-tag:empty {
+  display: none;
+}
+
+/*
+ * A section is a row of its own, in the weight of a heading and on a hairline, and its tick hides
+ * or shows the whole block. Its fields sit under it, indented to its label; while the section is
+ * hidden they keep their own ticks but fade, and a ticked one says why it is not on screen.
+ */
+.etskin-on .etskin-fields-section {
+  font-weight: 600;
+  border-top: 1px solid var(--sk-nav-border);
+}
+
+.etskin-on .etskin-fields-child {
+  padding-inline-start: 40px;
+}
+
+.etskin-on .etskin-fields-row[data-muted="true"] .etskin-fields-label {
+  color: var(--sk-text-faint);
+}
+
+.etskin-on .etskin-fields-row[data-muted="true"] .etskin-fields-box {
+  opacity: 0.55;
+}
+
+.etskin-on .etskin-fields-empty {
+  display: none;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--sk-text-muted);
+}
+
+.etskin-on .etskin-fields-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 8px 10px 0 10px;
+  border-top: 1px solid var(--sk-nav-border);
+}
+
+.etskin-on .etskin-fields-all,
+.etskin-on .etskin-fields-reset {
+  height: 30px;
+  padding: 0 10px;
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sk-text);
+  background: transparent;
+  border: 0 none;
+  border-radius: var(--sk-radius);
+  cursor: pointer;
+}
+
+.etskin-on .etskin-fields-reset {
+  color: var(--sk-text-muted);
+}
+
+.etskin-on .etskin-fields-all:hover,
+.etskin-on .etskin-fields-reset:hover {
+  background-color: var(--sk-go-fill);
+  color: var(--sk-text);
+}
+
+.etskin-on .etskin-fields-note {
+  display: none;
+  padding: 8px 14px 0 14px;
+  font-size: 12px;
+  color: var(--sk-danger);
+}
+
+/*
+ * The line added under Core's error message when a field in error is one the user hid: the
+ * field's name as an action that shows it and puts the focus in it.
+ */
+.etskin-on .etskin-hidden-errors,
+.etskin-on .etskin-missing {
+  margin-top: 4px;
+}
+
+.etskin-on .etskin-reveal {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------- GO action row */
+
+/*
+ * The list's action row as GO lays it out: Filters first, an outlined button with its funnel, its
+ * word and - while filters are in force - their count; New as the filled primary with its word; the
+ * rest quiet glyphs. In the form, Save carries its word instead, filled while there is something to
+ * save and outlined while there is not.
+ */
+.etskin-on .etskin-tb-filters {
+  border: 1px solid var(--sk-nav-border);
+  border-radius: var(--sk-radius);
+  background-color: var(--sk-surface);
+  box-sizing: border-box;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.etskin-on .etskin-tb-filters:hover,
+.etskin-on .etskin-tb-filters[aria-pressed="true"] {
+  border-color: var(--sk-border-strong);
+  background-color: var(--sk-go-fill-soft);
+}
+
+.etskin-on .etskin-tb-filters::after {
+  content: var(--sk-filters-label, "") attr(data-badge);
+  position: absolute;
+  inset-inline-start: 34px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sk-text);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.etskin-on .OBToolbarIconButton_icon_etskinFilters {
+  background-image: none;
+  background-color: var(--sk-go-icon);
+  -webkit-mask-position: 11px center;
+  mask-position: 11px center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
+  mask-size: 16px 16px;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18l-7 8.5V19l-4 2v-7.5z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18l-7 8.5V19l-4 2v-7.5z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-go .etskin-tb-new {
+  --sk-icon-color: var(--sk-surface);
+  background-color: var(--sk-go-ink);
+  border-radius: var(--sk-radius);
+  transition: background-color 120ms ease;
+}
+
+.etskin-on .etskin-go .etskin-tb-new:hover {
+  background-color: var(--sk-go-ink-hover);
+}
+
+.etskin-on .etskin-go .etskin-tb-new [class^="OBToolbarIconButton"][class*="Over"] {
+  background-color: transparent;
+}
+
+.etskin-on .etskin-go .etskin-tb-new .OBToolbarIconButton_icon_newDoc,
+.etskin-on .etskin-go .etskin-tb-savelabel .OBToolbarIconButton_icon_save {
+  -webkit-mask-position: 11px center;
+  mask-position: 11px center;
+  -webkit-mask-size: 17px 17px;
+  mask-size: 17px 17px;
+}
+
+.etskin-on .etskin-go .etskin-tb-new::after,
+.etskin-on .etskin-go .etskin-tb-savelabel::after {
+  position: absolute;
+  inset-inline-start: 36px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.etskin-on .etskin-go .etskin-tb-new::after {
+  content: var(--sk-new-label, "");
+  color: var(--sk-surface);
+}
+
+.etskin-on .etskin-go .etskin-tb-savelabel::after {
+  content: var(--sk-save-label, "");
+  color: var(--sk-on-primary);
+}
+
+.etskin-on .etskin-go .etskin-tb-savelabel:has([class*="Disabled"]) {
+  border: 1px solid var(--sk-nav-border);
+  box-sizing: border-box;
+}
+
+.etskin-on .etskin-go .etskin-tb-savelabel:has([class*="Disabled"])::after {
+  color: var(--sk-text-faint);
+}
+
+/* ---------------------------------------------------------------- GO frame */
+
+/*
+ * The frame around every tab takes GO's treatment, whatever the tab shows, so the strip never changes
+ * colour from one tab to the next: the window strip on the grey of the approved top bar and side
+ * navigation, like the desk, and the selected window tab the top edge of the sheet under it, outlined
+ * by a hairline rather than underlined in the primary. A standard window is one white sheet - the gaps
+ * between its toolbar, form, split and child tabs white too instead of showing the desk. Only colours
+ * change here: every size is SmartClient's, so the tabs and the windows work exactly as before.
+ */
+.etskin-on .OBTabBarMain {
+  box-shadow: inset 0 -1px 0 0 var(--sk-nav-border);
+}
+
+.etskin-on [class^="OBTabBarButtonMainTop"][class*="Selected"] {
+  box-shadow: inset 1px 0 0 0 var(--sk-nav-border), inset -1px 0 0 0 var(--sk-nav-border),
+    inset 0 1px 0 0 var(--sk-nav-border);
+}
+
+.etskin-on [class^="OBTabBarButtonMainTop"][class*="Over"]:not([class*="Selected"]) {
+  background-color: var(--sk-go-fill);
+}
+
+.etskin-on .etskin-go {
+  background-color: var(--sk-surface);
+}
