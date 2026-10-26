@@ -9,6 +9,9 @@ editing core. The palette is chosen by configuration, not by editing CSS.
 > commit `332c223` of its repository: the source, its dictionary rows and its web resources. See
 > [Installing](#installing).
 
+> **Contributing:** see [DEVELOPMENT.md](DEVELOPMENT.md) for the local setup, the edit/build loop and
+> the Git conventions. The backlog is the Jira epic ETP-5915.
+
 ## What is in it, and what is not
 
 Extracted from `com.etendoerp.skin.modern` at commit `3efdd3a51ed827b38af3af97e993eaae34ed4b42`.
