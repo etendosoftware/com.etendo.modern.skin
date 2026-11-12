@@ -12,7 +12,7 @@
  *
  * Moves the application menu out of the "Application" dropdown in the navigation bar and into a
  * permanent panel on the left, the way Etendo's React skin presents it. Controlled by the
- * ETSKIN_Navigation preference; anything other than 'sidebar' leaves the stock navigation alone.
+ * ETMSK_Navigation preference; anything other than 'sidebar' leaves the stock navigation alone.
  *
  * Nothing here needs a server round trip. OB.Application.menu is already the complete menu tree,
  * emitted per session by application-menu.js.ftl, and OBApplicationMenuTree#itemClick is already
@@ -58,7 +58,7 @@
 
   function wanted() {
     // etendo-skin.js publishes OB.ETSkin only when it decided the skin is on, so this follows the
-    // ETSKIN_Enabled and SKINLEG_LegacySkin decisions without repeating them.
+    // ETMSK_Enabled and SKINLEG_LegacySkin decisions without repeating them.
     if (typeof OB === 'undefined' || !OB || !OB.ETSkin) {
       return false;
     }
@@ -73,7 +73,7 @@
     if (isPopupDocument()) {
       return false;
     }
-    var mode = properties().ETSKIN_Navigation;
+    var mode = properties().ETMSK_Navigation;
     return !mode || mode === 'sidebar';
   }
 

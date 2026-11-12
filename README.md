@@ -53,7 +53,8 @@ depend on this one:
 | `src/com/etendo/modern/skin/LoginSignInProvider.java` | Puts the login stylesheet on the login page through the core's `SignInProvider` seam. |
 | `web/com.etendo.modern.skin/css/etendo-skin-login.css` | The login page, loaded by the provider above. |
 | `web/com.etendo.modern.skin/fonts/` | Inter, self hosted. Two woff2 subsets, declared by both stylesheets. |
-| `src-db/database/sourcedata/` | The module's identity: its row, the `ETMSK` prefix and its two dependencies. Nothing else. |
+| `src-db/database/sourcedata/` | The module's identity (its row, the `ETMSK` prefix and its two dependencies) and the three preferences: their *Property Configuration* entries and system-level seeds. |
+| `src-util/modulescript/.../CopySkinModernPreferences.java` | Copies `com.etendoerp.skin.modern`'s `ETSKIN_*` preferences to the `ETMSK_*` names on install or update from before 1.1.0; see [Shared configuration](#shared-configuration). |
 
 Every rule in the application stylesheet is scoped under `.etskin-on`, a class the script adds to
 the root element. Nothing is styled until the script decides the skin is on, so disabling the
@@ -74,7 +75,7 @@ the kernel populates from the preferences applicable to the current session — 
 Three preferences, all set at system level by the module and overridable per client, organization,
 role or user through *General Setup → Application → Preference*.
 
-### `ETSKIN_Enabled`
+### `ETMSK_Enabled`
 
 `Y` (default) or `N`. Opt-out, not opt-in. Set it to `N` for a client, role or user to give them
 the stock appearance back.
@@ -82,7 +83,7 @@ the stock appearance back.
 The skin also stands down on its own when `SKINLEG_LegacySkin` is `Y`, because `index.jsp` swaps
 the entire bundle in that case.
 
-### `ETSKIN_Theme`
+### `ETMSK_Theme`
 
 A JSON object. Every key is optional.
 
@@ -106,7 +107,7 @@ A JSON object. Every key is optional.
 | `density` | `compact`, `comfortable`, `spacious` | Row height, field height and tab bar height. |
 | `font` | any CSS font stack | Defaults to Inter, which the module ships, with a system fallback. |
 
-Keys not given fall back to the preset, and an unknown preset falls back to `indigo`. A malformed
+Keys not given fall back to the preset, and an unknown preset falls back to `etendoNext`. A malformed
 value leaves the whole theme at its defaults rather than half-applying.
 
 Contrast is derived, never configured: `--sk-on-primary`, `--sk-on-accent` and `--sk-on-danger` are
@@ -121,7 +122,7 @@ kept for the focus marker.
 The `etendo` preset restates the stock Classic colours as tokens instead. It is the low-risk
 rollout step — modern geometry, typography and icons, familiar colours.
 
-### `ETSKIN_Navigation`
+### `ETMSK_Navigation`
 
 `sidebar` (default) or `topbar`.
 
@@ -137,16 +138,26 @@ not do.
 
 ### Shared configuration
 
-The three preferences above are **shared configuration**, not this module's. Administrators set them
-per client, organization, role and user, and every one of those values is a row of its own found by
-the property name. This module reads them by those names and changes none of them.
+The module defines the three preferences itself: three entries in the core's *Property
+Configuration* list and three system-level seeds (`ETMSK_Enabled = Y`, `ETMSK_Theme` empty, which
+reads as the `etendoNext` preset, and `ETMSK_Navigation = sidebar`), all owned by `ETMSK`.
+Administrators override them per client, organization, role and user; every one of those values is
+a row of its own, found by the property name.
 
-Their definitions - the three entries in the core's *Property Configuration* list and the three
-system-level seeds - belong to `com.etendoerp.skin.modern`, and keep belonging to it in the
-transition, so this module ships no copy of them: a second definition would duplicate
-the list values, and one under new ids would orphan the system-level values. On an installation
-without `com.etendoerp.skin.modern` - a fresh one, for instance - a preference nobody has set reads
-as its default: the skin on, the `etendoNext` preset, and the side navigation.
+**Why `ETMSK_` and not `ETSKIN_`.** `com.etendoerp.skin.modern` defined the same settings as
+`ETSKIN_Enabled`, `ETSKIN_Theme` and `ETSKIN_Navigation`. Core does not let a module own a value of
+another module's list unless the value starts with one of its own DB prefixes (the
+`AD_REF_LIST` trigger raises `@ListValueDBPrefix@`), and `ETSKIN` is `skin.modern`'s prefix, so the
+shell cannot own those names. Renaming also leaves the two modules with no shared list value and no
+shared seed: `skin.modern`'s `ETSKIN_Enabled = N` no longer switches the shell off.
+
+**Migration.** `CopySkinModernPreferences` (`src-util/modulescript`) runs when the module is
+installed or updated from a version before 1.1.0. It copies every client, organization, role and
+user `ETSKIN_*` preference to the matching `ETMSK_*` name with the same value and visibility. It
+copies rather than renames, so `skin.modern` keeps its own rows while it is installed, and it skips
+`skin.modern`'s system-level seeds, rows inherited from a template role, and any visibility that
+already has an `ETMSK_*` value. After that the two sets are independent: an `ETSKIN_*` value set
+later is not picked up by the shell.
 
 ### The login page
 
@@ -162,7 +173,7 @@ built for; a stylesheet is not one, and that is the compromise this takes. The a
 editing a core template, which a core refresh silently reverts.
 
 **The login theme is global and fixed.** The page runs before authentication, so there is no client,
-organization, role or user to resolve `ETSKIN_Enabled` or `ETSKIN_Theme` against, and asking would
+organization, role or user to resolve `ETMSK_Enabled` or `ETMSK_Theme` against, and asking would
 mean a query on an anonymous request. Its tokens are the module defaults, kept in step with the
 `etendoNext` preset by hand so the two pages agree.
 
@@ -515,7 +526,7 @@ is translated, and it is the only thing on that pane a screen reader can read.
 
 The module depends only on Core and on the *User Interface Application* module. It edits no core
 file, adds no table, column, function or trigger, and its dictionary rows are its own (its identity,
-its `ETMSK` prefix and its dependencies).
+its `ETMSK` prefix, its dependencies and the three preferences).
 
 1. Copy the `com.etendo.modern.skin` folder into `modules/` of the installation.
 2. `./gradlew update.database`
@@ -528,10 +539,8 @@ the stock skin, and the module's rows leave the database with it.
 
 **What lives in another module.** The words the shell shows - the side navigation's group and
 category names (`ETSKIN_L_nav*`) and a few labels of the toolbar and the grid - are read from the
-dictionary as `ETSKIN_L_*` or `ETMSK_L_*` messages, and the definitions of the three
-`ETSKIN_*` preferences sit in `com.etendoerp.skin.modern` (see [Shared configuration](#shared-configuration)).
-Without that module the shell still works: every word falls back to the English written beside it in
-the code, and every preference reads as its default.
+dictionary as `ETSKIN_L_*` or `ETMSK_L_*` messages. Without that module the shell still works:
+every word falls back to the English written beside it in the code.
 
 **The side navigation map** (`NAV_SECTIONS` in `etendo-skin-nav.js`) names standard Etendo menu
 folders by `AD_MENU_ID`, plus a few entries of the installation it was built on. An id an

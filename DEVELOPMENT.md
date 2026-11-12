@@ -24,7 +24,7 @@ cd ..
 # restart Tomcat
 ```
 
-Log in and the skin is on: with no preference set it reads as `ETSKIN_Enabled = Y`, the
+Log in and the skin is on: with no preference set it reads as `ETMSK_Enabled = Y`, the
 `etendoNext` preset and the side navigation.
 
 To work on the module's dictionary rows (messages, preferences, see ETP-5920), mark it
@@ -59,20 +59,24 @@ stylesheet follows*):
 
 ## Preferences
 
-The three preferences (`ETSKIN_Enabled`, `ETSKIN_Theme`, `ETSKIN_Navigation`) and the `ETSKIN_L_*`
-labels are **defined** in `com.etendoerp.skin.modern` until ETP-5920 moves them here.
+The module defines its three preferences, `ETMSK_Enabled`, `ETMSK_Theme` and `ETMSK_Navigation`
+(ETP-5920): their *Property Configuration* entries and system-level seeds are in
+`src-db/database/sourcedata`. To try a preset or the top bar, add a preference in *General Setup >
+Application > Preference*, for example `ETMSK_Theme = {"preset":"etendo"}` or
+`ETMSK_Navigation = topbar` for your user, and log in again. Why they are not called `ETSKIN_*`,
+and how values from `com.etendoerp.skin.modern` are carried over, is in the README, *Shared
+configuration*.
 
-- **Without** `com.etendoerp.skin.modern` you get the defaults (skin on, `etendoNext`, side
-  navigation) and the English fallback labels. This is the supported setup for now, and enough
-  for most styling work.
-- **Do not install `com.etendoerp.skin.modern` next to this module.** Since INT-7413 it seeds
-  `ETSKIN_Enabled = N` at system level, which turns the shell off too. Setting it to `Y` turns on
-  *both* skins: `skin.modern` ships its own copy of the stylesheet and the navigation scripts, so
-  the two paint over each other.
-- Testing other presets or `ETSKIN_Navigation = topbar` therefore needs the preference
-  definitions in this module, which is ETP-5920. Until it lands, keep to the defaults.
+- The `ETSKIN_L_*` labels still live in `com.etendoerp.skin.modern`. Without it you get the English
+  fallback labels, which is enough for styling work.
+- **Do not install `com.etendoerp.skin.modern` next to this module.** It ships its own copy of the
+  stylesheet and the navigation scripts, so with both on the two paint over each other.
+- Testing the migration script: it only runs on install or on an update from a version before
+  1.1.0, and only once it is compiled. Set the module's version back to `1.0.0` in `AD_MODULE`,
+  then `./gradlew compile.modulescript -Dmodule=com.etendo.modern.skin` and
+  `./gradlew update.database -Dforce=true`.
 
-Test every visual change at least with the skin **on** and with `ETSKIN_Enabled = N`: off must
+Test every visual change at least with the skin **on** and with `ETMSK_Enabled = N`: off must
 give the stock look back with nothing left behind.
 
 ## Performance
@@ -101,4 +105,6 @@ The repository follows the Etendo Git Police rules, checked on every pull reques
   branch is in use). `main` only receives releases.
 - Every PR runs **Git Police** (branch name, destination and commit format; required to merge) and
   the **Auto Reviewer** bot. Address or mark as `/false-positive` its blocking comments.
+- A PR that touches `web/**/*.js` also runs **ES5 Check** (`es-check es5`). Run it locally before
+  pushing: `npx es-check@9.8.1 es5 'web/**/*.js'`.
 - Fill in the PR template: before/after screenshots, the preset and the navigation mode used.

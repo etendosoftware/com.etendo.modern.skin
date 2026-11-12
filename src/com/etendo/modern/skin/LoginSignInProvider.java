@@ -37,7 +37,7 @@ import org.openbravo.erpCommon.security.SignInProvider;
  * a real provider joins.
  * <p>
  * Nothing here is configurable. The page runs before authentication, so there is no client,
- * organization, role or user to resolve {@code ETSKIN_Enabled} or {@code ETSKIN_Theme} against, and
+ * organization, role or user to resolve {@code ETMSK_Enabled} or {@code ETMSK_Theme} against, and
  * asking would mean a database read on an anonymous request. The login theme is therefore global
  * and fixed, and the stylesheet says so at the top.
  * <p>
