@@ -75,7 +75,7 @@
 /* ---------------------------------------------------------------- tokens */
 
 /*
- * Fallbacks only. etendo-skin.js overwrites these on <html> from the ETSKIN_Theme preference, so
+ * Fallbacks only. etendo-skin.js overwrites these on <html> from the ETMSK_Theme preference, so
  * the palette changes per client without recompiling anything. Keeping real values here means a
  * JS failure degrades to a sane theme instead of an unstyled page.
  *
@@ -2205,7 +2205,7 @@
 /* ------------------------------------------------------- side navigation */
 
 /*
- * The panel etendo-skin-nav.js builds when ETSKIN_Navigation is 'sidebar'. It is plain markup
+ * The panel etendo-skin-nav.js builds when ETMSK_Navigation is 'sidebar'. It is plain markup
  * inside one isc.Canvas, so unlike the rest of this file it is styled with ordinary CSS layout
  * rather than around SmartClient's inline geometry - the only thing SmartClient decides here is
  * the width of the canvas.

@@ -89,7 +89,7 @@
 
   function wanted() {
     // etendo-skin.js publishes OB.ETSkin only when it decided the skin is on, so this follows the
-    // ETSKIN_Enabled and SKINLEG_LegacySkin decisions without repeating them.
+    // ETMSK_Enabled and SKINLEG_LegacySkin decisions without repeating them.
     return typeof OB !== 'undefined' && !!OB && !!OB.ETSkin && !!OB.TopLayout && !!OB.NavBar;
   }
 

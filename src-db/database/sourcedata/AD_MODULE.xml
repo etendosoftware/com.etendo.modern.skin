@@ -6,7 +6,7 @@
 <!--82257866FAE7421381C9A5FC45C2D76D-->  <AD_ORG_ID><![CDATA[0]]></AD_ORG_ID>
 <!--82257866FAE7421381C9A5FC45C2D76D-->  <ISACTIVE><![CDATA[Y]]></ISACTIVE>
 <!--82257866FAE7421381C9A5FC45C2D76D-->  <NAME><![CDATA[Etendo Modern Skin Shell]]></NAME>
-<!--82257866FAE7421381C9A5FC45C2D76D-->  <VERSION><![CDATA[1.0.0]]></VERSION>
+<!--82257866FAE7421381C9A5FC45C2D76D-->  <VERSION><![CDATA[1.1.0]]></VERSION>
 <!--82257866FAE7421381C9A5FC45C2D76D-->  <DESCRIPTION><![CDATA[Visual shell for the Etendo 3.0 UI: theme runtime and tokens, navigation, top bar, toolbar, forms, grids and the login page]]></DESCRIPTION>
 <!--82257866FAE7421381C9A5FC45C2D76D-->  <HELP><![CDATA[Restyles the Etendo 3.0 user interface and the login page without editing core. The palette, typography and density come from the ETSKIN_Theme preference and the navigation from ETSKIN_Navigation, so a single compiled stylesheet serves every client; setting ETSKIN_Enabled to N falls back to the stock look. Application screens are not part of this module.]]></HELP>
 <!--82257866FAE7421381C9A5FC45C2D76D-->  <TYPE><![CDATA[M]]></TYPE>

@@ -130,14 +130,14 @@
     if (preference('SKINLEG_LegacySkin') === 'Y') {
       return false;
     }
-    // Opt-out rather than opt-in: the module ships with ETSKIN_Enabled = Y at system level.
-    return preference('ETSKIN_Enabled') !== 'N';
+    // Opt-out rather than opt-in: the module ships with ETMSK_Enabled = Y at system level.
+    return preference('ETMSK_Enabled') !== 'N';
   }
 
   // PropertiesComponent parses values that look like JSON into real objects, but falls back to the
   // raw string when the admin saved something malformed. Tolerate both.
   function themeOverrides() {
-    var raw = preference('ETSKIN_Theme');
+    var raw = preference('ETMSK_Theme');
     if (!raw) {
       return {};
     }
