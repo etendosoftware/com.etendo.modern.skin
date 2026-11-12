@@ -438,15 +438,14 @@
    * kernel's I18NComponent sends the client every AD_MESSAGE of a module other than core, already in
    * the session language, as OB.I18N.labels. A skin word is a message named <DB prefix>_L_<name>, so
    * a translation module translates it like any other message, and a language without one keeps the
-   * English base text. While this module's sourcedata holds only its identity, its words live under
-   * ETSKIN_L_ with the rest of the skin's dictionary; ETMSK_L_ is read too, so they can move here
-   * with that transfer and nothing on this side has to change.
+   * English base text. The messages are this module's, ETMSK_L_<name>, English base with a Spanish
+   * translation in its sourcedata.
    *
    * Read on first use, not here: this script can run before the labels arrive. Until they do, the
    * getter answers an empty object and every caller keeps its fallback; once they are there, the
    * map is built once and kept.
    */
-  var LABEL_PREFIXES = ['ETMSK_L_', 'ETSKIN_L_'];
+  var LABEL_PREFIX = 'ETMSK_L_';
 
   function defineLabels(target) {
     var cache = null;
@@ -456,7 +455,7 @@
       get: function () {
         var source = OB.I18N && OB.I18N.labels;
         var out = {};
-        var key, i;
+        var key;
         if (cache) {
           return cache;
         }
@@ -465,10 +464,8 @@
         }
         for (key in source) {
           if (Object.prototype.hasOwnProperty.call(source, key)) {
-            for (i = 0; i < LABEL_PREFIXES.length; i++) {
-              if (key.indexOf(LABEL_PREFIXES[i]) === 0 && source[key]) {
-                out[key.substring(LABEL_PREFIXES[i].length)] = String(source[key]);
-              }
+            if (key.indexOf(LABEL_PREFIX) === 0 && source[key]) {
+              out[key.substring(LABEL_PREFIX.length)] = String(source[key]);
             }
           }
         }

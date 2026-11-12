@@ -299,7 +299,7 @@
    * and one Setup group at the end, and any other folder stays a group of its own. Whatever no
    * category claims is not lost: it goes under Other, folder and all.
    *
-   * Labels are skin words (ETSKIN_L_nav*), with the English written here as the fallback.
+   * Labels are skin words (ETMSK_L_nav*), with the English written here as the fallback.
    */
   var NAV_SECTIONS = [
     { key: 'General', items: [{ key: 'Home', glyph: 'home', home: true }] },
@@ -394,6 +394,10 @@
   function navLabel(key) {
     var labels = OB.ETSkin && OB.ETSkin.labels;
     var name = 'nav' + key;
+    // Home is core's word, already translated by core's translation modules.
+    if (key === 'Home' && OB.I18N && OB.I18N.labels && OB.I18N.labels.OBUIAPP_HomeKey) {
+      return OB.I18N.labels.OBUIAPP_HomeKey;
+    }
     return (labels && labels[name]) || NAV_FALLBACK[key] || key;
   }
 
