@@ -517,29 +517,52 @@
   var BUTTON_TYPE = 'etskinFields';
   var STORE = 'etskin.fields.v1';
   var MENU_WIDTH = 320;
+  /*
+   * The menu's words: core's label where core has one (CORE_TEXT below), otherwise the AD message
+   * ETMSK_L_form<Name> (formSearch, formShowAll...) through OB.ETSkin.labels, with the English here
+   * as the fallback.
+   */
   var TEXT = {
-    fields: 'Campos',
-    columns: 'Columnas',
-    filters: 'Filtros',
-    newRecord: 'Nuevo',
-    save: 'Guardar',
-    search: 'Buscar campo',
-    searchColumns: 'Buscar columna',
-    close: 'Cerrar',
-    inHiddenSection: 'En sección oculta',
-    showAll: 'Mostrar todos',
-    reset: 'Restablecer',
-    required: 'Obligatorio',
-    conditional: 'Según el registro',
-    forced: 'Visible por un error',
-    hiddenErrors: 'Hay campos con error que están ocultos:',
-    missingTitle: 'Faltan campos obligatorios que están ocultos',
-    reveal: 'Mostrar y enfocar',
-    none: 'Ningún campo coincide',
-    visible: 'visibles',
-    of: 'de',
-    unsaved: 'No se pudo guardar en este navegador: la elección vale hasta cerrar la sesión.'
+    fields: 'Fields',
+    columns: 'Columns',
+    filters: 'Filters',
+    newRecord: 'New',
+    save: 'Save',
+    search: 'Search field',
+    searchColumns: 'Search column',
+    close: 'Close',
+    inHiddenSection: 'In a hidden section',
+    showAll: 'Show all',
+    reset: 'Reset',
+    required: 'Required',
+    conditional: 'Depends on the record',
+    forced: 'Visible because of an error',
+    hiddenErrors: 'Some fields with errors are hidden:',
+    missingTitle: 'Some required fields are hidden',
+    reveal: 'Show and focus',
+    none: 'No field matches',
+    visibleCount: '{0} of {1} visible',
+    unsaved: 'Could not save in this browser: the choice lasts until the session ends.'
   };
+
+  // Words core already ships, translated by its own translation modules: used before the skin's.
+  var CORE_TEXT = {
+    fields: 'OBUIAPP_Personalization_HeaderFields',
+    columns: 'OBUISC_ListGrid.fieldVisibilitySubmenuTitle',
+    newRecord: 'OBUIAPP_New',
+    save: 'OBUIAPP_Save',
+    close: 'OBUIAPP_Close'
+  };
+
+  function text(name) {
+    var core = OB.I18N && OB.I18N.labels && CORE_TEXT[name] ? OB.I18N.labels[CORE_TEXT[name]] : null;
+    var labels = OB.ETSkin && OB.ETSkin.labels;
+    var key = 'form' + name.charAt(0).toUpperCase() + name.substring(1);
+    if (core) {
+      return String(core);
+    }
+    return labels && labels[key] ? String(labels[key]) : TEXT[name];
+  }
 
   var menu = null; // the one open menu: { canvas, view }
 
@@ -1033,8 +1056,8 @@
     for (i = 0; i < items.length; i++) {
       section = items[i].etskinBySection ? sections[items[i].name] : null;
       links.push('<a href="#" class="etskin-reveal" data-form="' + esc(form.ID) + '" data-name="' +
-        esc(items[i].name) + '">' + esc(TEXT.reveal) + ' «' + esc(plainText(items[i].title || items[i].name)) +
-        '»' + (section ? ' (' + esc(TEXT.inHiddenSection.toLowerCase()) + ' «' +
+        esc(items[i].name) + '">' + esc(text('reveal')) + ' «' + esc(plainText(items[i].title || items[i].name)) +
+        '»' + (section ? ' (' + esc(text('inHiddenSection').toLowerCase()) + ' «' +
         esc(plainText(section.title || section.defaultValue || '')) + '»)' : '') + '</a>');
     }
     return links.join(' · ');
@@ -1100,7 +1123,7 @@
         bar.text.setContents(stripped + block);
       }
     } else {
-      bar.setMessage(isc.OBMessageBar.TYPE_WARNING, TEXT.missingTitle, block);
+      bar.setMessage(isc.OBMessageBar.TYPE_WARNING, text('missingTitle'), block);
       bar.etskinOwned = true;
     }
   }
@@ -1133,7 +1156,7 @@
     bar.etskinOwned = false;
     current = bar.text.getContents ? String(bar.text.getContents() || '') : '';
     bar.text.setContents(current.replace(/<div class="etskin-missing">[\s\S]*?<\/div>/, '') +
-      '<div class="etskin-hidden-errors">' + esc(TEXT.hiddenErrors) + ' ' + revealLinks(form, hidden) + '</div>');
+      '<div class="etskin-hidden-errors">' + esc(text('hiddenErrors')) + ' ' + revealLinks(form, hidden) + '</div>');
   }
 
   function clearForced(form) {
@@ -1453,7 +1476,7 @@
         shown++;
       }
     }
-    return shown + ' ' + TEXT.of + ' ' + fields.length + ' ' + TEXT.visible;
+    return text('visibleCount').replace('{0}', shown).replace('{1}', fields.length);
   }
 
   // The tick is the user's choice, not the field's current state: a field revealed for an error
@@ -1461,22 +1484,22 @@
   // not on screen.
   function fieldTag(item, on) {
     if (item.etskinForced && !on) {
-      return TEXT.forced;
+      return text('forced');
     }
     if (item.etskinBySection && on) {
-      return TEXT.inHiddenSection;
+      return text('inHiddenSection');
     }
     if (item.required) {
-      return TEXT.required;
+      return text('required');
     }
     if (isc.isA.Function(item.obShowIf) || isc.isA.Function(item.showIf)) {
-      return TEXT.conditional;
+      return text('conditional');
     }
     return '';
   }
 
   function sectionTag(view, section) {
-    return section.etskinForced && !sectionWanted(view, section) ? TEXT.forced : '';
+    return section.etskinForced && !sectionWanted(view, section) ? text('forced') : '';
   }
 
   function rowHTML(item, section) {
@@ -1542,11 +1565,11 @@
       offeredByName[fields[i].name] = true;
     }
 
-    html.push('<div class="etskin-fields" role="dialog" aria-label="' + esc(TEXT.fields) + '">');
-    html.push(headHTML(TEXT.fields, countText(form)));
+    html.push('<div class="etskin-fields" role="dialog" aria-label="' + esc(text('fields')) + '">');
+    html.push(headHTML(text('fields'), countText(form)));
     html.push('<div class="etskin-fields-search"><span class="etskin-fields-search-icon"></span>' +
       '<input type="text" class="etskin-fields-input" autocomplete="off" spellcheck="false" placeholder="' +
-      esc(TEXT.search) + '" aria-label="' + esc(TEXT.search) + '"></div>');
+      esc(text('search')) + '" aria-label="' + esc(text('search')) + '"></div>');
     html.push('<div class="etskin-fields-list">');
     // In the form's order: the fields outside any section, then each section and its fields.
     for (i = 0; i < items.length; i++) {
@@ -1560,10 +1583,10 @@
       }
     }
     html.push('</div>');
-    html.push('<div class="etskin-fields-empty">' + esc(TEXT.none) + '</div>');
+    html.push('<div class="etskin-fields-empty">' + esc(text('none')) + '</div>');
     html.push('<div class="etskin-fields-foot"><button type="button" class="etskin-fields-all">' +
-      esc(TEXT.showAll) + '</button><button type="button" class="etskin-fields-reset">' +
-      esc(TEXT.reset) + '</button></div>');
+      esc(text('showAll')) + '</button><button type="button" class="etskin-fields-reset">' +
+      esc(text('reset')) + '</button></div>');
     html.push('<div class="etskin-fields-note"></div>');
     html.push('</div>');
     return html.join('');
@@ -1574,8 +1597,8 @@
   function headHTML(title, count) {
     return '<div class="etskin-fields-head"><span class="etskin-fields-title">' + esc(title) +
       '</span><span class="etskin-fields-count">' + esc(count) + '</span>' +
-      '<button type="button" class="etskin-fields-close" aria-label="' + esc(TEXT.close) + '" title="' +
-      esc(TEXT.close) + '"></button></div>';
+      '<button type="button" class="etskin-fields-close" aria-label="' + esc(text('close')) + '" title="' +
+      esc(text('close')) + '"></button></div>';
   }
 
   function columnCountText(view) {
@@ -1587,18 +1610,18 @@
         shown++;
       }
     }
-    return shown + ' ' + TEXT.of + ' ' + cols.length + ' ' + TEXT.visible;
+    return text('visibleCount').replace('{0}', shown).replace('{1}', cols.length);
   }
 
   function columnsMenuHTML(view) {
     var cols = gridColumns(view.viewGrid);
     var html = [];
     var i, title;
-    html.push('<div class="etskin-fields" role="dialog" aria-label="' + esc(TEXT.columns) + '">');
-    html.push(headHTML(TEXT.columns, columnCountText(view)));
+    html.push('<div class="etskin-fields" role="dialog" aria-label="' + esc(text('columns')) + '">');
+    html.push(headHTML(text('columns'), columnCountText(view)));
     html.push('<div class="etskin-fields-search"><span class="etskin-fields-search-icon"></span>' +
       '<input type="text" class="etskin-fields-input" autocomplete="off" spellcheck="false" placeholder="' +
-      esc(TEXT.searchColumns) + '" aria-label="' + esc(TEXT.searchColumns) + '"></div>');
+      esc(text('searchColumns')) + '" aria-label="' + esc(text('searchColumns')) + '"></div>');
     html.push('<div class="etskin-fields-list">');
     for (i = 0; i < cols.length; i++) {
       title = plainText(cols[i].title || cols[i].name);
@@ -1609,10 +1632,10 @@
         '<span class="etskin-fields-label">' + esc(title) + '</span></button>');
     }
     html.push('</div>');
-    html.push('<div class="etskin-fields-empty">' + esc(TEXT.none) + '</div>');
+    html.push('<div class="etskin-fields-empty">' + esc(text('none')) + '</div>');
     html.push('<div class="etskin-fields-foot"><button type="button" class="etskin-fields-all">' +
-      esc(TEXT.showAll) + '</button><button type="button" class="etskin-fields-reset">' +
-      esc(TEXT.reset) + '</button></div>');
+      esc(text('showAll')) + '</button><button type="button" class="etskin-fields-reset">' +
+      esc(text('reset')) + '</button></div>');
     html.push('<div class="etskin-fields-note"></div>');
     html.push('</div>');
     return html.join('');
@@ -1712,7 +1735,7 @@
     var saved = savePrefs(view, choices, sections || loadSectionChoices(view));
     applyChoices(view.viewForm);
     syncMissingNotice(view);
-    refreshMenu(saved ? '' : TEXT.unsaved);
+    refreshMenu(saved ? '' : text('unsaved'));
   }
 
   function toggleColumn(name) {
@@ -1726,7 +1749,7 @@
     choices[name] = !columnWanted(view, field, choices);
     saved = saveColumnChoices(view, choices);
     applyColumns(view);
-    refreshMenu(saved ? '' : TEXT.unsaved);
+    refreshMenu(saved ? '' : text('unsaved'));
   }
 
   function toggleSection(name) {
@@ -1774,7 +1797,7 @@
       }
       saved = saveColumnChoices(view, choices);
       applyColumns(view);
-      refreshMenu(saved ? '' : TEXT.unsaved);
+      refreshMenu(saved ? '' : text('unsaved'));
       return;
     }
     // Every field and every section.
@@ -1793,14 +1816,14 @@
     if (menu.mode === 'columns') {
       cleared = clearColumnChoices(view);
       applyColumns(view);
-      refreshMenu(cleared ? '' : TEXT.unsaved);
+      refreshMenu(cleared ? '' : text('unsaved'));
       return;
     }
     cleared = clearChoices(view);
     clearForced(view.viewForm);
     applyChoices(view.viewForm);
     syncMissingNotice(view);
-    refreshMenu(cleared ? '' : TEXT.unsaved);
+    refreshMenu(cleared ? '' : text('unsaved'));
   }
 
   function closeMenu() {
@@ -1958,7 +1981,7 @@
   function registerButton() {
     OB.ToolbarRegistry.registerButton(BUTTON_TYPE, isc.OBToolbarIconButton, {
       buttonType: BUTTON_TYPE,
-      prompt: TEXT.fields,
+      prompt: text('fields'),
       // Refreshed by the skin's toolbar arrangement, which otherwise leaves the view buttons alone.
       etskinStateful: true,
       action: function () {
@@ -1992,7 +2015,7 @@
         if (handle) {
           handle.setAttribute('data-mode', mode);
         }
-        this.setPrompt(mode === 'columns' ? TEXT.columns : TEXT.fields);
+        this.setPrompt(mode === 'columns' ? text('columns') : text('fields'));
         this.show();
       }
     }, 360);
@@ -2006,7 +2029,7 @@
   function registerFiltersButton() {
     OB.ToolbarRegistry.registerButton(FILTERS_TYPE, isc.OBToolbarIconButton, {
       buttonType: FILTERS_TYPE,
-      prompt: TEXT.filters,
+      prompt: text('filters'),
       action: function () {
         var grid = this.view && this.view.viewGrid;
         if (!grid || !grid.filterEditor) {
@@ -2038,11 +2061,11 @@
   // ------------------------------------------------------------------ hooks
 
   try {
-    document.documentElement.style.setProperty('--sk-fields-label', JSON.stringify(TEXT.fields));
-    document.documentElement.style.setProperty('--sk-columns-label', JSON.stringify(TEXT.columns));
-    document.documentElement.style.setProperty('--sk-filters-label', JSON.stringify(TEXT.filters));
-    document.documentElement.style.setProperty('--sk-new-label', JSON.stringify(TEXT.newRecord));
-    document.documentElement.style.setProperty('--sk-save-label', JSON.stringify(TEXT.save));
+    document.documentElement.style.setProperty('--sk-fields-label', JSON.stringify(text('fields')));
+    document.documentElement.style.setProperty('--sk-columns-label', JSON.stringify(text('columns')));
+    document.documentElement.style.setProperty('--sk-filters-label', JSON.stringify(text('filters')));
+    document.documentElement.style.setProperty('--sk-new-label', JSON.stringify(text('newRecord')));
+    document.documentElement.style.setProperty('--sk-save-label', JSON.stringify(text('save')));
     registerButton();
     registerFiltersButton();
 

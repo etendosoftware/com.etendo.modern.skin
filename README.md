@@ -53,7 +53,7 @@ depend on this one:
 | `src/com/etendo/modern/skin/LoginSignInProvider.java` | Puts the login stylesheet on the login page through the core's `SignInProvider` seam. |
 | `web/com.etendo.modern.skin/css/etendo-skin-login.css` | The login page, loaded by the provider above. |
 | `web/com.etendo.modern.skin/fonts/` | Inter, self hosted. Two woff2 subsets, declared by both stylesheets. |
-| `src-db/database/sourcedata/` | The module's identity (its row, the `ETMSK` prefix and its two dependencies) and the three preferences: their *Property Configuration* entries and system-level seeds. |
+| `src-db/database/sourcedata/` | The module's identity (its row, the `ETMSK` prefix and its two dependencies), the three preferences (their *Property Configuration* entries and system-level seeds) and the `ETMSK_L_*` messages the scripts show. |
 | `src-util/modulescript/.../CopySkinModernPreferences.java` | Copies `com.etendoerp.skin.modern`'s `ETSKIN_*` preferences to the `ETMSK_*` names on install or update from before 1.1.0; see [Shared configuration](#shared-configuration). |
 
 Every rule in the application stylesheet is scoped under `.etskin-on`, a class the script adds to
@@ -354,9 +354,9 @@ Accounting, Security...), and each category its windows in one flat list. The ma
 - **Home and the recent views.** General holds Home, which selects the workspace tab, and the
   recent views. Favourites, getting started and the company switcher of GO have no counterpart in
   Classic and are not imitated.
-- **The words are the dictionary's.** Group and category names are `ETSKIN_L_nav*` messages of the
-  reference module, with the English written in the map as the fallback, so a translation module
-  translates them like any other message.
+- **The words are the dictionary's.** Group and category names are this module's `ETMSK_L_nav*`
+  messages, with the English written in the map as the fallback, so a translation module
+  translates them like any other message. *Home* is core's `OBUIAPP_HomeKey`.
 
 Collapsed, the rail shows one tile per category, with a hairline between groups.
 
@@ -460,8 +460,8 @@ class or `--sk-*` token a UIKit view reads is changed.
   in a white variant meant for its dark selected tab, so `OBTabBarButtonMain` is told not to switch
   icons on selection: same icon, same click, same close. The workspace tab has none, as in Core.
 
-The menu's words are Spanish literals in the script for now; they become AD messages when the design
-leaves the rehearsal.
+The menu's words are core's labels where core has one (Fields, Columns, New, Save, Close) and this
+module's `ETMSK_L_form*` messages for the rest, with the English in the script as the fallback.
 
 ### The boot screen
 
@@ -537,10 +537,13 @@ To remove it, take the folder out of `modules/` together with what the build pro
 the deployed webapp), then `update.database`, `smartbuild` and a restart: the application returns to
 the stock skin, and the module's rows leave the database with it.
 
-**What lives in another module.** The words the shell shows - the side navigation's group and
-category names (`ETSKIN_L_nav*`) and a few labels of the toolbar and the grid - are read from the
-dictionary as `ETSKIN_L_*` or `ETMSK_L_*` messages. Without that module the shell still works:
-every word falls back to the English written beside it in the code.
+**The words.** Every word the shell shows is a dictionary message: core's own label where core has
+one, otherwise one of this module's `ETMSK_L_*` messages (the side navigation's groups and
+categories, the toolbar, the grid's record count and the Fields / Columns menu). The module ships
+them in English only. Core's words come translated with core's translation modules; the
+`ETMSK_L_*` ones need a translation module of their own (`com.etendo.modern.skin.es_es` for
+Spanish), and until one is installed they read in English. A missing message falls back to the
+English written beside it in the code.
 
 **The side navigation map** (`NAV_SECTIONS` in `etendo-skin-nav.js`) names standard Etendo menu
 folders by `AD_MENU_ID`, plus a few entries of the installation it was built on. An id an

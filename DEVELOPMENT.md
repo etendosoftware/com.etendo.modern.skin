@@ -67,8 +67,12 @@ Application > Preference*, for example `ETMSK_Theme = {"preset":"etendo"}` or
 and how values from `com.etendoerp.skin.modern` are carried over, is in the README, *Shared
 configuration*.
 
-- The `ETSKIN_L_*` labels still live in `com.etendoerp.skin.modern`. Without it you get the English
-  fallback labels, which is enough for styling work.
+- The words the scripts show are `ETMSK_L_*` messages in this module, English only. Add a new one in
+  *Application Dictionary > Messages* (module `ETMSK`, In Development) and read it with the
+  script's `skinLabel(name, fallback)` (or `text(name)` in `etendo-skin-form.js`), always with an
+  English fallback. Prefer a core label when core already has the word: it comes translated.
+  Translations go in a translation module (`com.etendo.modern.skin.es_es`), not here: Etendo only
+  imports translations from modules marked as translation modules.
 - **Do not install `com.etendoerp.skin.modern` next to this module.** It ships its own copy of the
   stylesheet and the navigation scripts, so with both on the two paint over each other.
 - Testing the migration script: it only runs on install or on an update from a version before
