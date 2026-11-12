@@ -105,4 +105,6 @@ The repository follows the Etendo Git Police rules, checked on every pull reques
   branch is in use). `main` only receives releases.
 - Every PR runs **Git Police** (branch name, destination and commit format; required to merge) and
   the **Auto Reviewer** bot. Address or mark as `/false-positive` its blocking comments.
+- A PR that touches `web/**/*.js` also runs **ES5 Check** (`es-check es5`). Run it locally before
+  pushing: `npx es-check@9.8.1 es5 'web/**/*.js'`.
 - Fill in the PR template: before/after screenshots, the preset and the navigation mode used.
