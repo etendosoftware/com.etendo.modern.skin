@@ -405,7 +405,9 @@ Two pieces are arranged rather than restyled, and neither is a control of the sk
   the grid shows (from `OB.ETSkin.countText`, refreshed from
   `updateRowCountDisplay`), or a chevron and the record's identifier while the form shows. A tab no
   menu entry opens, such as the workspace, keeps its own label and has neither. It follows the
-  selected tab through the same class observer on the tab bar that the side navigation uses.
+  selected tab through the same class observer on the tab bar that the side navigation uses, and
+  through a root view's `updateTabTitle`, which core calls on every switch between grid and form -
+  opening the form on a record already selected leaves the tab's label, and so the observer, quiet.
 
 Widths are fitted in JS on install and on every page resize: the title takes up to 480px, the field
 up to 480 and gives way first, down to 180, and the stock spacers of the bar, which are empty, are
@@ -468,6 +470,11 @@ class or `--sk-*` token a UIKit view reads is changed.
   and the window strip take the top bar's lavender whatever the tab shows - a standard window, the
   workspace, an EMOS view or a window still loading - so the strip never changes colour between
   tabs; a standard window is one white sheet on it.
+- **The child tabs.** Underlined words on a hairline, and each carries its record count once its
+  grid has loaded - "Lines (13)", core's own format. Core's `updateTabTitle` already draws that
+  count from `view.recordCount` while one parent record is selected, but nothing in core ever sets
+  it; `etendo-skin-grid.js` sets it from `updateRowCountDisplay`. A child tab that has not been
+  opened has fetched nothing and shows no count.
 - **The window tabs.** The selected tab keeps its close X. Core's skin draws the selected tab's icon
   in a white variant meant for its dark selected tab, so `OBTabBarButtonMain` is told not to switch
   icons on selection: same icon, same click, same close. The workspace tab has none, as in Core.

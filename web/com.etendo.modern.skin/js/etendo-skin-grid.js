@@ -340,12 +340,24 @@
       editGrid: false,
 
       updateRowCountDisplay: function () {
+        var view = this.view;
+        var count;
         if (hasEditLinkField(this)) {
           return originalRowCount.apply(this, arguments);
         }
         try {
           if (OB.ETSkin.topBar && OB.ETSkin.topBar.refreshTitle) {
             OB.ETSkin.topBar.refreshTitle();
+          }
+          /*
+           * A child tab carries its count, as the new UI's "Lines 13". Core already draws
+           * "Lines (13)" from view.recordCount in updateTabTitle - only when one parent record is
+           * selected - but nothing in core ever sets it, so this is the one line that was missing.
+           */
+          if (view && view.parentTabSet && view.updateTabTitle) {
+            count = countOf(this);
+            view.recordCount = count && count.length ? (count.capped ? this.dataPageSize + '+' : count.length) : null;
+            view.updateTabTitle();
           }
         } catch (e) {
           // A missing count is a missing count, not a broken grid.

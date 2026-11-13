@@ -373,6 +373,24 @@
         return result;
       };
     }
+    /*
+     * Opening the form on a record that is already selected leaves the tab's label as it was, so
+     * the class observer below never hears of it. Core ends every switch between grid and form,
+     * and every record change, in updateTabTitle, so a root view's call is the third trigger.
+     */
+    if (isc.OBStandardView && !isc.OBStandardView.getPrototype().etskinTitled) {
+      var originalTabTitle = isc.OBStandardView.getPrototype().updateTabTitle;
+      isc.OBStandardView.addProperties({
+        etskinTitled: true,
+        updateTabTitle: function () {
+          var result = originalTabTitle.apply(this, arguments);
+          if (!this.parentTabSet) {
+            scheduleTitle();
+          }
+          return result;
+        }
+      });
+    }
     if (bar && typeof MutationObserver !== 'undefined') {
       new MutationObserver(scheduleTitle).observe(bar, {
         attributes: true,
