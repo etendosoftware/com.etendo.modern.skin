@@ -379,6 +379,34 @@
     }
   }
 
+  /*
+   * With native scrollbars ListGrid.updateSorter draws the corner sort button twice: setVisibility
+   * already draws it (the grid is drawn), then the explicit draw() finds it no longer undrawn and
+   * SmartClient logs a warning whose stack trace throws (TypeError reading '$123y') - dozens of
+   * console errors per window. Core keeps that button on purpose (showSortArrow both, issue 17362),
+   * so the draw is made idempotent instead of the button removed.
+   */
+  function guardSorterDraw() {
+    var proto = isc.ListGrid && isc.ListGrid.getPrototype && isc.ListGrid.getPrototype();
+    var original = proto && proto.updateSorter;
+    if (!original || original.etskinGuarded) {
+      return;
+    }
+    proto.updateSorter = function () {
+      var sorter = this.sorter;
+      var draw;
+      if (sorter && !sorter.etskinDrawGuarded) {
+        sorter.etskinDrawGuarded = true;
+        draw = sorter.draw;
+        sorter.draw = function () {
+          return this.getDrawnState() !== isc.Canvas.UNDRAWN ? this : draw.apply(this, arguments);
+        };
+      }
+      return original.apply(this, arguments);
+    };
+    proto.updateSorter.etskinGuarded = true;
+  }
+
   function applySmartClient(tokens) {
     var density = DENSITIES[tokens.density];
     var i;
@@ -391,6 +419,7 @@
     // which is the branch Etendo takes. Those are PNG-drawn scrollbars and they are the single
     // most dated element on screen. Native ones also scroll better.
     addProperties('Canvas', { showCustomScrollbars: false });
+    guardSorterDraw();
 
     addProperties('OBViewGrid', {
       cellHeight: density.cellHeight,
