@@ -322,7 +322,7 @@
     if (view.isShowingForm) {
       t.record = record && record[OB.Constants.IDENTIFIER] ? String(record[OB.Constants.IDENTIFIER]) : '';
     } else if (OB.ETSkin.countText) {
-      // etendo-skin-grid.js owns the arithmetic, and the toolbar readout shows the same string.
+      // etendo-skin-grid.js owns the arithmetic.
       t.count = OB.ETSkin.countText(grid);
     }
     return t;

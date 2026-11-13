@@ -31,8 +31,8 @@
  *
  * That column was doing a second job, though: its cell in the filter row carried the record count,
  * as a bare number in an unlabelled 56px slot. The count is worth keeping and the slot is not, so
- * updateRowCountDisplay is redirected to a labelled readout on the toolbar - "128 records" instead
- * of "128" - and falls back to the stock behaviour untouched whenever the column is still there.
+ * updateRowCountDisplay is redirected to the top bar, which shows it beside the window's title -
+ * "(128 records)" instead of "128" - and falls back to the stock behaviour untouched whenever the column is still there.
  * The stock method reaches straight into the filter form for a field that is no longer among the
  * grid's fields, so leaving it alone is not an option: it throws on every data arrival.
  *
@@ -150,12 +150,6 @@
   function skinLabel(name, fallback) {
     var labels = OB.ETSkin && OB.ETSkin.labels;
     return labels && labels[name] ? String(labels[name]) : fallback;
-  }
-
-  function countReadout(grid) {
-    var view = grid.view;
-    var toolbar = view && view.toolBar;
-    return toolbar && toolbar.etskinCount ? toolbar.etskinCount : null;
   }
 
   /*
@@ -317,7 +311,7 @@
 
   // -------------------------------------------------------------------- main
 
-  // The top bar shows the root grid's count beside the window's title.
+  // The top bar reads the root grid's count through this.
   OB.ETSkin.countText = countText;
 
   try {
@@ -346,16 +340,10 @@
       editGrid: false,
 
       updateRowCountDisplay: function () {
-        var readout;
         if (hasEditLinkField(this)) {
           return originalRowCount.apply(this, arguments);
         }
         try {
-          readout = countReadout(this);
-          if (readout && readout.setContents) {
-            readout.setContents(countText(this));
-          }
-          // The top bar repeats the count beside the window's title.
           if (OB.ETSkin.topBar && OB.ETSkin.topBar.refreshTitle) {
             OB.ETSkin.topBar.refreshTitle();
           }

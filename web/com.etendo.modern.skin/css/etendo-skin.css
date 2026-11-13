@@ -116,12 +116,12 @@
   --sk-search-fill: #e7e9ee;
 
   /*
-   * Etendo GO's form and table language, for the standard windows: its near-black ink, the pale
-   * fills behind fields and under the pointer, and its muted glyph grey. New tokens only - no value a
-   * UIKit view reads changes.
+   * The standard windows' form and table language, first taken from Etendo GO: the ink, the pale
+   * fills behind fields and under the pointer, and the muted glyph grey. The ink is now the new UI's
+   * primary indigo (workspace-ui PRIMARY_500). New tokens only - no value a UIKit view reads changes.
    */
-  --sk-go-ink: #0f172a;
-  --sk-go-ink-hover: #1e293b;
+  --sk-go-ink: #202452;
+  --sk-go-ink-hover: #2e3470;
   --sk-go-fill: #f1f5f9;
   --sk-go-fill-soft: #f8fafc;
   --sk-go-icon: #64748b;
@@ -3159,19 +3159,6 @@
   pointer-events: none;
 }
 
-/*
- * The record count, back from the blank column it used to sit in. Muted and unboxed: it is a
- * readout, and nothing on the strip should invite a click except the things that take one.
- */
-.etskin-on .etskin-tb-count {
-  font-family: var(--sk-font);
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--sk-text-muted);
-  white-space: nowrap;
-  padding-inline-end: 12px;
-}
-
 /* ---------------------------------------------------------- toolbar menus */
 
 /*
@@ -3345,10 +3332,31 @@
 
 /* ---------------------------------------------------------------- GO toolbar */
 
-/* GO's action bar: muted glyphs in 8px squares, a neutral fill under the pointer. */
+/*
+ * The new UI's action bar: one pill holding the whole strip - muted glyphs in 8px squares, a neutral
+ * fill under the pointer. The pill is a pseudo-element inset inside the toolbar, because SmartClient
+ * places the toolbar and its members with inline geometry a margin would fight; the members are
+ * absolutely positioned children, so they paint over it.
+ */
 .etskin-on .etskin-go .OBToolbar {
   --sk-icon-color: var(--sk-go-icon);
-  border-bottom-color: var(--sk-nav-border);
+  border-bottom-color: transparent;
+}
+
+.etskin-on .etskin-go .OBToolbar::before {
+  content: "";
+  position: absolute;
+  inset: 4px 8px;
+  border-radius: 999px;
+  background-color: var(--sk-go-fill);
+  pointer-events: none;
+}
+
+/* Refresh sits in its own white circle, as the new UI draws it beside New. */
+.etskin-on .etskin-go [data-etskin-group="record"] {
+  border-radius: 999px;
+  background-color: var(--sk-surface);
+  box-shadow: 0 0 0 1px var(--sk-nav-border);
 }
 
 .etskin-on .etskin-go [class^="OBToolbarIconButton"] {
@@ -3364,15 +3372,17 @@
   --sk-icon-color: var(--sk-text);
 }
 
-/* Save is GO's primary button: the ink, filled, with the same corners as everything else. */
+/* Save is the form's primary button: the ink, filled, round like New. */
 .etskin-on .etskin-go .etskin-tb-primary {
-  border-radius: var(--sk-radius);
+  border-radius: 999px;
   box-shadow: none;
 }
 
+/* Actions reads as the new UI's "Available Process": a word and a chevron on the pill, no outline. */
 .etskin-on .etskin-go .etskin-tb-actions {
-  border-color: var(--sk-nav-border);
+  border-color: transparent;
   border-radius: var(--sk-radius);
+  background-color: transparent;
 }
 
 .etskin-on .etskin-go .etskin-tb-actions:hover {
@@ -3990,7 +4000,7 @@
 .etskin-on .etskin-go .etskin-tb-new {
   --sk-icon-color: var(--sk-surface);
   background-color: var(--sk-go-ink);
-  border-radius: var(--sk-radius);
+  border-radius: 999px;
   transition: background-color 120ms ease;
 }
 

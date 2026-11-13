@@ -46,7 +46,7 @@ depend on this one:
 | `web/com.etendo.modern.skin/js/etendo-skin.js` | Resolves the palette per session and writes the custom properties onto `<html>`. Also overrides the SmartClient sizes that live in JS rather than CSS, and publishes `OB.ETSkin`. |
 | `web/com.etendo.modern.skin/js/etendo-skin-nav.js` | Builds the left navigation panel out of `OB.Application.menu`. Stands down unless the script above ran. |
 | `web/com.etendo.modern.skin/js/etendo-skin-topbar.js` | Reorders the top bar and sizes its buttons. Same rule. |
-| `web/com.etendo.modern.skin/js/etendo-skin-toolbar.js` | Arranges the view toolbar into three groups with one filled action, and moves the occasional ones into an overflow menu. Same rule. |
+| `web/com.etendo.modern.skin/js/etendo-skin-toolbar.js` | Arranges the view toolbar as the new UI's single pill: one run of glyphs in its order, the process buttons in one Actions menu after it, and the view controls (Filters, Fields / Columns) on the right. Buttons other modules add spill into an overflow menu once the run is full. Same rule. |
 | `web/com.etendo.modern.skin/js/etendo-skin-form.js` | What a form's stylesheet cannot reach: the required marker, the link glyph, the section chevrons, the status bar title and the child panes. Also the standard windows' GO design - the Fields / Columns menu, the Filters button and the light frame; see [The standard windows](#the-standard-windows). Same rule. |
 | `web/com.etendo.modern.skin/js/etendo-skin-grid.js` | What a grid's stylesheet cannot reach: the row height, the header alignment, the frozen pane and the status badge. Same rule. |
 | `src/com/etendo/modern/skin/NavMenuFoldersComponent.java` | Publishes the menu ids of the session's menu folders as `OB.ETSkinMenuFolders`, a dynamic resource registered ahead of the navigation script. Core's menu gives every entry its id but no folder one; the side navigation groups the menu by these. |
@@ -401,7 +401,7 @@ Two pieces are arranged rather than restyled, and neither is a control of the sk
 - **The title is read, not typed.** A canvas after the brand shows the open view on one line as the
   new UI does - 20px semibold - taking the menu's name for the window rather than the tab's label,
   which changes with the selected record. Beside it goes the root grid's record count in 12px while
-  the grid shows (the same string as the toolbar readout, from `OB.ETSkin.countText`, refreshed from
+  the grid shows (from `OB.ETSkin.countText`, refreshed from
   `updateRowCountDisplay`), or a chevron and the record's identifier while the form shows. A tab no
   menu entry opens, such as the workspace, keeps its own label and has neither. It follows the
   selected tab through the same class observer on the tab bar that the side navigation uses.
@@ -454,8 +454,12 @@ class or `--sk-*` token a UIKit view reads is changed.
   columns matter is chosen from the interface by the team and the users. The user's choices win and live in `localStorage`, per user, role and tab: fields
   and sections under `etskin.fields.v1.*`, columns under `etskin.columns.v1.*`. They do not follow the
   user to another browser. Reset returns the tab to its first selection.
-- **The toolbar and the frame.** Filters leads, New is the filled primary in the list and Save carries
-  its word in the form. The desk and the window strip take the grey of the top bar and the side
+- **The toolbar and the frame.** The strip is one pill, as in the new UI: New (filled, indigo) and
+  Save carry their word - New in the list, Save in the form - then refresh in its own circle, delete,
+  undo and the occasional glyphs (clone, export, print, link, email, attach) inline, then Actions,
+  the process buttons as one menu in the place of the new UI's "Available Process". Filters and
+  Fields / Columns sit on the right with the stock view glyphs. The record count moved to the top
+  bar. The new UI's fullscreen button has no stock control behind it and is not drawn. The desk and the window strip take the grey of the top bar and the side
   navigation whatever the tab shows - a standard window, the workspace, an EMOS view or a window still
   loading - so the strip never changes colour between tabs; a standard window is one white sheet on it.
 - **The window tabs.** The selected tab keeps its close X. Core's skin draws the selected tab's icon
