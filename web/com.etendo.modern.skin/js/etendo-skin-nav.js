@@ -44,7 +44,6 @@
   var sidebar = null; // the isc.Canvas
   var menuDelegate = null; // an OBApplicationMenuTree, used only for itemClick
   var menuData = null;
-  var grouped = false; // menuData is GO's grouping of the menu rather than the menu itself
   // The index path of the node whose window is open, kept because the row it names is not always
   // the row that carries the mark; see applyCurrent.
   var currentPath = null;
@@ -260,298 +259,16 @@
   }
 
   function iconMarkup(node, depth, index) {
-    // Only sections carry a glyph, as in Etendo GO. Everything below a section hangs off the thin
-    // guide line under that glyph instead, which is what keeps a 277 entry tree quiet.
-    if (depth > 0) {
-      return '';
-    }
-    // Artwork is a section level idea, so it is only consulted for the top of the tree.
+    // Artwork is a section level idea, so it is only consulted for the top of the tree. Deeper
+    // nodes keep the glyph that says what kind of thing they open, as the new UI does.
     var art = depth === 0 ? artworkFor(node) : null;
     if (art) {
       return '<img class="etskin-nav-art" src="' + esc(art) + '" alt="">';
     }
     if (depth === 0) {
-      return '<span class="etskin-nav-icon etskin-nav-icon-sec-' + (node.etskinGlyph || sectionGlyph(index)) + '"></span>';
+      return '<span class="etskin-nav-icon etskin-nav-icon-sec-' + sectionGlyph(index) + '"></span>';
     }
     return '<span class="etskin-nav-icon etskin-nav-icon-' + iconFor(node) + '"></span>';
-  }
-
-  // -------------------------------------------------------------- grouping
-
-  /*
-   * Etendo GO's arrangement of the menu: a few named groups - General, Commercial, Operations,
-   * Finance, System - each holding short categories, and each category its windows in one flat
-   * list. Classic's menu is sixteen module folders, each with Transactions, Analysis Tools and Setup
-   * folders under it, so the panel regroups the session's own menu into that shape. Nothing is
-   * added and nothing the role cannot see appears: every entry below is an entry of
-   * OB.Application.menu, and a category the role has nothing in is left out.
-   *
-   * Categories name their sources by menu id, never by title, so the map holds in every language
-   * and survives a client renaming a folder. OB.Application.menu does not carry them - a folder has no
-   * id at all, and an entry's id is that of what it opens - so NavMenuFoldersComponent publishes them
-   * as OB.ETSkinMenuFolders, a tree of the same shape. Without it, or when the two disagree, the
-   * panel keeps the stock tree.
-   *
-   * A source brings its whole subtree, and a more specific source claimed by another category is
-   * taken out of it - Security lives inside General Setup, Invoices inside Financial Management.
-   * Inside a source, the entries are listed flat, a Transactions folder is opened into that list, the
-   * Analysis Tools and Setup folders of every source in the category are merged into one Analysis
-   * and one Setup group at the end, and any other folder stays a group of its own. Whatever no
-   * category claims is not lost: it goes under Other, folder and all.
-   *
-   * Labels are skin words (ETMSK_L_nav*), with the English written here as the fallback.
-   */
-  var NAV_SECTIONS = [
-    { key: 'General', items: [{ key: 'Home', glyph: 'home', home: true }] },
-    {
-      key: 'Commercial',
-      items: [
-        // Business Partner, Business Partner Info, Business Partner Setup, Partner Relations.
-        { key: 'Partners', glyph: 'users', from: ['110', '394', '800238', '263'] },
-        { key: 'Sales', glyph: 'trend', from: ['166'] },
-        { key: 'Projects', glyph: 'briefcase', from: ['160'] }
-      ]
-    },
-    {
-      key: 'Operations',
-      items: [
-        { key: 'Purchases', glyph: 'inbound', from: ['203'] },
-        // Warehouse Management, with the EMOS warehouse windows that sit in it.
-        { key: 'Inventory', glyph: 'package', from: ['800243'] },
-        { key: 'Production', glyph: 'factory', from: ['800121'] },
-        { key: 'Planning', glyph: 'clipboard', from: ['800212'] },
-        // Product, Product Setup, Pricing, Product Management.
-        { key: 'Products', glyph: 'tag', from: ['126', '800239', '800240', '183'] }
-      ]
-    },
-    {
-      key: 'Finance',
-      items: [
-        // Receivables and Payables, and the EMOS Invoice Monitor and Collections and Payments.
-        {
-          key: 'Billing',
-          glyph: 'card',
-          from: ['236', 'D939BE0C45FF7EB26F0EDC55B9D26D0C', 'DEE2FB4A19279DE4D82BCF06D2B9ACD2']
-        },
-        { key: 'Accounting', glyph: 'book', from: ['800252'] },
-        { key: 'Assets', glyph: 'building', from: ['345'] },
-        // Performance Measurement, Business Intelligence and the EMOS Financial Overview.
-        { key: 'Analysis', glyph: 'chart', from: ['158', '1004400006', '18A7370FE2B581C2A84F2E17C2C63915'] }
-      ]
-    },
-    {
-      key: 'System',
-      items: [
-        { key: 'Settings', glyph: 'sliders', from: ['155'] },
-        { key: 'Security', glyph: 'shield', from: ['367'] },
-        { key: 'Dictionary', glyph: 'layers', from: ['153'] },
-        // Jobs.
-        { key: 'Processes', glyph: 'bolt', from: ['3A59F70F148D4BE49D38E9935CDFE3C7'] },
-        // Etendo RX, and Integrations Configuration from General Setup.
-        {
-          key: 'Integrations',
-          glyph: 'plug',
-          from: ['56A75A71AF5A4CB6AD2C0BB1BBE7EA7C', '8AC84D3FD82742C0B064787BCECC412C']
-        },
-        // Copilot.
-        { key: 'Assistant', glyph: 'star', from: ['BD2E5BFEF0AE4D02ADA0902974C2B66D'] },
-        // The rest of Service: Knowledge and Reports.
-        { key: 'Support', glyph: 'compass', from: ['271'] },
-        { key: 'Other', glyph: 'grid', other: true }
-      ]
-    }
-  ];
-
-  var NAV_FALLBACK = {
-    General: 'General', Commercial: 'Commercial', Operations: 'Operations', Finance: 'Finance',
-    System: 'System', Home: 'Home', Partners: 'Partners', Sales: 'Sales', Projects: 'Projects',
-    Purchases: 'Purchases', Inventory: 'Inventory', Production: 'Production', Planning: 'Planning',
-    Products: 'Products', Billing: 'Billing', Accounting: 'Accounting', Assets: 'Assets',
-    Analysis: 'Analysis', Settings: 'Settings', Security: 'Security', Dictionary: 'Dictionary',
-    Processes: 'Processes', Integrations: 'Integrations', Assistant: 'AI assistant',
-    Support: 'Support', Other: 'Other', SubAnalysis: 'Analysis', SubSetup: 'Setup'
-  };
-
-  // Deprecated.
-  var NAV_HIDDEN = { '800257': true };
-
-  // Every module's Transactions folder: opened into the category's own list.
-  var NAV_FLATTEN = {
-    '800242': true, '800244': true, '800245': true, '800247': true, '800249': true,
-    '800250': true, '800253': true, '800254': true
-  };
-
-  // Every module's Analysis Tools and Setup folders, and Business Partner Setup: merged, per
-  // category, into one group each.
-  var NAV_MERGE = {
-    '280': 'SubAnalysis', '800075': 'SubAnalysis', '800076': 'SubAnalysis', '800077': 'SubAnalysis',
-    '800078': 'SubAnalysis', '800079': 'SubAnalysis', '800081': 'SubAnalysis', '800141': 'SubAnalysis',
-    '164': 'SubSetup', '167': 'SubSetup', '272': 'SubSetup', '800189': 'SubSetup', '800233': 'SubSetup',
-    '800248': 'SubSetup', '800251': 'SubSetup', '800255': 'SubSetup', '800256': 'SubSetup',
-    '800238': 'SubSetup'
-  };
-
-  function navLabel(key) {
-    var labels = OB.ETSkin && OB.ETSkin.labels;
-    var name = 'nav' + key;
-    // Home is core's word, already translated by core's translation modules.
-    if (key === 'Home' && OB.I18N && OB.I18N.labels && OB.I18N.labels.OBUIAPP_HomeKey) {
-      return OB.I18N.labels.OBUIAPP_HomeKey;
-    }
-    return (labels && labels[name]) || NAV_FALLBACK[key] || key;
-  }
-
-  function isFolderNode(node) {
-    return !!(node && node.submenu && node.submenu.length);
-  }
-
-  /*
-   * Gives every node of the menu the menu id its twin in OB.ETSkinMenuFolders carries. False, and the
-   * caller keeps the stock tree, the moment the two shapes disagree: grouping a menu by ids that
-   * belong to some other menu would put windows in the wrong place without anyone noticing.
-   */
-  function annotateFolders(list, ids) {
-    var i, node, id;
-    if (!list || !ids || ids.length !== list.length) {
-      return false;
-    }
-    for (i = 0; i < list.length; i++) {
-      node = list[i];
-      id = ids[i];
-      if (isFolderNode(node)) {
-        if (!id || typeof id !== 'object' || typeof id[0] !== 'string' || !annotateFolders(node.submenu, id[1])) {
-          return false;
-        }
-        node.etskinMenuId = id[0];
-      } else if (typeof id !== 'string' || !id) {
-        return false;
-      } else {
-        node.etskinMenuId = id;
-      }
-    }
-    return true;
-  }
-
-  function menuIdOf(node) {
-    return String(node.etskinMenuId || '');
-  }
-
-  function hasClaimedDescendant(node, claims) {
-    var i;
-    if (!isFolderNode(node)) {
-      return false;
-    }
-    for (i = 0; i < node.submenu.length; i++) {
-      if (claims[menuIdOf(node.submenu[i])] || hasClaimedDescendant(node.submenu[i], claims)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  // The tree the panel renders, or null to keep the stock one. Does not modify the menu's entries
-  // beyond the menu ids annotateFolders writes; the groups it returns are new objects.
-  function groupMenu(menu, folders) {
-    var claims = {};
-    var buckets = {};
-    var out = [];
-    var s, c, i, section, category, bucket, items, mergeKey;
-
-    if (!menu || !menu.length || !annotateFolders(menu, folders)) {
-      return null;
-    }
-
-    for (s = 0; s < NAV_SECTIONS.length; s++) {
-      for (c = 0; c < NAV_SECTIONS[s].items.length; c++) {
-        category = NAV_SECTIONS[s].items[c];
-        buckets[category.key] = { flat: [], groups: [], merged: { SubAnalysis: [], SubSetup: [] } };
-        for (i = 0; category.from && i < category.from.length; i++) {
-          claims[category.from[i]] = category.key;
-        }
-      }
-    }
-
-    function addSource(key, node) {
-      var b = buckets[key];
-      var j, child, childId;
-      if (!isFolderNode(node)) {
-        b.flat.push(node);
-        return;
-      }
-      // A source that is itself a Setup folder joins the category's Setup group.
-      if (NAV_MERGE[menuIdOf(node)]) {
-        b.merged[NAV_MERGE[menuIdOf(node)]] = b.merged[NAV_MERGE[menuIdOf(node)]].concat(node.submenu);
-        return;
-      }
-      for (j = 0; j < node.submenu.length; j++) {
-        child = node.submenu[j];
-        childId = menuIdOf(child);
-        if (NAV_HIDDEN[childId]) {
-          continue;
-        }
-        if (claims[childId] && claims[childId] !== key) {
-          addSource(claims[childId], child);
-        } else if (!isFolderNode(child)) {
-          b.flat.push(child);
-        } else if (NAV_FLATTEN[childId]) {
-          addSource(key, child);
-        } else if (NAV_MERGE[childId]) {
-          b.merged[NAV_MERGE[childId]] = b.merged[NAV_MERGE[childId]].concat(child.submenu);
-        } else {
-          b.groups.push(child);
-        }
-      }
-    }
-
-    function walk(list) {
-      var j, node, id;
-      for (j = 0; j < list.length; j++) {
-        node = list[j];
-        id = menuIdOf(node);
-        if (NAV_HIDDEN[id]) {
-          continue;
-        }
-        if (claims[id]) {
-          addSource(claims[id], node);
-        } else if (hasClaimedDescendant(node, claims)) {
-          walk(node.submenu);
-        } else if (isFolderNode(node)) {
-          buckets.Other.groups.push(node);
-        } else {
-          buckets.Other.flat.push(node);
-        }
-      }
-    }
-
-    walk(menu);
-
-    for (s = 0; s < NAV_SECTIONS.length; s++) {
-      section = NAV_SECTIONS[s];
-      for (c = 0; c < section.items.length; c++) {
-        category = section.items[c];
-        if (category.home) {
-          out.push({ title: navLabel(category.key), etskinHome: true, etskinGlyph: category.glyph, etskinSection: section.key });
-          continue;
-        }
-        bucket = buckets[category.key];
-        items = bucket.flat.concat(bucket.groups);
-        for (mergeKey in bucket.merged) {
-          if (bucket.merged.hasOwnProperty(mergeKey) && bucket.merged[mergeKey].length) {
-            items.push({ title: navLabel(mergeKey), type: 'folder', submenu: bucket.merged[mergeKey] });
-          }
-        }
-        if (items.length) {
-          out.push({
-            title: navLabel(category.key),
-            type: 'folder',
-            submenu: items,
-            etskinGlyph: category.glyph,
-            etskinSection: section.key
-          });
-        }
-      }
-    }
-    return out;
   }
 
   // Nodes are addressed by their index path into OB.Application.menu ("0.4.2") rather than by id:
@@ -578,21 +295,11 @@
   function renderNodes(list, prefix, depth) {
     var html = [];
     var i, node, path, isFolder;
-    var section = null;
 
     for (i = 0; i < list.length; i++) {
       node = list[i];
       path = prefix === '' ? String(i) : prefix + '.' + i;
       isFolder = !!(node.submenu && node.submenu.length);
-
-      // The grouped tree's group titles, and the recent views at the end of General, as in GO.
-      if (depth === 0 && node.etskinSection && node.etskinSection !== section) {
-        if (section === 'General') {
-          html.push(recentsSlot());
-        }
-        section = node.etskinSection;
-        html.push('<div class="etskin-nav-section-title">' + esc(navLabel(section)) + '</div>');
-      }
 
       html.push('<div class="etskin-nav-group">');
       html.push(
@@ -623,9 +330,6 @@
       }
       html.push('</div>');
     }
-    if (depth === 0 && section === 'General') {
-      html.push(recentsSlot());
-    }
     return html.join('');
   }
 
@@ -646,13 +350,9 @@
     for (i = 0; i < menuData.length; i++) {
       node = menuData[i];
       art = artworkFor(node);
-      // A gap between the groups, which have no titles in the rail.
-      if (i > 0 && node.etskinSection && node.etskinSection !== menuData[i - 1].etskinSection) {
-        html.push('<span class="etskin-nav-rail-gap"></span>');
-      }
       html.push(
         '<button type="button" class="etskin-nav-tile' +
-          (art ? '' : ' etskin-nav-icon-sec-' + (node.etskinGlyph || sectionGlyph(i))) +
+          (art ? '' : ' etskin-nav-icon-sec-' + sectionGlyph(i)) +
           '" data-p="' +
           i +
           '" title="' +
@@ -761,10 +461,8 @@
       renderRail() +
       '</div>' +
       '<div class="etskin-nav-body">' +
-      // Grouped, the recents sit inside General and every group has its own title.
-      (grouped
-        ? ''
-        : recentsSlot() + '<div class="etskin-nav-section-title">' + esc(menuLabel) + '</div>') +
+      // The recent views as chips over the tree, as the new UI lays them out.
+      recentsSlot() +
       '<div class="etskin-nav-tree">' +
       renderNodes(menuData, '', 0) +
       '</div>' +
@@ -1009,10 +707,6 @@
     if (windowId && menuData) {
       currentPath = pathOfWindow(menuData, '', windowId);
     }
-    if (!currentPath && grouped && menuData[0] && menuData[0].etskinHome &&
-        OB.MainView.TabSet.tabs && tab === OB.MainView.TabSet.tabs[0]) {
-      currentPath = '0';
-    }
     for (i = 0; !currentPath && title && i < rows.length; i++) {
       labelEl = rows[i].querySelector('.etskin-nav-label');
       if (labelEl && labelEl.textContent === title) {
@@ -1060,13 +754,6 @@
       return;
     }
     markCurrent(row);
-    // Home is the workspace, which core keeps as the first tab and never lets close.
-    if (node.etskinHome) {
-      if (OB.MainView && OB.MainView.TabSet) {
-        OB.MainView.TabSet.selectTab(0);
-      }
-      return;
-    }
     delegateClick(node);
     refreshRecents();
   }
@@ -1270,15 +957,8 @@
       return;
     }
 
-    // GO's groups when the folder ids came with the menu and match it, the stock tree otherwise.
-    var regrouped = null;
-    try {
-      regrouped = groupMenu(OB.Application.menu, OB.ETSkinMenuFolders);
-    } catch (e) {
-      regrouped = null;
-    }
-    grouped = !!regrouped;
-    menuData = regrouped || OB.Application.menu;
+    // The session's own menu tree, as the new UI shows it: no regrouping, no folder left out.
+    menuData = OB.Application.menu;
     menuDelegate = isc.OBApplicationMenuTree.create({ autoDraw: false });
 
     // One read, used for both halves of the initial state. See panelClassName.

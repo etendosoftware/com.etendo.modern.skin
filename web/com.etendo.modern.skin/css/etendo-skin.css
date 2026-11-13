@@ -2366,14 +2366,13 @@
   padding: 0 0 12px 0;
 }
 
-/* ---------------------------------------------------------- group titles */
+/* ------------------------------------------------------- recents title */
 
 /*
  * GO's group titles: 12px, regular weight, muted, 16px in from the edge, 16px above and 4px below.
  * Discreet on purpose - they separate, they do not compete with the entries.
  */
-.etskin-on .etskin-nav-recents-title,
-.etskin-on .etskin-nav-section-title {
+.etskin-on .etskin-nav-recents-title {
   padding: 16px 16px 4px 16px;
   font-size: 12px;
   font-weight: 400;
@@ -2577,6 +2576,36 @@
   object-fit: contain;
 }
 
+/* What a row below a section opens: folder, window, report, process, form, view or link. */
+
+.etskin-on .etskin-nav-icon-folder {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7h5l2 2h11v10H3z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-window {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18v14H3z M3 9h18'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-report {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h9l3 3v15H6z M15 3v4h4 M9 12h6 M9 16h5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-process {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 5l10 7-10 7z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-form {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4h14v16H5z M9 9h6 M9 13h6 M9 17h3'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-view {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12c3-5 17-5 20 0-3 5-17 5-20 0z M12 15a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-external {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6 M20 4l-9 9 M18 13v7H4V6h7'/%3E%3C/svg%3E");
+}
+
 /*
  * Section glyphs. One per top level section, assigned by etendo-skin-nav.js so that no two
  * sections in a menu ever carry the same one. They are declared as --sk-icon and nothing else,
@@ -2731,12 +2760,8 @@
  * the flow. Clearing the box drops both classes and the panel is back to whatever the user had
  * expanded - the open state was never thrown away.
  */
-/*
- * While filtering, the matches are what matters: the group titles and the recent views would only
- * stand between them.
- */
-.etskin-on .etskin-nav-filtering .etskin-nav-tree > .etskin-nav-section-title,
-.etskin-on .etskin-nav-filtering .etskin-nav-tree > .etskin-nav-recents-slot {
+/* While filtering, the matches are what matters: the recent views would only stand between them. */
+.etskin-on .etskin-nav-filtering .etskin-nav-recents-slot {
   display: none;
 }
 
@@ -2834,14 +2859,6 @@
  */
 .etskin-on .etskin-nav-rail {
   display: none;
-}
-
-/* Between two groups of tiles, the rail's stand-in for a group title. */
-.etskin-on .etskin-nav-rail-gap {
-  flex: 0 0 auto;
-  width: 24px;
-  height: 1px;
-  background-color: var(--sk-nav-border);
 }
 
 .etskin-on .etskin-nav-collapsed .etskin-nav-rail {
