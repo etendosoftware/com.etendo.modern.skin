@@ -285,11 +285,12 @@ the expanded state is never thrown away.
 
 The geometry comes from Etendo GO's side navigation, the earlier reference, measured from its own
 markup: 240px open and 56px
-collapsed, a `#f6f7f9` panel with a `#e1e7ef` edge, 32px rows, thin 20px glyphs on the sections
-only, and every label starting at 52px. The entries of a section hang from a guide line at 33px —
-under the section's glyph — and each deeper level adds 16px, with a line of its own. The open entry
-is a `#ffd900` band from its guide line to 8px short of the edge; a section holding it is filled
-yellow while closed and keeps a 3px yellow start border while open. Those four colours are the
+collapsed, 32px rows, thin 20px glyphs on the sections only, and every label starting at 52px. The
+entries of a section hang from a guide line at 33px — under the section's glyph — and each deeper
+level adds 16px, with a line of its own. The colours are the new UI's: a `#f7f7f9` panel with a
+`#e1e7ef` edge, a `#e3e4e9` filled search field, and the open entry as a `#d9d8dd` band with 8px
+corners from its guide line to 8px short of the edge, where GO used its brand yellow; a section
+holding it is filled while closed and keeps a 3px start border while open. They are the
 `--sk-nav-*` tokens, kept apart from the palette presets and from `--sk-marker`. The recent views
 are rows under the same guide line rather than chips, under two discreet group titles that reuse
 core labels (`OBKMO_RecentViews` and `UINAVBA_APPLICATION_MENU`). Only one section is open at a

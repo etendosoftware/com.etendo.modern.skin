@@ -99,13 +99,16 @@
   --sk-text: #101828;
 
   /*
-   * Etendo GO's side navigation: a pale grey panel, a hairline edge and the brand yellow for the
-   * open entry. Kept apart from the palette on purpose - the presets recolour the windows, not the
-   * way into them - and from --sk-marker, which is the split view's focus mark.
+   * The side navigation, with the new UI's values (workspace-ui --ui-sidebar-bg, --ui-selected-bg,
+   * --ui-search-bg): a pale grey panel, a hairline edge, a neutral grey for the open entry where
+   * Etendo GO used its brand yellow, and a filled search field. Kept apart from the palette on
+   * purpose - the presets recolour the windows, not the way into them - and from --sk-marker, which
+   * is the split view's focus mark.
    */
-  --sk-nav-surface: #f6f7f9;
+  --sk-nav-surface: #f7f7f9;
   --sk-nav-border: #e1e7ef;
-  --sk-nav-highlight: #ffd900;
+  --sk-nav-highlight: #d9d8dd;
+  --sk-nav-search: #e3e4e9;
   --sk-nav-on-highlight: var(--sk-text);
 
   /*
@@ -2256,10 +2259,10 @@
  * still live under .etskin-on for one reason: if the skin is off the script never runs, and a
  * stray .etskin-nav rule would then be dead weight the browser still has to match.
  *
- * The look is Etendo GO's side navigation restated for Classic: a pale grey panel with a hairline
- * edge, 32px rows, thin 20px glyphs on the sections only, the entries of a section hanging off a
- * guide line under its glyph, and the brand yellow as the one fill that says "you are here". The
- * measurements are GO's own: 240px open and 56px collapsed, the glyph's centre and the guide line
+ * The geometry is Etendo GO's side navigation restated for Classic, in the new UI's colours: a pale
+ * grey panel with a hairline edge, 32px rows, thin 20px glyphs on the sections only, the entries of
+ * a section hanging off a guide line under its glyph, and one neutral fill that says "you are here".
+ * The measurements are GO's own: 240px open and 56px collapsed, the glyph's centre and the guide line
  * both at 33px, and every label - section or entry - starting at 52px.
  */
 
@@ -2307,12 +2310,12 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  height: 36px;
+  height: 40px;
   box-sizing: border-box;
-  padding-inline: 10px;
-  background-color: var(--sk-surface);
-  border: 1px solid var(--sk-nav-border);
-  border-radius: var(--sk-radius-sm);
+  padding-inline: 12px;
+  background-color: var(--sk-nav-search);
+  border: 1px solid transparent;
+  border-radius: 8px;
   transition: border-color 130ms ease, box-shadow 130ms ease;
 }
 
@@ -2535,10 +2538,9 @@
 
 /*
  * The open view. A section row that carries the mark - its entry is inside a closed section - is
- * filled yellow edge to edge, border included. An entry that carries it gets a yellow band that
- * starts at its own guide line and stops 8px short of the edge, so the line reads as running into
- * the band. The label takes the medium or semibold weight GO uses; the text colour stays the text
- * colour, which on this yellow is the most legible there is.
+ * filled edge to edge, border included. An entry that carries it gets a band with the new UI's 8px
+ * corners that starts at its own guide line and stops 8px short of the edge, so the line reads as
+ * running into the band. The label takes a medium or semibold weight.
  */
 .etskin-on .etskin-nav-row-top.etskin-nav-current,
 .etskin-on .etskin-nav-row-top.etskin-nav-current:hover {
@@ -2547,6 +2549,7 @@
   color: var(--sk-nav-on-highlight);
   background-color: var(--sk-nav-highlight);
   border-inline-start-color: var(--sk-nav-highlight);
+  border-radius: 8px;
 }
 
 .etskin-on .etskin-nav-row:not(.etskin-nav-row-top).etskin-nav-current,
@@ -2564,10 +2567,11 @@
   top: 0;
   bottom: 0;
   background-color: var(--sk-nav-highlight);
+  border-radius: 8px;
 }
 
 /*
- * An open section holding the open view keeps its yellow start border and goes medium, as GO does,
+ * An open section holding the open view keeps a start border in the highlight and goes medium,
  * so the eye can travel from the section to the band below it. A folder inside the section that
  * holds it just goes medium.
  */
@@ -2582,7 +2586,7 @@
 
 /* ---------------------------------------------------------------- icons */
 
-/* Thin, 20px and muted, as GO draws them; full text colour on the yellow. */
+/* Thin, 20px and muted, as GO draws them; full text colour on the highlight. */
 .etskin-on .etskin-nav-icon {
   position: relative;
   z-index: 1;
@@ -3332,6 +3336,8 @@
  * color-mix is resolved where it is declared and would otherwise keep the old accent.
  */
 .etskin-on .etskin-go {
+  /* The split view's focus mark in the accent rather than Classic's yellow, which the new UI lacks. */
+  --sk-marker: var(--sk-go-ink);
   --sk-primary: var(--sk-go-ink);
   --sk-on-primary: var(--sk-surface);
   --sk-primary-hover: var(--sk-go-ink-hover);
