@@ -109,19 +109,28 @@
   --sk-nav-on-highlight: var(--sk-text);
 
   /*
-   * The new UI's header band: the top bar and the window strip under it on a pale lavender (its
-   * PRIMARY_100, lightened), above the content. The search field stays a pale pill on it.
+   * The new UI's header band, measured from workspace-ui: the top bar on the lavender its content
+   * gradient starts from, the window strip under it 5% darker (--ui-tabbar-bg), the selected tab
+   * nearly white (--ui-tab-active-bg) and underlined in a dark grey (--ui-tab-active-line). The
+   * utilities are 40px discs of --ui-nav-btn-bg holding a slate glyph. The search field stays a
+   * pale pill on the band.
    */
-  --sk-topbar-surface: #e4e6f9;
+  --sk-topbar-surface: #cbcffe;
+  --sk-tabbar-surface: color-mix(in srgb, #00030d 5%, var(--sk-topbar-surface));
+  --sk-tab-active: #fafafb;
+  --sk-tab-active-line: #2a2b2f;
+  --sk-chip-surface: #fcfcfd;
+  --sk-chip-ink: #3f4a7e;
   --sk-search-fill: color-mix(in srgb, var(--sk-surface) 70%, var(--sk-topbar-surface));
 
   /*
    * The standard windows' form and table language, first taken from Etendo GO: the ink, the pale
    * fills behind fields and under the pointer, and the muted glyph grey. The ink is now the new UI's
-   * primary indigo (workspace-ui PRIMARY_500). New tokens only - no value a UIKit view reads changes.
+   * accent violet (workspace-ui --ui-accent and --ui-accent-hover). New tokens only - no value a
+   * UIKit view reads changes.
    */
-  --sk-go-ink: #202452;
-  --sk-go-ink-hover: #2e3470;
+  --sk-go-ink: #2a1757;
+  --sk-go-ink-hover: #1b0f3a;
   --sk-go-fill: #f1f5f9;
   --sk-go-fill-soft: #f8fafc;
   --sk-go-icon: #64748b;
@@ -1207,23 +1216,23 @@
  */
 .etskin-on .etskin-tray-item {
   margin-inline-end: 0;
-  background-color: var(--sk-surface);
+  background-color: var(--sk-chip-surface);
   border-radius: 999px;
   box-shadow: none;
-  --sk-icon-color: var(--sk-text-muted);
+  --sk-icon-color: var(--sk-chip-ink);
   transition: background-color 130ms ease;
 }
 
 .etskin-on .etskin-tray-item:hover {
-  background-color: color-mix(in srgb, var(--sk-text) 6%, var(--sk-surface));
+  background-color: var(--sk-surface);
   border-radius: 999px;
-  --sk-icon-color: var(--sk-text);
+  --sk-icon-color: var(--sk-go-ink);
 }
 
 .etskin-on .etskin-tray-item.OBNavBarComponentSelected {
-  background-color: color-mix(in srgb, var(--sk-text) 10%, var(--sk-surface));
+  background-color: var(--sk-surface);
   border-radius: 999px;
-  --sk-icon-color: var(--sk-text);
+  --sk-icon-color: var(--sk-go-ink);
 }
 
 /* The stock widgets bring their own artwork; inside a chip the mask below is the artwork. */
@@ -1563,7 +1572,7 @@
 
 .etskin-on .etskin-top-title-main {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 26px;
   color: var(--sk-text);
 }
@@ -1575,7 +1584,7 @@
 
 .etskin-on .etskin-top-title-record {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 26px;
   color: var(--sk-text);
 }
@@ -4075,11 +4084,23 @@
  * change here: every size is SmartClient's, so the tabs and the windows work exactly as before.
  */
 .etskin-on .OBTabBarMain {
-  box-shadow: inset 0 -1px 0 0 var(--sk-nav-border);
+  background-color: var(--sk-tabbar-surface);
 }
 
 .etskin-on [class^="OBTabBarButtonMainTop"][class*="Selected"] {
-  box-shadow: inset 0 -2px 0 0 var(--sk-go-ink);
+  background-color: var(--sk-tab-active);
+  border-radius: 0;
+  box-shadow: inset 0 -2px 0 0 var(--sk-tab-active-line);
+}
+
+/* The new UI's window tab label: 14px medium in a dark slate, the selected one no heavier. */
+.etskin-on [class^="OBTabBarButtonMainTitle"] {
+  font-size: 14px;
+  color: #1d223a;
+}
+
+.etskin-on [class^="OBTabBarButtonMainTitle"][class*="Selected"] {
+  font-weight: 500;
 }
 
 /*
