@@ -3358,7 +3358,8 @@
   position: absolute;
   inset: 4px 8px;
   border-radius: 999px;
-  background-color: var(--sk-go-fill);
+  /* --ui-group-bg: white at 40% over the lavender. */
+  background-color: rgb(255 255 255 / 40%);
   pointer-events: none;
 }
 
@@ -3452,31 +3453,44 @@
 
 /* ------------------------------------------------------------------ GO grid */
 
-/* GO's table: 14px rows on a hairline, a quiet header, neutral hover and selection. */
+/*
+ * The new UI's table, measured from workspace-ui: 12.5px cells ruled both ways in --ui-line-soft, a
+ * lavender header (--ui-table-head-bg) with its columns parted by --ui-head-sep, a 5% neutral hover
+ * (--ui-hover) and a pale violet selection (--ui-row-selected).
+ */
 .etskin-on .etskin-go td[class^="OBGridCell"],
 .etskin-on .etskin-go td[class^="OBGridLinkCell"] {
-  font-size: 14px;
-  border-color: var(--sk-nav-border);
-  padding: 0 12px;
+  font-size: 12.5px;
+  border-width: 0 1px 1px 0;
+  border-color: #eff0f1;
+  padding: 0 8px;
 }
 
 .etskin-on .etskin-go td[class^="OBGridCell"][class*="Over"] {
-  background-color: var(--sk-go-fill-soft);
+  background-color: color-mix(in srgb, #000 5%, var(--sk-surface));
 }
 
 .etskin-on .etskin-go td[class^="OBGridCell"][class*="Selected"] {
-  background-color: var(--sk-go-fill);
+  background-color: #ece8f6;
 }
 
 .etskin-on .etskin-go .OBGridHeaderBar {
-  border-color: var(--sk-nav-border);
+  background-color: #cbcff1;
+  border-color: #b8bada;
+}
+
+.etskin-on .etskin-go td[class^="OBGridHeaderCell"],
+.etskin-on .etskin-go div[class^="OBGridHeaderCell"] {
+  border-width: 0 1px 0 0;
+  border-style: solid;
+  border-color: #b8bada;
 }
 
 .etskin-on .etskin-go [class^="OBGridHeaderCellTitle"] {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--sk-text);
-  padding: 0 12px;
+  font-size: 12.8px;
+  font-weight: 500;
+  color: rgb(0 0 0 / 87%);
+  padding: 0 8px;
 }
 
 /* ------------------------------------------------------------ GO child tabs */
@@ -4135,4 +4149,18 @@
 
 .etskin-on .etskin-go {
   background-color: var(--sk-surface);
+}
+
+/*
+ * The new UI's window ground, from workspace-ui: a gradient from the header's lavender down to its
+ * page grey over 420px, so the toolbar pill floats on lavender and the grid and the form's cards
+ * stand on it as white sheets.
+ */
+.etskin-on .etskin-go {
+  background-color: #f5f6fa;
+  background-image: linear-gradient(var(--sk-topbar-surface) 0, #f5f6fa 420px, #f5f6fa 100%);
+}
+
+.etskin-on .etskin-go .OBToolbar {
+  background-color: transparent;
 }
