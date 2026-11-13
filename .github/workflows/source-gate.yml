@@ -1,0 +1,36 @@
+name: Source Gate
+
+# The skin's scripts are concatenated into Classic's global bundle and minified with the kernel's
+# JSMin, and its stylesheet goes through the kernel's CSS pipeline: one ES2015+ construct, one
+# script JSMin mangles or one "(" inside url() takes the whole application down. No path filter:
+# this is meant to be a required check, and a required check that does not run blocks the PR.
+on:
+  pull_request:
+    branches: [develop, main, 'epic/**']
+
+env:
+  # The core version whose JSMin the gate runs. Keep it at the version the module is proven on.
+  ETENDO_CORE_REF: 26.2.10
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: ES5
+        run: npx -y es-check@9.8.1 es5 'web/**/*.js'
+      - name: Fetch core JSMin
+        run: |
+          curl -sfL -o "$RUNNER_TEMP/JSMin.java" \
+            "https://raw.githubusercontent.com/etendosoftware/etendo_core/$ETENDO_CORE_REF/modules_core/org.openbravo.client.kernel/src/org/openbravo/client/kernel/JSMin.java"
+      - name: JSMin and CSS gates
+        run: node verify/check-source.mjs
+        env:
+          JSMIN_SOURCE: ${{ runner.temp }}/JSMin.java
