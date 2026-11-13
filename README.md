@@ -5,6 +5,10 @@ tokens, the side navigation, the top bar, the toolbar, forms, grids, the stylesh
 fonts, and the login page. It restyles the stock UI without replacing the stock skin and without
 editing core. The palette is chosen by configuration, not by editing CSS.
 
+The visual reference is the new Etendo UI (WorkspaceUI, `workspace-ui` on `main`), chosen for
+ETP-6245. Etendo GO was the earlier reference, and several measurements below still come from it;
+where they do, the text says so.
+
 > **Status:** in use on Etendo Classic 26.2.10 with Core as a JAR. This package is the module at
 > commit `332c223` of its repository: the source, its dictionary rows and its web resources. See
 > [Installing](#installing).
@@ -20,8 +24,7 @@ workspace dashboard, a point of sale, a sales order board and a Copilot dock. Th
 stylesheet sections, their views and their menu entries are not here, and nothing here loads them.
 
 The stylesheet was cut by what its rules select and who produces it, not by where they sat. Every
-`etskin-` class left in `etendo-skin.css` is one a script of this module emits; the one exception,
-`etskin-nav-section-title`, was already a rule nothing emitted before the extraction. Copilot's chip
+`etskin-` class left in `etendo-skin.css` is one a script of this module emits. Copilot's chip
 in the top bar left with Copilot: the tray is shell, but the `copilot` role is the one an application
 passes to it.
 
@@ -33,7 +36,8 @@ depend on this one:
 | `OB.ETSkin` | Published by `etendo-skin.js` when the skin is on. Every script, here or in an application, stands down without it. |
 | `OB.ETSkin.tokens` | The resolved palette. |
 | `OB.ETSkin.statusBadge(value, label)` | The document status badge: five tones, one rule each. The grid uses it, and so does any screen that shows a status. |
-| `OB.ETSkin.topBar` | `{ tray, chip, first }` - `chip(wrapper, role, active)` dresses a navigation bar button as one of the tray's icon chips, marked `etskin-tray-chip` so it keeps the round shape without the shell naming its role. A module that passes a role ships the icon for it. |
+| `OB.ETSkin.topBar` | `{ tray, chip, first, refreshTitle }` - `refreshTitle()` re-reads the title beside the brand; `chip(wrapper, role, active)` dresses a navigation bar button as one of the tray's icon chips, marked `etskin-tray-chip` so it keeps the round shape without the shell naming its role. A module that passes a role ships the icon for it. |
+| `OB.ETSkin.countText(grid)` | The grid's record count as words ("128 records", "more than 100 records"), or `''`. Published by `etendo-skin-grid.js`; the top bar shows it beside the title. |
 | `OB.ETSkin.labels`, `OB.ETSkin.navIcons`, `OB.ETSkin.trayCreateNew` | Optional overrides. Nothing here defines them; every read falls back to a default. |
 | The `--sk-*` tokens and the `.etskin-on` gate | The whole palette as CSS custom properties, and the class that switches the skin on. |
 
@@ -49,7 +53,6 @@ depend on this one:
 | `web/com.etendo.modern.skin/js/etendo-skin-toolbar.js` | Arranges the view toolbar as the new UI's single pill: one run of glyphs in its order, the process buttons in one Actions menu after it, and the view controls (Filters, Fields / Columns) on the right. Buttons other modules add spill into an overflow menu once the run is full. Same rule. |
 | `web/com.etendo.modern.skin/js/etendo-skin-form.js` | What a form's stylesheet cannot reach: the required marker, the link glyph, the section chevrons, the status bar title and the child panes. Also the standard windows' GO design - the Fields / Columns menu, the Filters button and the light frame; see [The standard windows](#the-standard-windows). Same rule. |
 | `web/com.etendo.modern.skin/js/etendo-skin-grid.js` | What a grid's stylesheet cannot reach: the row height, the header alignment, the frozen pane and the status badge. Same rule. |
-| `src/com/etendo/modern/skin/NavMenuFoldersComponent.java` | Publishes the menu ids of the session's menu folders as `OB.ETSkinMenuFolders`, a dynamic resource registered ahead of the navigation script. Core's menu gives every entry its id but no folder one; the side navigation groups the menu by these. |
 | `src/com/etendo/modern/skin/LoginSignInProvider.java` | Puts the login stylesheet on the login page through the core's `SignInProvider` seam. |
 | `web/com.etendo.modern.skin/css/etendo-skin-login.css` | The login page, loaded by the provider above. |
 | `web/com.etendo.modern.skin/fonts/` | Inter, self hosted. Two woff2 subsets, declared by both stylesheets. |
@@ -220,13 +223,10 @@ framework is counting on, so the sheet-on-a-desk look is built out of things tha
 - The React skin's chips do not transfer to the workspace list: SmartClient sizes those rows to the
   column rather than to their text, so a filled pill becomes a full-width lozenge with the drag
   handle and the add button sitting outside it.
-- They do transfer to the child tab strip, which is the one place a pill is affordable: those tab
-  buttons are sized to their own title. Even there the pill is a `::before` inset inside the
-  button, because the button itself carries an inline `width` and `height` SmartClient measured -
-  a margin would move it and a border would grow it.
-- The two strips are marked differently, following the reference: the selected *window* tab is a
-  white sheet with the accent along its bottom edge, while the selected *child* tab is marked only
-  by being the lightest of three fills over the band. Neither uses a colour change on the label.
+- Both tab strips mark the selected tab the new UI's way, with a 2px underline in the ink, drawn
+  as an inset shadow: every tab button carries an inline `width` and `height` SmartClient measured,
+  so a border would grow it. The same reason puts the toolbar's pill on a `::before` inset inside
+  the toolbar rather than on the toolbar itself.
 
 ### The navigation panel
 
@@ -275,16 +275,16 @@ that would drift.
   panel is missing but the *Application* menu is still in the navigation bar, so the user still has
   a menu.
 - **Core's words first, the dictionary for the rest.** The search box's placeholder and the recents
-  heading reuse core labels (`OBUIAPP_CalWidget_Filter`, `OBKMO_RecentViews`). The group and
-  category names have no core counterpart, so they are skin words in the dictionary - see
-  [Groups and categories](#groups-and-categories) - never English literals on their own.
+  heading reuse core labels (`OBUIAPP_CalWidget_Filter`, `OBKMO_RecentViews`); the panel has no
+  words of its own.
 
 Filtering is two classes: one on the root, which opens every subtree so a match four levels down is
 visible without expanding anything, and one on each group that contains no match, which takes it
 out of the flow. Clearing the box drops both and the panel is back to whatever the user had open —
 the expanded state is never thrown away.
 
-The look follows Etendo GO's side navigation, measured from its own markup: 240px open and 56px
+The geometry comes from Etendo GO's side navigation, the earlier reference, measured from its own
+markup: 240px open and 56px
 collapsed, a `#f6f7f9` panel with a `#e1e7ef` edge, 32px rows, thin 20px glyphs on the sections
 only, and every label starting at 52px. The entries of a section hang from a guide line at 33px —
 under the section's glyph — and each deeper level adds 16px, with a line of its own. The open entry
@@ -305,18 +305,17 @@ the rail still answers "where am I". Clicking a tile expands the panel, opens th
 scrolls it into view; the search box expands the panel and takes focus. The choice is remembered in
 `localStorage`, per browser, wrapped in try/catch because a private window throws.
 
-A tile shows a two-letter monogram taken from the section title — first letters of the first two
-significant words, stopwords in English and Spanish skipped, a single-word title contributing its
-first two letters. Monograms rather than shipped artwork, because **a folder node in
+A section shows a glyph of its own, in the rail and in the expanded row alike. **A folder node in
 `OB.Application.menu` carries no id**: its keys are exactly `title`, `singleRecord`, `readOnly`,
-`editOrDeleteOnly`, `type` and `submenu`. There is nothing stable to key an icon table on except the
-translated title, and the menu is data — a client can rename a section or add one. A monogram is
-derived from whatever the title happens to be, so it is always present, correct in every language
-and works for third-party sections. Collisions are possible (*Procurement Management* and
-*Production Management* both give `PM`); each tile carries the full title as its tooltip.
+`editOrDeleteOnly`, `type` and `submenu`, so there is nothing stable to key a drawing on except the
+translated title. The title is matched against the words the standard sections are named with, in
+English and in Spanish (`SECTION_WORDS`), and a section no word matches - a third-party module's,
+say - takes the next unused glyph of a pool, so no two sections share one. Every row below a
+section carries the glyph of what it opens, as the new UI does: folder, window, report, process,
+form, view or link, from the node's `type`. Each tile carries the full title as its tooltip.
 
 Real artwork drops in without a rework. If `OB.ETSkin.navIcons` exists, the renderer reads
-`navIcons[title]` for each top-level node and emits that as an `<img>` in place of the monogram, in
+`navIcons[title]` for each top-level node and emits that as an `<img>` in place of the glyph, in
 the rail and in the expanded row alike. Populating it needs no core change: this module's own
 `ComponentProvider` can register a generated `.js.ftl` resource that reads `AD_MENU` (joined to
 `AD_MENU_TRL` for the session's language, which is the same text the menu itself was built from) and
@@ -330,35 +329,13 @@ fighting a user who just collapsed that folder. And it
 matches the open tab to a menu row by title, because a title is all a tab and a menu node reliably
 share.
 
-#### Groups and categories
+#### The menu as the AD defines it
 
-The panel does not show Classic's sixteen module folders as they are. It regroups the session's own
-menu the way Etendo GO lays its navigation out: five groups under small titles - General,
-Commercial, Operations, Finance and System - each holding short categories (Sales, Inventory,
-Accounting, Security...), and each category its windows in one flat list. The map is
-`NAV_SECTIONS` in `etendo-skin-nav.js`.
-
-- **By menu id, never by title.** A category names its sources by `AD_MENU_ID`, so the map holds in
-  every language and when a client renames a folder. Entries carry their id in
-  `OB.Application.menu`; folders do not, so `NavMenuFoldersComponent` publishes theirs from the
-  same `MenuManager` the core template reads. If that tree is missing or does not match the menu
-  entry for entry, the panel shows the stock tree.
-- **Nothing added, nothing lost.** Every row is an entry of the session's menu, so the role still
-  decides what appears, and a category with nothing in it is left out. A source brings its whole
-  subtree; a more specific source another category claims is taken out of it (Security from General
-  Setup, the EMOS Invoice Monitor from Financial Management). Whatever no category claims - a third
-  party module's folder, say - goes under Other, folder and all. Deprecated is left out.
-- **GO's flat lists.** A module's Transactions folder is opened into its category's list; the
-  Analysis Tools and Setup folders of every source in a category are merged into one Analysis and
-  one Setup group at its end; any other folder stays a group of its own.
-- **Home and the recent views.** General holds Home, which selects the workspace tab, and the
-  recent views. Favourites, getting started and the company switcher of GO have no counterpart in
-  Classic and are not imitated.
-- **The words are the dictionary's.** Group and category names are this module's `ETMSK_L_nav*`
-  messages, with the English written in the map as the fallback, so a translation module
-  translates them like any other message. *Home* is core's `OBUIAPP_HomeKey`.
-
-Collapsed, the rail shows one tile per category, with a hairline between groups.
+The panel shows the session's menu tree as the Application Dictionary defines it, with the recent
+views above it, as the new UI does. An earlier version regrouped it the way Etendo GO lays its
+navigation out - groups and categories mapped by menu id, with their own `ETMSK_L_nav*` messages
+and a server component publishing the folders' ids. ETP-6245 removed that along with GO as the
+reference; it is in the git history should both lines ever be supported.
 
 ### The navigation bar
 
@@ -415,8 +392,7 @@ narrowed to nothing so that the two around the field can centre it. The room is 
 parent rather than the bar, because an overflowing bar measures wider than the page.
 
 The labels become icons. `Alerts (1)`, `Help` and the logout image get a masked glyph and lose
-their text; `admin` becomes an `AD` monogram over a tinted disc, the same device the collapsed rail
-uses. The glyph is drawn on the wrapper rather than on the label, because a SmartClient button is a
+their text; `admin` becomes an `AD` monogram over a tinted disc. The glyph is drawn on the wrapper rather than on the label, because a SmartClient button is a
 table and the styleName lands on the label cell, its spacer cells *and* the icon slot alike - mask
 "the cell" and four overlapping copies of the icon appear, which is exactly what the first attempt
 looked like.
@@ -436,7 +412,8 @@ the way in.
 ### The standard windows
 
 Every standard window of Etendo Classic - every `OBStandardWindow`, whatever its module - takes the
-list, form and toolbar language of Etendo GO, first proved on Sales Order. The EMOS views are UIKit
+list, form and toolbar language first taken from Etendo GO and proved on Sales Order, and now
+moving to the new UI's (ETP-6245). The EMOS views are UIKit
 canvases, never `OBStandardWindow`, and none of this reaches them: every rule hangs from
 `etskin-go`, the class `etendo-skin-form.js` puts on a standard window's root, and no SmartClient
 class or `--sk-*` token a UIKit view reads is changed.
