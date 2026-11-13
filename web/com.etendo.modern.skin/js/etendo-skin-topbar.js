@@ -60,8 +60,8 @@
   var SEARCH_HEIGHT = 44;
   var SEARCH_MAX = 480;
   var SEARCH_MIN = 180;
-  // The title column: GO caps it at 320px and truncates.
-  var TITLE_MAX = 320;
+  // The title column: wide enough for the view and the record beside it, truncated beyond that.
+  var TITLE_MAX = 480;
   var TITLE_MIN = 140;
   // The brand column matches the side navigation, so the title starts over the content.
   var BRAND_WIDTH = 240;
@@ -299,9 +299,10 @@
 
   /*
    * The title is the menu's name for the window rather than the tab's label, because a tab is renamed
-   * the moment a record is selected in it ("Sales Invoice - 1000367 - 03-0...") and GO's title names
-   * the view, not the record. The path above it is the breadcrumb. A tab that no menu entry opens -
-   * the workspace, a process - keeps its own label and has no breadcrumb.
+   * the moment a record is selected in it ("Sales Invoice - 1000367 - 03-0...") and the new UI's
+   * title names the view, not the record. Beside it, as the new UI does: the record count while the
+   * grid is showing, or the record itself while the form is - a one-step breadcrumb. A tab that no
+   * menu entry opens - the workspace, a process - keeps its own label and has neither.
    */
   function currentTitle() {
     var tabSet = OB.MainView && OB.MainView.TabSet;
@@ -311,10 +312,20 @@
     var label = (pane && pane.tabTitle) || (tab && (tab.title || tab.tabTitle)) || '';
     var menu = OB.Application && OB.Application.menu;
     var trail = menu ? menuTrail(menu, windowId, windowId ? null : label, []) : null;
-    if (trail && trail.length) {
-      return { title: trail[trail.length - 1], crumb: trail.slice(0, trail.length - 1).join(' / ') };
+    var view = windowId && pane.view;
+    var grid = view && view.viewGrid;
+    var record = grid && grid.getSelectedRecord ? grid.getSelectedRecord() : null;
+    var t = { title: trail && trail.length ? trail[trail.length - 1] : label, record: '', count: '' };
+    if (!grid) {
+      return t;
     }
-    return { title: label, crumb: '' };
+    if (view.isShowingForm) {
+      t.record = record && record[OB.Constants.IDENTIFIER] ? String(record[OB.Constants.IDENTIFIER]) : '';
+    } else if (OB.ETSkin.countText) {
+      // etendo-skin-grid.js owns the arithmetic, and the toolbar readout shows the same string.
+      t.count = OB.ETSkin.countText(grid);
+    }
+    return t;
   }
 
   function renderTitle() {
@@ -324,9 +335,11 @@
     }
     t = currentTitle();
     titleCanvas.setContents(
-      '<div class="etskin-top-title" title="' + esc(t.title) + '">' +
+      '<div class="etskin-top-title" title="' + esc(t.record ? t.title + ' > ' + t.record : t.title) + '">' +
         '<span class="etskin-top-title-main">' + esc(t.title) + '</span>' +
-        (t.crumb ? '<span class="etskin-top-title-crumb">' + esc(t.crumb) + '</span>' : '') +
+        (t.record ? '<span class="etskin-top-title-sep"></span>' +
+          '<span class="etskin-top-title-record">' + esc(t.record) + '</span>' : '') +
+        (t.count ? '<span class="etskin-top-title-count">(' + esc(t.count) + ')</span>' : '') +
       '</div>'
     );
   }
@@ -419,7 +432,7 @@
     // What is left once the brand, the tray, the edge spacer, the bar's right margin and the emptied
     // stock spacers have their pixels.
     free = total - brand - tray - (top.etskinEdge ? 8 : 0) - (top.layoutRightMargin || 0) - stock;
-    title = Math.max(TITLE_MIN, Math.min(TITLE_MAX, Math.round(free * 0.3)));
+    title = Math.max(TITLE_MIN, Math.min(TITLE_MAX, Math.round(free * 0.4)));
     search = Math.max(SEARCH_MIN, Math.min(SEARCH_MAX, free - title - 48));
     side = Math.max(8, Math.floor((free - title - search) / 2));
     if (titleCanvas) {
@@ -742,7 +755,7 @@
       });
     }
 
-    OB.ETSkin.topBar = { tray: OB.NavBar, chip: chip, first: moveFirst };
+    OB.ETSkin.topBar = { tray: OB.NavBar, chip: chip, first: moveFirst, refreshTitle: scheduleTitle };
   }
 
   // ------------------------------------------------------------------ main

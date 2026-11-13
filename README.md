@@ -386,9 +386,9 @@ Everything else - the glyphs, the fills, the hover and selected states - is CSS.
 The look follows Etendo GO's top bar, measured from its own markup: 62px on the same `#f6f7f9` as
 the side navigation (`--sk-topbar-surface`) and no rule under it, so bar and panel read as one
 frame. The brand column is 240px when the side navigation is on, so what follows starts over the
-content. The utilities are 40px glyphs with GO's 8px corners, no surface and no shadow, a neutral
-fill only under the pointer or while their menu is open; the avatar stays round, and so does any
-chip another module hands to `chip()`.
+content. The utilities are the new UI's round white chips: a 40px `--sk-surface` disc with a muted
+glyph and a neutral tint under the pointer or while their menu is open; the avatar keeps its tinted
+disc, and any chip another module hands to `chip()` stays round.
 
 Two pieces are arranged rather than restyled, and neither is a control of the skin's own:
 
@@ -398,13 +398,15 @@ Two pieces are arranged rather than restyled, and neither is a control of the sk
   opens and marks that wrapper while the flyout is open, so both follow it, and the keyboard shortcut
   is untouched. The placeholder is the launcher's own translated tooltip, written into
   `--sk-search-label` and drawn with `content: var(...)`, which survives SmartClient's redraws.
-- **The title is read, not typed.** A canvas after the brand shows the open view as GO does - 20px
-  semibold with its place in the menu under it in 12px - taking the menu's name for the window
-  rather than the tab's label, which changes with the selected record. A tab no menu entry opens,
-  such as the workspace, keeps its own label. It follows the selected tab through the same class
-  observer on the tab bar that the side navigation uses.
+- **The title is read, not typed.** A canvas after the brand shows the open view on one line as the
+  new UI does - 20px semibold - taking the menu's name for the window rather than the tab's label,
+  which changes with the selected record. Beside it goes the root grid's record count in 12px while
+  the grid shows (the same string as the toolbar readout, from `OB.ETSkin.countText`, refreshed from
+  `updateRowCountDisplay`), or a chevron and the record's identifier while the form shows. A tab no
+  menu entry opens, such as the workspace, keeps its own label and has neither. It follows the
+  selected tab through the same class observer on the tab bar that the side navigation uses.
 
-Widths are fitted in JS on install and on every page resize: the title takes up to 320px, the field
+Widths are fitted in JS on install and on every page resize: the title takes up to 480px, the field
 up to 480 and gives way first, down to 180, and the stock spacers of the bar, which are empty, are
 narrowed to nothing so that the two around the field can centre it. The room is read from the bar's
 parent rather than the bar, because an overflowing bar measures wider than the page.

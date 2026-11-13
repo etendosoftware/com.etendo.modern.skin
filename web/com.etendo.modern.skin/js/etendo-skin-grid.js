@@ -317,6 +317,9 @@
 
   // -------------------------------------------------------------------- main
 
+  // The top bar shows the root grid's count beside the window's title.
+  OB.ETSkin.countText = countText;
+
   try {
     var proto = isc.OBViewGrid.getPrototype();
     var originalDraw = proto.draw;
@@ -351,6 +354,10 @@
           readout = countReadout(this);
           if (readout && readout.setContents) {
             readout.setContents(countText(this));
+          }
+          // The top bar repeats the count beside the window's title.
+          if (OB.ETSkin.topBar && OB.ETSkin.topBar.refreshTitle) {
+            OB.ETSkin.topBar.refreshTitle();
           }
         } catch (e) {
           // A missing count is a missing count, not a broken grid.

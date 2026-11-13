@@ -1200,28 +1200,28 @@
  * open state is worth marking here rather than leaving to the widget.
  */
 /*
- * GO's utilities are glyphs, not chips: no surface and no shadow, a muted 20px glyph in a 40px square
- * with GO's 8px corners, and a neutral fill only under the pointer or while the control's menu is
- * open. The palette's primary is left to the content, where it means "act".
+ * The new UI's utilities are round white chips: a muted 20px glyph on a 40px white disc, and a
+ * neutral fill under the pointer or while the control's menu is open. The palette's primary is left
+ * to the content, where it means "act".
  */
 .etskin-on .etskin-tray-item {
   margin-inline-end: 0;
-  background-color: transparent;
-  border-radius: var(--sk-radius);
+  background-color: var(--sk-surface);
+  border-radius: 999px;
   box-shadow: none;
   --sk-icon-color: var(--sk-text-muted);
   transition: background-color 130ms ease;
 }
 
 .etskin-on .etskin-tray-item:hover {
-  background-color: var(--sk-neutral-soft);
-  border-radius: var(--sk-radius);
+  background-color: color-mix(in srgb, var(--sk-text) 6%, var(--sk-surface));
+  border-radius: 999px;
   --sk-icon-color: var(--sk-text);
 }
 
 .etskin-on .etskin-tray-item.OBNavBarComponentSelected {
-  background-color: var(--sk-border-hairline);
-  border-radius: var(--sk-radius);
+  background-color: color-mix(in srgb, var(--sk-text) 10%, var(--sk-surface));
+  border-radius: 999px;
   --sk-icon-color: var(--sk-text);
 }
 
@@ -1530,9 +1530,10 @@
 /* ------------------------------------------------------------- top title */
 
 /*
- * The title of the open view, as GO sets it: 20px semibold, truncated, with where it sits in the
- * menu under it in 12px muted text. The column starts over the content because the brand column to
- * its left is exactly as wide as the side navigation.
+ * The title of the open view, as the new UI sets it: one line, 20px semibold, with the record count
+ * beside it in 12px muted text on the grid, or a chevron and the record on the form. The view's name
+ * never shrinks; the record gives way first. The column starts over the content because the brand
+ * column to its left is exactly as wide as the side navigation.
  */
 .etskin-on .etskinTopTitle {
   background: transparent;
@@ -1540,8 +1541,8 @@
 
 .etskin-on .etskin-top-title {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  gap: 8px;
   height: 100%;
   min-width: 0;
   padding-inline-start: 24px;
@@ -1550,8 +1551,10 @@
 }
 
 .etskin-on .etskin-top-title-main,
-.etskin-on .etskin-top-title-crumb {
+.etskin-on .etskin-top-title-record,
+.etskin-on .etskin-top-title-count {
   display: block;
+  min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1564,11 +1567,40 @@
   color: var(--sk-text);
 }
 
-.etskin-on .etskin-top-title-crumb {
+.etskin-on .etskin-top-title-main {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+.etskin-on .etskin-top-title-record {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  color: var(--sk-text);
+}
+
+.etskin-on .etskin-top-title-count {
+  flex-shrink: 0;
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;
   color: var(--sk-text-muted);
+}
+
+/* A chevron drawn with two borders, so no glyph depends on the font. */
+.etskin-on .etskin-top-title-sep {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  margin-inline-end: 2px;
+  border-top: 1.5px solid var(--sk-text-muted);
+  border-right: 1.5px solid var(--sk-text-muted);
+  transform: rotate(45deg);
+}
+
+[dir="rtl"] .etskin-on .etskin-top-title-sep,
+.etskin-on[dir="rtl"] .etskin-top-title-sep {
+  transform: rotate(-135deg);
 }
 
 /*
