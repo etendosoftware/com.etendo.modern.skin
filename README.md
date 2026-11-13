@@ -383,9 +383,10 @@ Almost all of that is a stylesheet problem. Two things are not, and they are the
 
 Everything else - the glyphs, the fills, the hover and selected states - is CSS.
 
-The look follows Etendo GO's top bar, measured from its own markup: 62px on the same `#f6f7f9` as
-the side navigation (`--sk-topbar-surface`) and no rule under it, so bar and panel read as one
-frame. The brand column is 240px when the side navigation is on, so what follows starts over the
+The bar's geometry follows Etendo GO's top bar, measured from its own markup: 62px and no rule
+under it. Its colour is the new UI's header band: a pale lavender (`--sk-topbar-surface`,
+`#e4e6f9`) that the window strip under it shares, so bar and strip read as one band above the
+content. The brand column is 240px when the side navigation is on, so what follows starts over the
 content. The utilities are the new UI's round white chips: a 40px `--sk-surface` disc with a muted
 glyph and a neutral tint under the pointer or while their menu is open; the avatar keeps its tinted
 disc, and any chip another module hands to `chip()` stays round.
@@ -454,14 +455,19 @@ class or `--sk-*` token a UIKit view reads is changed.
   columns matter is chosen from the interface by the team and the users. The user's choices win and live in `localStorage`, per user, role and tab: fields
   and sections under `etskin.fields.v1.*`, columns under `etskin.columns.v1.*`. They do not follow the
   user to another browser. Reset returns the tab to its first selection.
+- **Form sections.** The new UI draws each section as a white card with an icon and a chevron.
+  A section's fields are rows of the form's one table, so nothing can wrap them; the section
+  header becomes the card's head instead - a rounded, outlined white band with a glyph before the
+  title - and the fields follow under it. The status bar already sits above the form.
 - **The toolbar and the frame.** The strip is one pill, as in the new UI: New (filled, indigo) and
   Save carry their word - New in the list, Save in the form - then refresh in its own circle, delete,
   undo and the occasional glyphs (clone, export, print, link, email, attach) inline, then Actions,
   the process buttons as one menu in the place of the new UI's "Available Process". Filters and
   Fields / Columns sit on the right with the stock view glyphs. The record count moved to the top
-  bar. The new UI's fullscreen button has no stock control behind it and is not drawn. The desk and the window strip take the grey of the top bar and the side
-  navigation whatever the tab shows - a standard window, the workspace, an EMOS view or a window still
-  loading - so the strip never changes colour between tabs; a standard window is one white sheet on it.
+  bar. The new UI's fullscreen button has no stock control behind it and is not drawn. The desk
+  and the window strip take the top bar's lavender whatever the tab shows - a standard window, the
+  workspace, an EMOS view or a window still loading - so the strip never changes colour between
+  tabs; a standard window is one white sheet on it.
 - **The window tabs.** The selected tab keeps its close X. Core's skin draws the selected tab's icon
   in a white variant meant for its dark selected tab, so `OBTabBarButtonMain` is told not to switch
   icons on selection: same icon, same click, same close. The workspace tab has none, as in Core.

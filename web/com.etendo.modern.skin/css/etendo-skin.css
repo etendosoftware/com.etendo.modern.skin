@@ -109,11 +109,11 @@
   --sk-nav-on-highlight: var(--sk-text);
 
   /*
-   * Etendo GO's top bar sits on the same grey as the side navigation, so the two read as one frame
-   * around the content, and its search field is a slightly darker grey pill.
+   * The new UI's header band: the top bar and the window strip under it on a pale lavender (its
+   * PRIMARY_100, lightened), above the content. The search field stays a pale pill on it.
    */
-  --sk-topbar-surface: var(--sk-nav-surface);
-  --sk-search-fill: #e7e9ee;
+  --sk-topbar-surface: #e4e6f9;
+  --sk-search-fill: color-mix(in srgb, var(--sk-surface) 70%, var(--sk-topbar-surface));
 
   /*
    * The standard windows' form and table language, first taken from Etendo GO: the ink, the pale
@@ -759,12 +759,13 @@
 
 /*
  * The desk is painted once, on the tab set, and everything between it and the sheets is
- * transparent. It is GO's grey, the one of the top bar and the side navigation, whatever the tab on
- * screen: a standard window, the workspace, an EMOS view - which paints its own ground over it - or
- * a window still loading. See the GO frame below for the window strip.
+ * transparent. It is the top bar's lavender, so the bar and the window strip read as the new UI's
+ * one header band, whatever the tab on screen: a standard window, the workspace, an EMOS view -
+ * which paints its own ground over it - or a window still loading. See the GO frame below for the
+ * window strip.
  */
 .etskin-on .OBTabSetMain {
-  background-color: var(--sk-nav-surface);
+  background-color: var(--sk-topbar-surface);
   background-image: none;
 }
 
@@ -1042,8 +1043,8 @@
 /* ---------------------------------------------------- navbar and app menu */
 
 /*
- * No rule under the bar: GO's bar and side navigation are one grey frame, and the content below is
- * already a different colour, which is edge enough.
+ * No rule under the bar: the bar and the window strip are one lavender band, and the content below
+ * is already a different colour, which is edge enough.
  */
 .etskin-on .OBTopLayout {
   background-color: var(--sk-topbar-surface);
@@ -3579,31 +3580,40 @@
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table) {
   margin-inline-start: -4px;
   width: calc(100% - 16px) !important;
-  background-image: linear-gradient(to right, var(--sk-section-title), transparent);
-  background-position: left bottom;
-  background-repeat: no-repeat;
-  /* Half the form's width, the fade included: a rule under a heading, not a divider across the form. */
-  background-size: 50% 1px;
 }
 
-[dir="rtl"] .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table),
-.etskin-on[dir="rtl"] .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table) {
-  background-image: linear-gradient(to left, var(--sk-section-title), transparent);
-  background-position: right bottom;
-}
-
+/*
+ * The new UI draws each section as a white card with an icon and a chevron in its header. The
+ * fields of a section are rows of the same form table as every other section, so nothing can wrap
+ * them; the header is what becomes the card's head - a rounded, outlined band with a glyph before
+ * the title - and the fields follow under it.
+ */
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] > table {
   width: 100% !important;
-  background-color: transparent;
-  box-shadow: none;
-  border-radius: 0;
+  background-color: var(--sk-surface);
+  box-shadow: inset 0 0 0 1px var(--sk-nav-border);
+  border-radius: var(--sk-radius-lg);
   border: 0 none;
 }
 
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"] {
   font-size: 14px;
-  color: var(--sk-section-title);
-  padding-inline-start: 0;
+  font-weight: 600;
+  color: var(--sk-text);
+  padding-inline-start: 12px;
+}
+
+.etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"]::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 12px;
+  vertical-align: -3px;
+  background-color: var(--sk-section-title);
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M6 3h8l4 4v14H6z M14 3v4h4'/%3E%3C/svg%3E");
+  -webkit-mask: var(--sk-icon) center / 16px 16px no-repeat;
+  mask: var(--sk-icon) center / 16px 16px no-repeat;
 }
 
 .etskin-on .etskin-go .etskin-section-chevron {
