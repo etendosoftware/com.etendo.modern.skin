@@ -47,12 +47,6 @@ public class SkinComponentProvider extends BaseComponentProvider {
 
   @Override
   public Component getComponent(String componentId, Map<String, Object> parameters) {
-    if (NavMenuFoldersComponent.COMPONENT_ID.equals(componentId)) {
-      final NavMenuFoldersComponent component = getComponent(NavMenuFoldersComponent.class);
-      component.setId(componentId);
-      component.setParameters(parameters);
-      return component;
-    }
     throw new IllegalArgumentException("Component id " + componentId + " not supported.");
   }
 
@@ -64,10 +58,6 @@ public class SkinComponentProvider extends BaseComponentProvider {
     globalResources.add(createStaticResource(WEB_PATH + "js/etendo-skin.js", false));
     // Everything below must come after etendo-skin.js: each script stands down unless that one has
     // published OB.ETSkin.
-    // The menu folder ids the side navigation groups by. Per session, so a dynamic resource; see
-    // NavMenuFoldersComponent.
-    globalResources.add(createDynamicResource("org.openbravo.client.kernel/" + COMPONENT_TYPE + "/"
-        + NavMenuFoldersComponent.COMPONENT_ID));
     globalResources.add(createStaticResource(WEB_PATH + "js/etendo-skin-nav.js", false));
     globalResources.add(createStaticResource(WEB_PATH + "js/etendo-skin-topbar.js", false));
     globalResources.add(createStaticResource(WEB_PATH + "js/etendo-skin-toolbar.js", false));

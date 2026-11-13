@@ -31,8 +31,8 @@
  *
  * That column was doing a second job, though: its cell in the filter row carried the record count,
  * as a bare number in an unlabelled 56px slot. The count is worth keeping and the slot is not, so
- * updateRowCountDisplay is redirected to a labelled readout on the toolbar - "128 records" instead
- * of "128" - and falls back to the stock behaviour untouched whenever the column is still there.
+ * updateRowCountDisplay is redirected to the top bar, which shows it beside the window's title -
+ * "(128 records)" instead of "128" - and falls back to the stock behaviour untouched whenever the column is still there.
  * The stock method reaches straight into the filter form for a field that is no longer among the
  * grid's fields, so leaving it alone is not an option: it throws on every data arrival.
  *
@@ -150,12 +150,6 @@
   function skinLabel(name, fallback) {
     var labels = OB.ETSkin && OB.ETSkin.labels;
     return labels && labels[name] ? String(labels[name]) : fallback;
-  }
-
-  function countReadout(grid) {
-    var view = grid.view;
-    var toolbar = view && view.toolBar;
-    return toolbar && toolbar.etskinCount ? toolbar.etskinCount : null;
   }
 
   /*
@@ -315,7 +309,42 @@
     return OB.ETSkin.statusBadge(raw, label);
   }
 
+  // ---------------------------------------------------------------- fk links
+
+  /*
+   * The new UI draws a reference - an organization, a business partner - as a link to its record.
+   * Classic draws the name only, but the form already has the way there: its link title calls
+   * OB.Utilities.openDirectView with the field's own refColumnName, targetEntity and id, and a grid
+   * field carries the same three. So a reference cell becomes a link only where that call can be
+   * made, and the click makes exactly that call - never a blue word that does nothing.
+   */
+  var FK_CLASS = 'etskin-fk';
+
+  function linkable(grid, field, record) {
+    return !!(field && field.fkField && field.targetEntity && record && record[field.name] &&
+      grid.view && grid.view.standardWindow && grid.view.standardWindow.windowId &&
+      OB.Utilities && OB.Utilities.openDirectView);
+  }
+
+  function fkTarget() {
+    var event = isc.EH && isc.EH.lastEvent;
+    var node = event && event.nativeTarget;
+    while (node && node.nodeType === 1) {
+      if ((' ' + node.className + ' ').indexOf(' ' + FK_CLASS + ' ') !== -1) {
+        return true;
+      }
+      if (node.tagName === 'TD') {
+        return false;
+      }
+      node = node.parentNode;
+    }
+    return false;
+  }
+
   // -------------------------------------------------------------------- main
+
+  // The top bar reads the root grid's count through this.
+  OB.ETSkin.countText = countText;
 
   try {
     var proto = isc.OBViewGrid.getPrototype();
@@ -325,6 +354,7 @@
     var originalFunnel = proto.checkShowFilterFunnelIcon;
     var originalSingle = proto.setSingleRecordFilterMessage;
     var originalCell = proto.getCellValue;
+    var originalCellClick = proto.cellClick;
 
     isc.OBViewGrid.addProperties({
       /*
@@ -343,14 +373,24 @@
       editGrid: false,
 
       updateRowCountDisplay: function () {
-        var readout;
+        var view = this.view;
+        var count;
         if (hasEditLinkField(this)) {
           return originalRowCount.apply(this, arguments);
         }
         try {
-          readout = countReadout(this);
-          if (readout && readout.setContents) {
-            readout.setContents(countText(this));
+          if (OB.ETSkin.topBar && OB.ETSkin.topBar.refreshTitle) {
+            OB.ETSkin.topBar.refreshTitle();
+          }
+          /*
+           * A child tab carries its count, as the new UI's "Lines 13". Core already draws
+           * "Lines (13)" from view.recordCount in updateTabTitle - only when one parent record is
+           * selected - but nothing in core ever sets it, so this is the one line that was missing.
+           */
+          if (view && view.parentTabSet && view.updateTabTitle) {
+            count = countOf(this);
+            view.recordCount = count && count.length ? (count.capped ? this.dataPageSize + '+' : count.length) : null;
+            view.updateTabTitle();
           }
         } catch (e) {
           // A missing count is a missing count, not a broken grid.
@@ -403,7 +443,26 @@
         if (badge !== null) {
           return badge;
         }
-        return originalCell.apply(this, arguments);
+        var value = originalCell.apply(this, arguments);
+        var field = this.fields[fieldNum];
+        if (value && !this.isEditingRow && linkable(this, field, record)) {
+          return '<span class="' + FK_CLASS + '">' + value + '</span>';
+        }
+        return value;
+      },
+
+      cellClick: function (record, rowNum, colNum) {
+        var field = this.getField(colNum);
+        try {
+          if (linkable(this, field, record) && fkTarget()) {
+            OB.Utilities.openDirectView(this.view.standardWindow.windowId, field.refColumnName,
+              field.targetEntity, record[field.name], field.id);
+            return false;
+          }
+        } catch (e) {
+          // Then the click is an ordinary click on the cell.
+        }
+        return originalCellClick.apply(this, arguments);
       }
     });
   } catch (e) {
