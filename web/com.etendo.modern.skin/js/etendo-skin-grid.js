@@ -309,6 +309,38 @@
     return OB.ETSkin.statusBadge(raw, label);
   }
 
+  // ---------------------------------------------------------------- fk links
+
+  /*
+   * The new UI draws a reference - an organization, a business partner - as a link to its record.
+   * Classic draws the name only, but the form already has the way there: its link title calls
+   * OB.Utilities.openDirectView with the field's own refColumnName, targetEntity and id, and a grid
+   * field carries the same three. So a reference cell becomes a link only where that call can be
+   * made, and the click makes exactly that call - never a blue word that does nothing.
+   */
+  var FK_CLASS = 'etskin-fk';
+
+  function linkable(grid, field, record) {
+    return !!(field && field.fkField && field.targetEntity && record && record[field.name] &&
+      grid.view && grid.view.standardWindow && grid.view.standardWindow.windowId &&
+      OB.Utilities && OB.Utilities.openDirectView);
+  }
+
+  function fkTarget() {
+    var event = isc.EH && isc.EH.lastEvent;
+    var node = event && event.nativeTarget;
+    while (node && node.nodeType === 1) {
+      if ((' ' + node.className + ' ').indexOf(' ' + FK_CLASS + ' ') !== -1) {
+        return true;
+      }
+      if (node.tagName === 'TD') {
+        return false;
+      }
+      node = node.parentNode;
+    }
+    return false;
+  }
+
   // -------------------------------------------------------------------- main
 
   // The top bar reads the root grid's count through this.
@@ -322,6 +354,7 @@
     var originalFunnel = proto.checkShowFilterFunnelIcon;
     var originalSingle = proto.setSingleRecordFilterMessage;
     var originalCell = proto.getCellValue;
+    var originalCellClick = proto.cellClick;
 
     isc.OBViewGrid.addProperties({
       /*
@@ -410,7 +443,26 @@
         if (badge !== null) {
           return badge;
         }
-        return originalCell.apply(this, arguments);
+        var value = originalCell.apply(this, arguments);
+        var field = this.fields[fieldNum];
+        if (value && !this.isEditingRow && linkable(this, field, record)) {
+          return '<span class="' + FK_CLASS + '">' + value + '</span>';
+        }
+        return value;
+      },
+
+      cellClick: function (record, rowNum, colNum) {
+        var field = this.getField(colNum);
+        try {
+          if (linkable(this, field, record) && fkTarget()) {
+            OB.Utilities.openDirectView(this.view.standardWindow.windowId, field.refColumnName,
+              field.targetEntity, record[field.name], field.id);
+            return false;
+          }
+        } catch (e) {
+          // Then the click is an ordinary click on the cell.
+        }
+        return originalCellClick.apply(this, arguments);
       }
     });
   } catch (e) {

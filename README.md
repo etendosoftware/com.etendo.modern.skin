@@ -35,7 +35,7 @@ depend on this one:
 | --- | --- |
 | `OB.ETSkin` | Published by `etendo-skin.js` when the skin is on. Every script, here or in an application, stands down without it. |
 | `OB.ETSkin.tokens` | The resolved palette. |
-| `OB.ETSkin.statusBadge(value, label)` | The document status badge: five tones, one rule each. The grid uses it, and so does any screen that shows a status. |
+| `OB.ETSkin.statusBadge(value, label)` | The document status badge: each status value maps to one of five tones (`STATUS_TONES` in `etendo-skin.js`), drawn as the new UI's filled tag - grey, accent, green, yellow, red. The grid uses it, and so does any screen that shows a status. |
 | `OB.ETSkin.topBar` | `{ tray, chip, first, refreshTitle }` - `refreshTitle()` re-reads the title beside the brand; `chip(wrapper, role, active)` dresses a navigation bar button as one of the tray's icon chips, marked `etskin-tray-chip` so it keeps the round shape without the shell naming its role. A module that passes a role ships the icon for it. |
 | `OB.ETSkin.countText(grid)` | The grid's record count as words ("128 records", "more than 100 records"), or `''`. Published by `etendo-skin-grid.js`; the top bar shows it beside the title. |
 | `OB.ETSkin.labels`, `OB.ETSkin.navIcons`, `OB.ETSkin.trayCreateNew` | Optional overrides. Nothing here defines them; every read falls back to a default. |
@@ -52,7 +52,7 @@ depend on this one:
 | `web/com.etendo.modern.skin/js/etendo-skin-topbar.js` | Reorders the top bar and sizes its buttons. Same rule. |
 | `web/com.etendo.modern.skin/js/etendo-skin-toolbar.js` | Arranges the view toolbar as the new UI's single pill: one run of glyphs in its order, the process buttons in one Actions menu after it, and the view controls (Filters, Fields / Columns) on the right. Buttons other modules add spill into an overflow menu once the run is full. Same rule. |
 | `web/com.etendo.modern.skin/js/etendo-skin-form.js` | What a form's stylesheet cannot reach: the required marker, the link glyph, the section chevrons, the status bar title and the child panes. Also the standard windows' GO design - the Fields / Columns menu, the Filters button and the light frame; see [The standard windows](#the-standard-windows). Same rule. |
-| `web/com.etendo.modern.skin/js/etendo-skin-grid.js` | What a grid's stylesheet cannot reach: the row height, the header alignment, the frozen pane and the status badge. Same rule. |
+| `web/com.etendo.modern.skin/js/etendo-skin-grid.js` | What a grid's stylesheet cannot reach: the row height, the header alignment, the frozen pane, the status badge, and the reference cells as links to their record (the form's own `OB.Utilities.openDirectView` call). Same rule. |
 | `src/com/etendo/modern/skin/LoginSignInProvider.java` | Puts the login stylesheet on the login page through the core's `SignInProvider` seam. |
 | `web/com.etendo.modern.skin/css/etendo-skin-login.css` | The login page, loaded by the provider above. |
 | `web/com.etendo.modern.skin/fonts/` | Inter, self hosted. Two woff2 subsets, declared by both stylesheets. |
@@ -266,7 +266,7 @@ that would drift.
   strictly more correct: a fetch that really is a development window sets it again from its own
   response.
 - **The panel stands down in a popup.** A popup carries its own layout, shows one process or one
-  classic form and cannot navigate anywhere, so a 240px menu there is dead weight in a deliberately
+  classic form and cannot navigate anywhere, so a 260px menu there is dead weight in a deliberately
   small window. Popups are recognised by all three shapes core opens them in: the `hideMenu=true`
   it appends to classic window, help and popup urls; the `PROCESS` window name
   `OB.Utilities.openProcessPopup` gives the window it opens; and the opener any `window.open` leaves
@@ -284,15 +284,15 @@ out of the flow. Clearing the box drops both and the panel is back to whatever t
 the expanded state is never thrown away.
 
 The geometry comes from Etendo GO's side navigation, the earlier reference, measured from its own
-markup: 240px open and 56px
-collapsed, 32px rows, thin 20px glyphs on the sections only, and every label starting at 52px. The
+markup: 56px
+collapsed (260px open, the new UI's width), 32px rows, thin 20px glyphs on the sections only, and every label starting at 52px. The
 entries of a section hang from a guide line at 33px — under the section's glyph — and each deeper
 level adds 16px, with a line of its own. The colours are the new UI's: a `#f7f7f9` panel with a
 `#e1e7ef` edge, a `#e3e4e9` filled search field, and the open entry as a `#d9d8dd` band with 8px
 corners from its guide line to 8px short of the edge, where GO used its brand yellow; a section
 holding it is filled while closed and keeps a 3px start border while open. They are the
 `--sk-nav-*` tokens, kept apart from the palette presets and from `--sk-marker`. The recent views
-are rows under the same guide line rather than chips, under two discreet group titles that reuse
+are the new UI's wrap of grey pills, under two discreet group titles that reuse
 core labels (`OBKMO_RecentViews` and `UINAVBA_APPLICATION_MENU`). Only one section is open at a
 time, as in GO: opening a section folds the one that was open, while folders inside a section keep
 whatever the user left open. GO's collapsed rail opens a flyout on hover; Classic's tree is up to
@@ -364,7 +364,7 @@ Everything else - the glyphs, the fills, the hover and selected states - is CSS.
 The bar's geometry follows Etendo GO's top bar, measured from its own markup: 62px and no rule
 under it. Its colour is the new UI's header band: a pale lavender (`--sk-topbar-surface`,
 `#e4e6f9`) that the window strip under it shares, so bar and strip read as one band above the
-content. The brand column is 240px when the side navigation is on, so what follows starts over the
+content. The brand column is 260px when the side navigation is on, so what follows starts over the
 content. The utilities are the new UI's round white chips: a 40px `--sk-surface` disc with a muted
 glyph and a neutral tint under the pointer or while their menu is open; the avatar keeps its tinted
 disc, and any chip another module hands to `chip()` stays round.

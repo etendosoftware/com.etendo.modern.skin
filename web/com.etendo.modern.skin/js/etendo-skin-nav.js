@@ -35,8 +35,8 @@
 (function () {
   'use strict';
 
-  // Etendo GO's proportions: 240px open, 56px collapsed.
-  var NAV_WIDTH = 240;
+  // 260px open, as the new UI's panel (workspace-ui); 56px collapsed, as Etendo GO's rail.
+  var NAV_WIDTH = 260;
   var RAIL_WIDTH = 56;
   var COLLAPSE_KEY = 'etskin.nav.collapsed';
   var RECENT_LIST = 'UINAVBA_MenuRecentList';

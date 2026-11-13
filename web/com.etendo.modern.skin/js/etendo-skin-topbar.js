@@ -64,7 +64,7 @@
   var TITLE_MAX = 480;
   var TITLE_MIN = 140;
   // The brand column matches the side navigation, so the title starts over the content.
-  var BRAND_WIDTH = 240;
+  var BRAND_WIDTH = 260;
   var BASE_STYLE = 'OBNavBarComponent';
   /*
    * A tray member narrower than this cannot be clicked, so it is not a control: it is a component

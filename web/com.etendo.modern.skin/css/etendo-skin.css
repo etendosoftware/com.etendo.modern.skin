@@ -2262,7 +2262,7 @@
  * The geometry is Etendo GO's side navigation restated for Classic, in the new UI's colours: a pale
  * grey panel with a hairline edge, 32px rows, thin 20px glyphs on the sections only, the entries of
  * a section hanging off a guide line under its glyph, and one neutral fill that says "you are here".
- * The measurements are GO's own: 240px open and 56px collapsed, the glyph's centre and the guide line
+ * The measurements are GO's own but for the width, which is the new UI's: 260px open and 56px collapsed, the glyph's centre and the guide line
  * both at 33px, and every label - section or entry - starting at 52px.
  */
 
@@ -2428,37 +2428,30 @@
 /* -------------------------------------------------------------- recents */
 
 /*
- * The recent views read as the entries of a section: the same 32px rows, the same guide line, the
- * same 52px label start. The chips they used to be were a second visual language in the panel.
+ * The recent views as the new UI shows them: a wrap of pills under the title, in workspace-ui's
+ * chip colours (--ui-chip-bg, darker under the pointer as --ui-chip-hover).
  */
 .etskin-on .etskin-nav-chips {
-  position: relative;
-  padding-block: 2px;
-}
-
-.etskin-on .etskin-nav-chips::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 33px;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background-color: var(--sk-nav-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 8px 16px;
 }
 
 .etskin-on .etskin-nav-chip {
   display: block;
-  width: 100%;
-  height: 32px;
-  padding: 0 16px 0 52px;
+  max-width: 100%;
+  height: 30px;
+  padding: 0 12px;
   font-family: var(--sk-font);
   font-size: 14px;
   font-weight: 400;
-  line-height: 32px;
+  line-height: 30px;
   text-align: start;
   color: var(--sk-text);
-  background: transparent;
+  background-color: #e3e4e6;
   border: 0 none;
+  border-radius: 999px;
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
@@ -2467,7 +2460,7 @@
 }
 
 .etskin-on .etskin-nav-chip:hover {
-  background-color: var(--sk-neutral-soft);
+  background-color: #d9d8dd;
 }
 
 .etskin-on .etskin-nav-chip:focus-visible {
@@ -3246,71 +3239,60 @@
 
 /*
  * The document status, wherever it is shown: a grid cell here, or any screen that asks
- * OB.ETSkin.statusBadge for one. Five tones,
- * one rule each, and the tone is decided in JavaScript from the status value - see STATUS_TONES in
- * etendo-skin.js for which value takes which tone and why.
+ * OB.ETSkin.statusBadge for one. Five tones, one rule each, and the tone is decided in JavaScript
+ * from the status value - see STATUS_TONES in etendo-skin.js for which value takes which tone and
+ * why. That mapping is the skin's own and is kept as it is.
  *
- * The badge is sized to sit inside a 38px grid row without changing it, and it is allowed to
- * ellipsize rather than to widen its column: Closed - Order Created is a long name and a status
- * column that grew to fit it would take the room from the columns that carry the document.
+ * The look is the new UI's Tag: a filled pill, white text on the strong tones and dark text on the
+ * yellow and the grey, in workspace-ui's tag colours (success #008000, warning #FFCC00, error
+ * #DC143C, draft #E5E5E6) and its accent for the working state. It is allowed to ellipsize rather
+ * than to widen its column: Closed - Order Created is a long name and a status column that grew to
+ * fit it would take the room from the columns that carry the document.
  */
 .etskin-on .etskin-status {
   display: inline-block;
   max-width: 100%;
   padding: 2px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 15px;
-  letter-spacing: 0.01em;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
   vertical-align: middle;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border: 1px solid transparent;
+  border: 0 none;
   border-radius: 999px;
 }
 
 /* Not started, or not a state anybody acts on. */
 .etskin-on .etskin-status-neutral {
-  color: var(--sk-text-muted);
-  background-color: var(--sk-neutral-soft);
-  border-color: var(--sk-border);
+  color: #2a2c32;
+  background-color: #e5e5e6;
 }
 
-/* Under way. The working state is the primary tone rather than green, so that green is left to
-   mean finished and the two cannot be confused down a column. */
+/* Under way. The working state takes the accent rather than green, so that green is left to mean
+   finished and the two cannot be confused down a column. */
 .etskin-on .etskin-status-active {
-  color: var(--sk-primary);
-  background-color: var(--sk-primary-soft);
-  border-color: color-mix(in srgb, var(--sk-primary) 30%, transparent);
+  color: #fff;
+  background-color: #2a1757;
 }
 
 /* Finished. */
 .etskin-on .etskin-status-done {
-  color: var(--sk-success);
-  background-color: color-mix(in srgb, var(--sk-success) 12%, var(--sk-surface));
-  border-color: color-mix(in srgb, var(--sk-success) 32%, transparent);
+  color: #fff;
+  background-color: #008000;
 }
 
 /* Wants attention but is not a failure. */
 .etskin-on .etskin-status-warn {
-  color: var(--sk-warning);
-  background-color: color-mix(in srgb, var(--sk-warning) 14%, var(--sk-surface));
-  border-color: color-mix(in srgb, var(--sk-warning) 34%, transparent);
+  color: #2a2c32;
+  background-color: #ffcc00;
 }
 
 /* Voided, rejected, refused or in error. */
 .etskin-on .etskin-status-bad {
-  color: var(--sk-danger);
-  background-color: color-mix(in srgb, var(--sk-danger) 11%, var(--sk-surface));
-  border-color: color-mix(in srgb, var(--sk-danger) 32%, transparent);
-}
-
-/* A selected grid row inverts its own text colour, and a badge inside it must not be left reading
-   its tone against the selection fill. */
-.etskin-on .OBGridRowSelected .etskin-status,
-.etskin-on .OBGridRowSelectedOver .etskin-status {
-  background-color: var(--sk-surface);
+  color: #fff;
+  background-color: #dc143c;
 }
 
 /* ----------------------------------------------------------- accessibility */
@@ -3497,6 +3479,16 @@
   font-weight: 500;
   color: rgb(0 0 0 / 87%);
   padding: 0 8px;
+}
+
+/* A reference cell's link to its record (etendo-skin-grid.js), in the new UI's link blue. */
+.etskin-on .etskin-go .etskin-fk {
+  color: #004aca;
+  cursor: pointer;
+}
+
+.etskin-on .etskin-go .etskin-fk:hover {
+  text-decoration: underline;
 }
 
 /* ------------------------------------------------------------ GO child tabs */
