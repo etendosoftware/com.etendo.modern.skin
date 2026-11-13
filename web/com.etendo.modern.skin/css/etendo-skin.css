@@ -3614,16 +3614,17 @@
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] > table {
   width: 100% !important;
   background-color: var(--sk-surface);
-  box-shadow: inset 0 0 0 1px var(--sk-nav-border);
-  border-radius: var(--sk-radius-lg);
+  /* workspace-ui's card: 12px corners, a #e3e5ea hairline, no shadow. */
+  box-shadow: inset 0 0 0 1px #e3e5ea;
+  border-radius: 12px;
   border: 0 none;
 }
 
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"] {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  color: var(--sk-text);
-  padding-inline-start: 12px;
+  color: #1d2433;
+  padding-inline-start: 16px;
 }
 
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"]::before {
