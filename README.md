@@ -465,6 +465,11 @@ class or `--sk-*` token a UIKit view reads is changed.
 - **The window tabs.** The selected tab keeps its close X. Core's skin draws the selected tab's icon
   in a white variant meant for its dark selected tab, so `OBTabBarButtonMain` is told not to switch
   icons on selection: same icon, same click, same close. The workspace tab has none, as in Core.
+  As in the new UI, each window tab shows a folder glyph before its name and the workspace a house,
+  and the selected tab is underlined in the ink. The stylesheet tells them apart by the label's
+  markup (a closable tab nests a table for its close icon), since core gives tabs no other hook. The
+  workspace keeps its word beside the house: its title is also the document title and is saved in
+  the URL's state, so emptying it to narrow the tab would leak into both.
 
 The menu's words are core's labels where core has one (Fields, Columns, New, Save, Close) and this
 module's `ETMSK_L_form*` messages for the rest, with the English in the script as the fallback.
