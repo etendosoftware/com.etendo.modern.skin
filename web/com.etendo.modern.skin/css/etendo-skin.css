@@ -3245,7 +3245,7 @@
  *
  * The look is the new UI's Tag: a filled pill, white text on the strong tones and dark text on the
  * yellow and the grey, in workspace-ui's tag colours (success #008000, warning #FFCC00, error
- * #DC143C, draft #E5E5E6) and its accent for the working state. It is allowed to ellipsize rather
+ * #DC143C, draft #E5E5E6) and its accent for the primary tag. It is allowed to ellipsize rather
  * than to widen its column: Closed - Order Created is a long name and a status column that grew to
  * fit it would take the room from the columns that carry the document.
  */
@@ -3270,26 +3270,25 @@
   background-color: #e5e5e6;
 }
 
-/* Under way. The working state takes the accent rather than green, so that green is left to mean
-   finished and the two cannot be confused down a column. */
+/* The new UI's primary tag: transferred, re-opened. */
 .etskin-on .etskin-status-active {
   color: #fff;
   background-color: #2a1757;
 }
 
-/* Finished. */
+/* Booked, closed, posted, accepted. */
 .etskin-on .etskin-status-done {
   color: #fff;
   background-color: #008000;
 }
 
-/* Wants attention but is not a failure. */
+/* Under way, modified, printed, being evaluated. */
 .etskin-on .etskin-status-warn {
   color: #2a2c32;
   background-color: #ffcc00;
 }
 
-/* Voided, rejected, refused or in error. */
+/* Voided, rejected, inactive, not paid or in error. */
 .etskin-on .etskin-status-bad {
   color: #fff;
   background-color: #dc143c;

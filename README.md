@@ -35,7 +35,7 @@ depend on this one:
 | --- | --- |
 | `OB.ETSkin` | Published by `etendo-skin.js` when the skin is on. Every script, here or in an application, stands down without it. |
 | `OB.ETSkin.tokens` | The resolved palette. |
-| `OB.ETSkin.statusBadge(value, label)` | The document status badge: each status value maps to one of five tones (`STATUS_TONES` in `etendo-skin.js`), drawn as the new UI's filled tag - grey, accent, green, yellow, red. The grid uses it, and so does any screen that shows a status. |
+| `OB.ETSkin.statusBadge(value, label)` | The document status badge: each status value maps to one of five tones (`STATUS_TONES` in `etendo-skin.js`), drawn as the new UI's filled tag - grey, accent, green, yellow, red. Which status takes which tone copies the new UI's `statusConfig`. The new UI itself colours the badge from `AD_REF_LIST.EM_ETMETA_COLOR` (`com.etendoerp.metadata`), which only its template fills, for five values; reading that column here instead is an open decision. The grid uses it, and so does any screen that shows a status. |
 | `OB.ETSkin.topBar` | `{ tray, chip, first, refreshTitle }` - `refreshTitle()` re-reads the title beside the brand; `chip(wrapper, role, active)` dresses a navigation bar button as one of the tray's icon chips, marked `etskin-tray-chip` so it keeps the round shape without the shell naming its role. A module that passes a role ships the icon for it. |
 | `OB.ETSkin.countText(grid)` | The grid's record count as words ("128 records", "more than 100 records"), or `''`. Published by `etendo-skin-grid.js`; the top bar shows it beside the title. |
 | `OB.ETSkin.labels`, `OB.ETSkin.navIcons`, `OB.ETSkin.trayCreateNew` | Optional overrides. Nothing here defines them; every read falls back to a default. |
