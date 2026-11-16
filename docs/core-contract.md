@@ -104,7 +104,7 @@ called on that path.
 | Quick Launch wrapper `setStyleName` (instance) | `etendo-skin-topbar.js:107` | Keeps a marker class through `OBQuickRun`'s two `setStyleName` calls per flyout. | Quick Launch loses the pill style while open. |
 | Alert button `setTitle` (instance) | `etendo-skin-topbar.js:156` | Empties the label (the bell is a CSS mask) and keeps the count as the unread dot. `OB.I18N.getLabel` calls it back asynchronously. | Text over the bell; no dot. |
 | `OB.TopLayout.CompanyImageLogo`, `OB.TopLayout.reflow` | `etendo-skin-topbar.js:661, 765` | Moves Core's logo canvas next to "Etendo". | Logo in its stock place. |
-| `OB.ViewFormProperties.handleFieldErrors`, `processFICReturn`, `setFocusInErrorField` | `etendo-skin-form.js:2186, 2202, 2224` | Core copies these onto every form at creation, so they are wrapped at the source: the hidden required fields notice and the focus on a visible field in error. | No notice; SmartClient error focusing a hidden field. |
+| `OB.ViewFormProperties.handleFieldErrors`, `OB.ViewFormProperties.processFICReturn`, `OB.ViewFormProperties.setFocusInErrorField` | `etendo-skin-form.js:2186, 2202, 2224` | Core copies these onto every form at creation, so they are wrapped at the source: the hidden required fields notice and the focus on a visible field in error. | No notice; SmartClient error focusing a hidden field. |
 | `OB.ToolbarRegistry.registerButton` | `etendo-skin-form.js:1985, 2033` | Registers `etskinFields` and `etskinFilters` (`isc.OBToolbarIconButton`). | No Fields / Columns or Filters buttons. |
 | `OB.Layout.ViewManager.loadedWindowClassName` | `etendo-skin-nav.js:744` | Cleared before every open from the side panel (a development window leaves it set and `ob-view-manager.js` reuses it). | The first open renders the last development window instead. |
 | `isc.OBApplicationMenuTree.create(...).itemClick` | `etendo-skin-nav.js:962` | The side panel opens entries through Core's own menu tree. | Clicks in the side panel do nothing. |
@@ -195,8 +195,10 @@ tr -d '\r' < web/com.etendo.modern.skin/css/etendo-skin.css | grep -oE '\.OB[A-Z
 
 ## Checking that this list is complete
 
-The reviewer's grep: every wrapped prototype, replaced global and `addProperties` target in the
-scripts must appear above.
+`node verify/check-source.mjs` (gate **G4 core-contract**, also run by the Source Gate workflow)
+finds every wrapped prototype method, replaced global and `addProperties` target in the scripts and
+fails when one of them is not named in this file. A new hook therefore lands with its row here. The
+same search by hand:
 
 ```bash
 cd web/com.etendo.modern.skin/js

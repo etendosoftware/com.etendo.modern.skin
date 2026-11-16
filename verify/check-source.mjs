@@ -7,6 +7,8 @@
  *   G2 css-url         no parenthesis inside url(): the kernel's CSS pipeline stops at the first )
  *   G3 css-scope       every rule of etendo-skin.css hangs from .etskin-on, except the documented
  *                      exceptions (@font-face, :root tokens, the boot screen under #OBLoadingDiv)
+ *   G4 core-contract   every Core / SmartClient function the scripts wrap or replace is named in
+ *                      docs/core-contract.md, so a new hook cannot land undocumented
  *
  * ES5 syntax is checked separately with es-check (see .github/workflows/source-gate.yml).
  *
@@ -122,6 +124,41 @@ const ALLOWED = [/\.etskin-on(?![\w-])/, /^:root$/, /#OBLoadingDiv\b/];
     }
   }
   report('G3', 'css-scope', problems, `${count} selector(s) under .etskin-on or a documented exception`);
+}
+
+/* ------------------------------------------------------------------ core contract */
+
+// The hook shapes the scripts use: a prototype method read before it is wrapped, a class given new
+// methods, and a function assigned over a global or an instance's method. Each one names a target
+// that must appear in the contract. A name is enough: the contract says what breaks if it changes.
+const HOOKS = [
+  /getPrototype\(\)\.([A-Za-z_$][\w$]*)/g,
+  /=\s*proto\.([A-Za-z_$][\w$]*)/g,
+  /\b(isc\.[A-Za-z_$][\w$]*)\.addProperties\(/g,
+  /\b((?:OB|isc)\.[\w$.]+)\s*=\s*function\b/g,
+  /\b[a-z][\w$]*\.([A-Za-z_$][\w$]*)\s*=\s*function\s*\(/g,
+];
+{
+  const contract = path.join(MODULE, 'docs', 'core-contract.md');
+  const problems = [];
+  const names = new Set();
+  if (!fs.existsSync(contract)) {
+    problems.push(`${rel(contract)} not found`);
+  } else {
+    const doc = read(contract);
+    for (const file of list(path.join(WEB, 'js'), '.js')) {
+      read(file).split(/\r?\n/).forEach((line, i) => {
+        if (/^\s*(\/\/|\*)/.test(line)) return;
+        for (const re of HOOKS) {
+          for (const m of line.matchAll(re)) {
+            names.add(m[1]);
+            if (!doc.includes(m[1])) problems.push(`${rel(file)}:${i + 1}: ${m[1]} is not in ${rel(contract)}`);
+          }
+        }
+      });
+    }
+  }
+  report('G4', 'core-contract', problems, `${names.size} hook target(s) named in docs/core-contract.md`);
 }
 
 /* ------------------------------------------------------------------ report */

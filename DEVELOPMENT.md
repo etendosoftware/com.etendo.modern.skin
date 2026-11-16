@@ -111,7 +111,9 @@ The repository follows the Etendo Git Police rules, checked on every pull reques
   the **Auto Reviewer** bot. Address or mark as `/false-positive` its blocking comments.
 - Every PR also runs the **Source Gate** (`.github/workflows/source-gate.yml`): the scripts are ES5
   (`es-check`), still parse after the kernel's own JSMin, no stylesheet has a `(` inside `url()`, and
-  every rule of `etendo-skin.css` is under `.etskin-on` (or `:root`, `@font-face`, `#OBLoadingDiv`).
+  every rule of `etendo-skin.css` is under `.etskin-on` (or `:root`, `@font-face`, `#OBLoadingDiv`),
+  and every Core or SmartClient function the scripts wrap is named in
+  [docs/core-contract.md](docs/core-contract.md) (G4: a new hook needs its row there).
   Run it locally before pushing, from the module folder inside an Etendo checkout (it compiles core's
   `JSMin.java` with `javac`):
 
