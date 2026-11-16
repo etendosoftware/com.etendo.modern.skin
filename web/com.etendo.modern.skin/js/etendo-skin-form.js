@@ -1326,12 +1326,14 @@
   /*
    * Once per grid: GO's row and header heights, the filter row folded away behind the Filters button
    * - hidden, not removed, and the criteria exactly as they are - and the columns the user chose. The columns Core showed
-   * are remembered first, as the defaults of a tab this file has no list for.
+   * are remembered first, as the defaults of a tab this file has no list for. It runs just before the
+   * grid's first draw, where changing heights and columns is cheap: on a drawn grid every one of those
+   * changes lays the whole grid out again.
    */
   function adaptGrid(view) {
     var grid = view && view.viewGrid;
     var cols, i;
-    if (!grid || grid.etskinGoGrid || !grid.fieldIsVisible || !grid.isDrawn || !grid.isDrawn()) {
+    if (!grid || grid.etskinGoGrid || !grid.fieldIsVisible) {
       return;
     }
     grid.etskinGoGrid = true;
@@ -2069,6 +2071,20 @@
     document.documentElement.style.setProperty('--sk-save-label', JSON.stringify(text('save')));
     registerButton();
     registerFiltersButton();
+
+    var originalGridDraw = isc.OBViewGrid.getPrototype().draw;
+    isc.OBViewGrid.addProperties({
+      draw: function () {
+        if (!this.isDrawn() && isGoView(this.view) && this.view.viewGrid === this) {
+          try {
+            adaptGrid(this.view);
+          } catch (e) {
+            // A grid that cannot be adapted is drawn as Core made it.
+          }
+        }
+        return originalGridDraw.apply(this, arguments);
+      }
+    });
 
     var originalSetFields = isc.OBViewForm.getPrototype().setFields;
     var originalGoNewState = isc.OBViewForm.getPrototype().setNewState;
