@@ -2073,6 +2073,7 @@
     registerFiltersButton();
 
     var originalGridDraw = isc.OBViewGrid.getPrototype().draw;
+    var originalGridFilter = isc.OBViewGrid.getPrototype().filterData;
     isc.OBViewGrid.addProperties({
       draw: function () {
         if (!this.isDrawn() && isGoView(this.view) && this.view.viewGrid === this) {
@@ -2083,6 +2084,19 @@
           }
         }
         return originalGridDraw.apply(this, arguments);
+      },
+      // Every filter change - typed, cleared, the implicit filter switched off - ends here, so the
+      // count on the Filters button follows it instead of waiting for the next press.
+      filterData: function () {
+        var result = originalGridFilter.apply(this, arguments);
+        if (isGoView(this.view) && this.view.viewGrid === this) {
+          try {
+            refreshFiltersButton(this.view);
+          } catch (e) {
+            // A stale count is a stale count, not a broken filter.
+          }
+        }
+        return result;
       }
     });
 
