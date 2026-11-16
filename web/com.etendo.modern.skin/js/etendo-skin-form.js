@@ -1291,7 +1291,8 @@
    */
   function applyColumns(view) {
     var grid = view && view.viewGrid;
-    var changes = [];
+    var show = [];
+    var hide = [];
     var cols, i, want, had;
     if (!grid || !grid.fieldIsVisible) {
       return;
@@ -1300,22 +1301,22 @@
     for (i = 0; i < cols.length; i++) {
       want = columnWanted(view, cols[i]);
       if (want !== !!grid.fieldIsVisible(cols[i].name)) {
-        changes.push({ name: cols[i].name, show: want });
+        (want ? show : hide).push(cols[i].name);
       }
     }
-    if (!changes.length) {
+    if (!show.length && !hide.length) {
       return;
     }
     had = !grid.etskinFolded;
     if (had) {
       setFolded(grid, true);
     }
-    for (i = 0; i < changes.length; i++) {
-      if (changes[i].show) {
-        grid.showField(changes[i].name);
-      } else {
-        grid.hideField(changes[i].name);
-      }
+    // One call per direction: both take a list, and each call lays the whole grid out again.
+    if (show.length) {
+      grid.showField(show);
+    }
+    if (hide.length) {
+      grid.hideField(hide);
     }
     if (had) {
       setFolded(grid, false);
