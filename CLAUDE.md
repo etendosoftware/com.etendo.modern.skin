@@ -20,7 +20,8 @@ setup and the workflow. The backlog is the Jira epic ETP-5915.
 - Do not hide stock toolbar icons with prefix matches: list them by name.
 - No parentheses inside `url()` in the CSS.
 - No changes to Etendo Core files. If a task seems to need one, stop and say so.
-- Keep the README in sync when behaviour, configuration or a core hook changes.
+- Keep the README in sync when behaviour, configuration or a core hook changes. A new or changed
+  hook on Core or SmartClient also goes in [docs/core-contract.md](docs/core-contract.md).
 
 ## Git conventions (Git Police)
 
