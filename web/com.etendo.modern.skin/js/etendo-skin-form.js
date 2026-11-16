@@ -532,6 +532,9 @@
   // The new UI's table, measured from workspace-ui: a dense 32px row under a 32px header.
   var ROW_HEIGHT = 32;
   var HEADER_HEIGHT = 32;
+  // The tree column holds the indent, chevron, checkbox and folder before its value: at the list's
+  // 100px an account code three levels down was cut to nothing.
+  var TREE_COLUMN_WIDTH = 240;
   // The lines' share of a split window; the main list takes the rest.
   var LINES_SHARE = '38%';
   var FILTERS_TYPE = 'etskinFilters';
@@ -1358,6 +1361,7 @@
    */
   function adaptGrid(view) {
     var grid = view && view.viewGrid;
+    var tree = view && view.treeGrid;
     var cols, i;
     if (!grid || grid.etskinGoGrid || !grid.fieldIsVisible) {
       return;
@@ -1373,6 +1377,12 @@
     }
     if (grid.setHeaderHeight) {
       grid.setHeaderHeight(HEADER_HEIGHT);
+    }
+    // The same tab shown as a tree is a second grid with the stock 25px rows: the records shrank
+    // the moment the user switched to the tree.
+    if (tree && tree.setCellHeight) {
+      tree.setCellHeight(ROW_HEIGHT);
+      tree.setHeaderHeight(HEADER_HEIGHT);
     }
     setFolded(grid, true);
     applyColumns(view);
@@ -2097,6 +2107,22 @@
     document.documentElement.style.setProperty('--sk-save-label', JSON.stringify(text('save')));
     registerButton();
     registerFiltersButton();
+
+    var originalTreeFields = isc.OBTreeViewGrid && isc.OBTreeViewGrid.getPrototype().getTreeGridFields;
+    if (originalTreeFields) {
+      isc.OBTreeViewGrid.addProperties({
+        // Core copies the list's columns into the tree every time it is shown, widths included. The
+        // first one is the tree column; it gets its own copy, so the list keeps its width.
+        getTreeGridFields: function () {
+          var fields = originalTreeFields.apply(this, arguments);
+          if (fields && fields[0] && typeof fields[0].width === 'number' && fields[0].width < TREE_COLUMN_WIDTH &&
+              isGoView(this.view)) {
+            fields[0] = isc.addProperties({}, fields[0], { width: TREE_COLUMN_WIDTH });
+          }
+          return fields;
+        }
+      });
+    }
 
     var originalGridDraw = isc.OBViewGrid.getPrototype().draw;
     var originalGridFilter = isc.OBViewGrid.getPrototype().filterData;

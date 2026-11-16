@@ -284,6 +284,7 @@
  * them numeric columns do not line up, which is most of what an ERP grid shows.
  */
 .etskin-on td[class^="OBGridCell"],
+.etskin-on td[class^="OBTreeGridCell"],
 .etskin-on td[class^="OBGridLinkCell"] {
   font-family: var(--sk-font);
   font-size: 13px;
@@ -301,11 +302,13 @@
    stripes and let selection carry the emphasis. */
 .etskin-on td[class^="OBGridCell"],
 .etskin-on td[class^="OBGridCell"][class$="Dark"],
-.etskin-on td[class^="OBGridCell"][class*="Dark"] {
+.etskin-on td[class^="OBGridCell"][class*="Dark"],
+.etskin-on td[class^="OBTreeGridCell"] {
   background-color: var(--sk-surface);
 }
 
-.etskin-on td[class^="OBGridCell"][class*="Over"] {
+.etskin-on td[class^="OBGridCell"][class*="Over"],
+.etskin-on td[class^="OBTreeGridCell"][class*="Over"] {
   background-color: var(--sk-primary-softer);
 }
 
@@ -315,11 +318,13 @@
  * every column and draws the grid full of vertical lines. There is no row level hook to hang it
  * on: SmartClient gives the TR neither a class nor a background.
  */
-.etskin-on td[class^="OBGridCell"][class*="Selected"] {
+.etskin-on td[class^="OBGridCell"][class*="Selected"],
+.etskin-on td[class^="OBTreeGridCell"][class*="Selected"] {
   background-color: var(--sk-primary-soft);
 }
 
-.etskin-on td[class^="OBGridCell"][class*="SelectedViewInactive"] {
+.etskin-on td[class^="OBGridCell"][class*="SelectedViewInactive"],
+.etskin-on td[class^="OBTreeGridCell"][class*="SelectedViewInactive"] {
   background-color: color-mix(in srgb, var(--sk-text) 6%, transparent);
 }
 
@@ -327,7 +332,8 @@
   background-color: color-mix(in srgb, var(--sk-danger) 12%, var(--sk-surface));
 }
 
-.etskin-on td[class^="OBGridCell"][class*="Disabled"] {
+.etskin-on td[class^="OBGridCell"][class*="Disabled"],
+.etskin-on td[class^="OBTreeGridCell"][class*="Disabled"] {
   color: var(--sk-text-faint);
 }
 
@@ -3633,6 +3639,7 @@
  * (--ui-hover) and a pale violet selection (--ui-row-selected).
  */
 .etskin-on .etskin-go td[class^="OBGridCell"],
+.etskin-on .etskin-go td[class^="OBTreeGridCell"],
 .etskin-on .etskin-go td[class^="OBGridLinkCell"] {
   font-size: 12.5px;
   border-width: 0 1px 1px 0;
@@ -3640,11 +3647,13 @@
   padding: 0 8px;
 }
 
-.etskin-on .etskin-go td[class^="OBGridCell"][class*="Over"] {
+.etskin-on .etskin-go td[class^="OBGridCell"][class*="Over"],
+.etskin-on .etskin-go td[class^="OBTreeGridCell"][class*="Over"] {
   background-color: color-mix(in srgb, #000 5%, var(--sk-surface));
 }
 
-.etskin-on .etskin-go td[class^="OBGridCell"][class*="Selected"] {
+.etskin-on .etskin-go td[class^="OBGridCell"][class*="Selected"],
+.etskin-on .etskin-go td[class^="OBTreeGridCell"][class*="Selected"] {
   background-color: #ece8f6;
 }
 
@@ -4348,4 +4357,72 @@
 
 .etskin-on .etskin-go .OBToolbar {
   background-color: transparent;
+}
+
+/* ------------------------------------------------------------ tree views */
+
+/*
+ * A tab shown as a tree (Account Tree, Organization, Product Category, any tree grid) takes the new
+ * UI's tree column, measured from workspace-ui: a #3F4A7E chevron to open and close a folder, a
+ * folder in the accent, a dot for a leaf. Core draws each of them as a span whose inline style names
+ * the stock image, so the image is matched by name and swapped; the click targets do not change.
+ * Rows, hover and selection are the grid's own rules (OBTreeGridCell is listed beside OBGridCell),
+ * and the row height is the grid's (etendo-skin.js, OBTreeGrid).
+ */
+.etskin-on [style*="tree-grid/iconTree_closed"],
+.etskin-on [style*="tree-grid/iconTree_opened"],
+.etskin-on [style*="tree-grid/iconFolder"],
+.etskin-on [style*="tree-grid/iconNode"] {
+  background-size: 16px 16px !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.etskin-on [style*="tree-grid/iconTree_closed"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233F4A7E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 7l5 5-5 5'/%3E%3C/svg%3E") !important;
+}
+
+.etskin-on [style*="tree-grid/iconTree_opened"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233F4A7E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E") !important;
+}
+
+.etskin-on [style*="tree-grid/iconFolder.png"],
+.etskin-on [style*="tree-grid/iconFolder_into"],
+.etskin-on [style*="tree-grid/iconFolder_close_into"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232a1757'%3E%3Cpath d='M3 6.5a1.5 1.5 0 0 1 1.5-1.5h4.4l2 2h8.6a1.5 1.5 0 0 1 1.5 1.5v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18z'/%3E%3C/svg%3E") !important;
+}
+
+.etskin-on [style*="tree-grid/iconFolder_open.png"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232a1757' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M3.9 6h5l2 2h9.2v10.5H3.9z'/%3E%3C/svg%3E") !important;
+}
+
+.etskin-on [style*="tree-grid/iconNode"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4' fill='%232a1757'/%3E%3C/svg%3E") !important;
+}
+
+/*
+ * Dragging a node, as the new UI marks it: the row it would drop into tinted in the accent and ruled
+ * above and below, and a solid accent line where it would land between rows. Core marks the target
+ * folder by swapping its icon to an _into image, which is the only trace of it in the DOM; the line
+ * is SmartClient's dragLine, stock a dotted salmon rule.
+ */
+.etskin-on tr:has([style*="tree-grid/iconFolder"][style*="_into.png"]) > td[class^="OBTreeGridCell"] {
+  background-color: rgb(42 23 87 / 20%);
+  box-shadow: inset 0 2px 0 #2a1757, inset 0 -2px 0 #2a1757;
+}
+
+.etskin-on .dragLine {
+  border-top: 3px solid #2a1757;
+}
+
+/* What follows the pointer: the dragged row's title on a small white card instead of a dotted box. */
+.etskin-on .gridDragTracker {
+  font-family: var(--sk-font);
+  font-size: 12.5px;
+  color: var(--sk-text);
+  background-color: var(--sk-surface);
+  border: 1px solid #e3e5ea;
+  border-radius: 6px;
+  box-shadow: 0 2.5px 6.25px rgb(0 3 13 / 10%);
+  padding: 2px 8px;
 }
