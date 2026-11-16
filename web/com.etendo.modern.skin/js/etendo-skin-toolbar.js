@@ -16,16 +16,17 @@
  * which of the sixteen glyphs is the one you came for. That is the "breathes complexity" the
  * review was pointing at.
  *
- * This file gives the strip a shape:
+ * This file gives the strip the new UI's shape - one pill:
  *
- *   - Three small groups on the left - create, edit, record - separated by hairlines, with Save
- *     carrying the one filled accent on the screen. Seven glyphs where there were sixteen.
- *   - The six occasional ones (export, attach, clone, print, email, link) move into a single
- *     overflow menu. Nothing is removed; it is one click away and it has a name, which is more
- *     than a bare glyph offered.
- *   - The process buttons become one labelled "Actions" menu anchored at the right edge, next to
- *     the three view controls. A window with eight processes now costs 96px instead of 630px of
+ *   - On the left, one run of glyphs in the new UI's order: create and save first (New and Save
+ *     carry their word, from etendo-skin-form.js), refresh, delete and undo, then the occasional
+ *     ones (export, attach, clone, print, email, link) inline as the new UI shows them.
+ *   - After a hairline, the process buttons as one labelled "Actions" menu - the new UI's
+ *     "Available Process". A window with eight processes costs 96px instead of 630px of
  *     horizontal run, and none of them can fall off the screen.
+ *   - On the right, the view controls: Filters, Fields / Columns and the stock view glyphs.
+ *
+ * Buttons another module adds join the run while there is room and an overflow menu after that.
  *
  * How it hooks in
  *
@@ -55,33 +56,27 @@
   var GAP = 2;
   var LEFT_MARGIN = 12;
   var RIGHT_MARGIN = 24;
-  // A 1px rule centred in 13px of air: the gap is what separates the groups, the line only
-  // confirms it.
+  // A 1px rule centred in 13px of air, between the run of glyphs and Actions.
   var DIVIDER = 13;
   // Wide enough for the word plus the chevron the stylesheet draws after it.
   var ACTIONS_WIDTH = 96;
-  // "more than 100 records" is the longest string the readout ever holds.
-  var COUNT_WIDTH = 148;
-
+  // The new UI's order. Groups are only a name on the element now: the pill has no hairlines inside
+  // the run, and the stylesheet keys the round refresh on its group.
   var GROUPS = [
-    { name: 'create', types: ['newDoc', 'newRow'] },
-    { name: 'edit', types: ['save', 'savecloseX', 'undo'] },
-    { name: 'record', types: ['eliminate', 'refresh'] }
+    { name: 'create', types: ['newDoc', 'newRow', 'save', 'savecloseX'] },
+    { name: 'record', types: ['refresh'] },
+    { name: 'edit', types: ['eliminate', 'undo'] },
+    { name: 'more', types: ['clone', 'export', 'print', 'link', 'email', 'attach'] }
   ];
-  var MORE = ['export', 'attach', 'clone', 'print', 'email', 'link'];
-  // etskinFields is the Fields / Columns menu of the standard windows (etendo-skin-form.js).
-  var VIEW = ['etskinFields', 'personalization', 'manageviews', 'gridAndFilter'];
-  // The field menu is a glyph with its word, so it is as wide as the word needs.
-  var FIELDS_WIDTH = 110;
-  // Buttons that lead the strip, before the create group: the standard windows' Filters (also from
-  // etendo-skin-form.js). A glyph with its word and, when filters are on, a count.
-  var LEAD = ['etskinFilters'];
-  var LEAD_WIDTH = 104;
+  // etskinFilters and etskinFields are the Filters button and the Fields / Columns menu of the
+  // standard windows (etendo-skin-form.js), each a glyph with its word.
+  var VIEW = ['etskinFilters', 'etskinFields', 'personalization', 'manageviews', 'gridAndFilter'];
+  var WIDE = { etskinFilters: 104, etskinFields: 110 };
   var PRIMARY = 'save';
 
-  // Beyond this the left run stops reading as a few groups and starts reading as a wall again, so
+  // Beyond this the run stops reading as one row of glyphs and starts reading as a wall again, so
   // buttons contributed by other modules spill into the overflow menu rather than extend it.
-  var MAX_LEFT = 9;
+  var MAX_LEFT = 18;
 
   /*
    * Stock buttons carry a prompt - a whole sentence explaining the action - and, for most of them,
@@ -199,7 +194,7 @@
   /*
    * Marks a canvas as something the stock toolbar loops may walk over but must not act on.
    * refreshCustomButtons disables and re-enables the keyboard shortcut of every entry of
-   * rightMembers, and the count readout is a Label, which has no shortcut to disable. A pair of
+   * rightMembers, and a canvas this file adds may have no shortcut to disable. A pair of
    * no-ops there is cheaper - and far less brittle - than teaching that loop about this file.
    */
   function inert(canvas) {
@@ -330,27 +325,6 @@
   }
 
   /*
-   * The grid's record count used to live in the filter row of the edit-link column, as a bare
-   * number under a blank header. That column is gone, and the number comes back here with a word
-   * attached. It is a plain Label rather than a button so it is never mistaken for one, and it is
-   * left unmarked so the toolbar measurements keep counting only controls.
-   *
-   * Written by etendo-skin-grid.js, which reaches it through toolbar.etskinCount.
-   */
-  function countReadout() {
-    return inert(isc.Label.create({
-      autoDraw: false,
-      width: COUNT_WIDTH,
-      height: ICON,
-      align: 'right',
-      valign: 'center',
-      wrap: false,
-      styleName: 'etskin-tb-count',
-      contents: ''
-    }));
-  }
-
-  /*
    * Re-evaluates displayIf for the record that is open now, synchronously and from values the
    * browser already holds - which is what refreshCustomButtonsView is for. The framework does the
    * same thing on every record and selection change, so this normally confirms what is already
@@ -414,7 +388,7 @@
     var left = [];
     var right = [];
     var spill = [];
-    var i, j, group, button, source, classes;
+    var i, j, group, button, source, classes, width;
 
     if (!toolbar.leftMembers || toolbar.leftMembers.length === 0) {
       toolbar.leftMembers = OB.ToolbarRegistry.getButtons(toolbar.view.tabId);
@@ -442,20 +416,8 @@
       return byType[type];
     }
 
-    for (i = 0; i < LEAD.length; i++) {
-      button = claim(LEAD[i]);
-      if (button) {
-        button.setWidth(LEAD_WIDTH);
-        mark(button, 'lead', 'etskin-tb-filters', LEAD_WIDTH);
-        left.push(button);
-      }
-    }
-
     for (i = 0; i < GROUPS.length; i++) {
       group = GROUPS[i];
-      if (left.length > 0) {
-        left.push(divider());
-      }
       for (j = 0; j < group.types.length; j++) {
         button = claim(group.types[j]);
         if (button) {
@@ -466,12 +428,6 @@
       }
     }
 
-    for (i = 0; i < MORE.length; i++) {
-      button = claim(MORE[i]);
-      if (button) {
-        spill.push(button);
-      }
-    }
     for (i = 0; i < VIEW.length; i++) {
       claim(VIEW[i]);
     }
@@ -505,21 +461,16 @@
       left.push(button);
     }
 
-    toolbar.etskinCount = countReadout();
-    right.push(toolbar.etskinCount);
-
+    // Stock calls updateState on the left members only where they have one, and this has none.
+    left.push(divider());
     button = actionsButton(toolbar);
     mark(button, 'actions', 'etskin-tb-actions', ACTIONS_WIDTH);
-    right.push(button);
+    left.push(button);
+
     for (i = 0; i < VIEW.length; i++) {
       if (byType[VIEW[i]]) {
-        // Actions is a labelled pill and the view controls are bare glyphs; abutting them reads
-        // as one control with a word stuck to it. The rule that separates the groups on the left
-        // separates these two as well.
-        if (right[right.length - 1] === button) {
-          right.push(inert(divider()));
-        }
-        byType[VIEW[i]].setWidth(VIEW[i] === 'etskinFields' ? FIELDS_WIDTH : ICON);
+        width = WIDE[VIEW[i]] || ICON;
+        byType[VIEW[i]].setWidth(width);
         /*
          * manageviews is an icon button by class but a menu button by style: it keeps its
          * "Save View" title and draws no glyph, so at 32px the word is clipped to "S...".
@@ -527,6 +478,9 @@
          * to the tooltip so nothing is lost.
          */
         classes = 'etskin-tb-view';
+        if (VIEW[i] === 'etskinFilters') {
+          classes += ' etskin-tb-filters';
+        }
         if (VIEW[i] === 'etskinFields') {
           classes += ' etskin-tb-fields';
         }
@@ -536,7 +490,7 @@
             byType[VIEW[i]].prompt = labelFor(byType[VIEW[i]]);
           }
         }
-        mark(byType[VIEW[i]], 'right', classes, VIEW[i] === 'etskinFields' ? FIELDS_WIDTH : ICON);
+        mark(byType[VIEW[i]], 'right', classes, width);
         if (byType[VIEW[i]].etskinStateful) {
           toolbar.etskinStateful = (toolbar.etskinStateful || []).concat([byType[VIEW[i]]]);
         }
@@ -673,8 +627,8 @@
         /*
          * Stock reads this to walk the process buttons and refresh each one's display logic
          * against its view: the loop asks every entry for its contextView and then for that
-         * view's state. This file also parks its own canvases in rightMembers - the count
-         * readout, the Actions button, the view icons - because that array is what initWidget
+         * view's state. This file also parks its own canvases in rightMembers - the view
+         * icons - because that array is what initWidget
          * lays out, and none of them belongs to a view. Returning only the process buttons is
          * what stock already assumes it is getting, and it is what keeps that refresh - the one
          * that decides which options the record allows - running at all.

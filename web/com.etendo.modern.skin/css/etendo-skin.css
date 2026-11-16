@@ -99,29 +99,41 @@
   --sk-text: #101828;
 
   /*
-   * Etendo GO's side navigation: a pale grey panel, a hairline edge and the brand yellow for the
-   * open entry. Kept apart from the palette on purpose - the presets recolour the windows, not the
-   * way into them - and from --sk-marker, which is the split view's focus mark.
+   * The side navigation, with the new UI's values (workspace-ui --ui-sidebar-bg, --ui-selected-bg,
+   * --ui-search-bg): a pale grey panel, a hairline edge, a neutral grey for the open entry where
+   * Etendo GO used its brand yellow, and a filled search field. Kept apart from the palette on
+   * purpose - the presets recolour the windows, not the way into them - and from --sk-marker, which
+   * is the split view's focus mark.
    */
-  --sk-nav-surface: #f6f7f9;
+  --sk-nav-surface: #f7f7f9;
   --sk-nav-border: #e1e7ef;
-  --sk-nav-highlight: #ffd900;
+  --sk-nav-highlight: #d9d8dd;
+  --sk-nav-search: #e3e4e9;
   --sk-nav-on-highlight: var(--sk-text);
 
   /*
-   * Etendo GO's top bar sits on the same grey as the side navigation, so the two read as one frame
-   * around the content, and its search field is a slightly darker grey pill.
+   * The new UI's header band, measured from workspace-ui: the top bar on the lavender its content
+   * gradient starts from, the window strip under it 5% darker (--ui-tabbar-bg), the selected tab
+   * nearly white (--ui-tab-active-bg) and underlined in a dark grey (--ui-tab-active-line). The
+   * utilities are 40px discs of --ui-nav-btn-bg holding a slate glyph. The search field stays a
+   * pale pill on the band.
    */
-  --sk-topbar-surface: var(--sk-nav-surface);
-  --sk-search-fill: #e7e9ee;
+  --sk-topbar-surface: #cbcffe;
+  --sk-tabbar-surface: color-mix(in srgb, #00030d 5%, var(--sk-topbar-surface));
+  --sk-tab-active: #fafafb;
+  --sk-tab-active-line: #2a2b2f;
+  --sk-chip-surface: #fcfcfd;
+  --sk-chip-ink: #3f4a7e;
+  --sk-search-fill: color-mix(in srgb, var(--sk-surface) 70%, var(--sk-topbar-surface));
 
   /*
-   * Etendo GO's form and table language, for the standard windows: its near-black ink, the pale
-   * fills behind fields and under the pointer, and its muted glyph grey. New tokens only - no value a
+   * The standard windows' form and table language, first taken from Etendo GO: the ink, the pale
+   * fills behind fields and under the pointer, and the muted glyph grey. The ink is now the new UI's
+   * accent violet (workspace-ui --ui-accent and --ui-accent-hover). New tokens only - no value a
    * UIKit view reads changes.
    */
-  --sk-go-ink: #0f172a;
-  --sk-go-ink-hover: #1e293b;
+  --sk-go-ink: #2a1757;
+  --sk-go-ink-hover: #1b0f3a;
   --sk-go-fill: #f1f5f9;
   --sk-go-fill-soft: #f8fafc;
   --sk-go-icon: #64748b;
@@ -759,12 +771,13 @@
 
 /*
  * The desk is painted once, on the tab set, and everything between it and the sheets is
- * transparent. It is GO's grey, the one of the top bar and the side navigation, whatever the tab on
- * screen: a standard window, the workspace, an EMOS view - which paints its own ground over it - or
- * a window still loading. See the GO frame below for the window strip.
+ * transparent. It is the top bar's lavender, so the bar and the window strip read as the new UI's
+ * one header band, whatever the tab on screen: a standard window, the workspace, an EMOS view -
+ * which paints its own ground over it - or a window still loading. See the GO frame below for the
+ * window strip.
  */
 .etskin-on .OBTabSetMain {
-  background-color: var(--sk-nav-surface);
+  background-color: var(--sk-topbar-surface);
   background-image: none;
 }
 
@@ -1042,8 +1055,8 @@
 /* ---------------------------------------------------- navbar and app menu */
 
 /*
- * No rule under the bar: GO's bar and side navigation are one grey frame, and the content below is
- * already a different colour, which is edge enough.
+ * No rule under the bar: the bar and the window strip are one lavender band, and the content below
+ * is already a different colour, which is edge enough.
  */
 .etskin-on .OBTopLayout {
   background-color: var(--sk-topbar-surface);
@@ -1200,29 +1213,29 @@
  * open state is worth marking here rather than leaving to the widget.
  */
 /*
- * GO's utilities are glyphs, not chips: no surface and no shadow, a muted 20px glyph in a 40px square
- * with GO's 8px corners, and a neutral fill only under the pointer or while the control's menu is
- * open. The palette's primary is left to the content, where it means "act".
+ * The new UI's utilities are round white chips: a muted 20px glyph on a 40px white disc, and a
+ * neutral fill under the pointer or while the control's menu is open. The palette's primary is left
+ * to the content, where it means "act".
  */
 .etskin-on .etskin-tray-item {
   margin-inline-end: 0;
-  background-color: transparent;
-  border-radius: var(--sk-radius);
+  background-color: var(--sk-chip-surface);
+  border-radius: 999px;
   box-shadow: none;
-  --sk-icon-color: var(--sk-text-muted);
+  --sk-icon-color: var(--sk-chip-ink);
   transition: background-color 130ms ease;
 }
 
 .etskin-on .etskin-tray-item:hover {
-  background-color: var(--sk-neutral-soft);
-  border-radius: var(--sk-radius);
-  --sk-icon-color: var(--sk-text);
+  background-color: var(--sk-surface);
+  border-radius: 999px;
+  --sk-icon-color: var(--sk-go-ink);
 }
 
 .etskin-on .etskin-tray-item.OBNavBarComponentSelected {
-  background-color: var(--sk-border-hairline);
-  border-radius: var(--sk-radius);
-  --sk-icon-color: var(--sk-text);
+  background-color: var(--sk-surface);
+  border-radius: 999px;
+  --sk-icon-color: var(--sk-go-ink);
 }
 
 /* The stock widgets bring their own artwork; inside a chip the mask below is the artwork. */
@@ -1530,9 +1543,10 @@
 /* ------------------------------------------------------------- top title */
 
 /*
- * The title of the open view, as GO sets it: 20px semibold, truncated, with where it sits in the
- * menu under it in 12px muted text. The column starts over the content because the brand column to
- * its left is exactly as wide as the side navigation.
+ * The title of the open view, as the new UI sets it: one line, 20px semibold, with the record count
+ * beside it in 12px muted text on the grid, or a chevron and the record on the form. The view's name
+ * never shrinks; the record gives way first. The column starts over the content because the brand
+ * column to its left is exactly as wide as the side navigation.
  */
 .etskin-on .etskinTopTitle {
   background: transparent;
@@ -1540,8 +1554,8 @@
 
 .etskin-on .etskin-top-title {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  gap: 8px;
   height: 100%;
   min-width: 0;
   padding-inline-start: 24px;
@@ -1550,8 +1564,10 @@
 }
 
 .etskin-on .etskin-top-title-main,
-.etskin-on .etskin-top-title-crumb {
+.etskin-on .etskin-top-title-record,
+.etskin-on .etskin-top-title-count {
   display: block;
+  min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1559,16 +1575,45 @@
 
 .etskin-on .etskin-top-title-main {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 26px;
   color: var(--sk-text);
 }
 
-.etskin-on .etskin-top-title-crumb {
+.etskin-on .etskin-top-title-main {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+.etskin-on .etskin-top-title-record {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 26px;
+  color: var(--sk-text);
+}
+
+.etskin-on .etskin-top-title-count {
+  flex-shrink: 0;
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;
   color: var(--sk-text-muted);
+}
+
+/* A chevron drawn with two borders, so no glyph depends on the font. */
+.etskin-on .etskin-top-title-sep {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  margin-inline-end: 2px;
+  border-top: 1.5px solid var(--sk-text-muted);
+  border-right: 1.5px solid var(--sk-text-muted);
+  transform: rotate(45deg);
+}
+
+[dir="rtl"] .etskin-on .etskin-top-title-sep,
+.etskin-on[dir="rtl"] .etskin-top-title-sep {
+  transform: rotate(-135deg);
 }
 
 /*
@@ -2214,10 +2259,10 @@
  * still live under .etskin-on for one reason: if the skin is off the script never runs, and a
  * stray .etskin-nav rule would then be dead weight the browser still has to match.
  *
- * The look is Etendo GO's side navigation restated for Classic: a pale grey panel with a hairline
- * edge, 32px rows, thin 20px glyphs on the sections only, the entries of a section hanging off a
- * guide line under its glyph, and the brand yellow as the one fill that says "you are here". The
- * measurements are GO's own: 240px open and 56px collapsed, the glyph's centre and the guide line
+ * The geometry is Etendo GO's side navigation restated for Classic, in the new UI's colours: a pale
+ * grey panel with a hairline edge, 32px rows, thin 20px glyphs on the sections only, the entries of
+ * a section hanging off a guide line under its glyph, and one neutral fill that says "you are here".
+ * The measurements are GO's own but for the width, which is the new UI's: 260px open and 56px collapsed, the glyph's centre and the guide line
  * both at 33px, and every label - section or entry - starting at 52px.
  */
 
@@ -2265,12 +2310,12 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  height: 36px;
+  height: 40px;
   box-sizing: border-box;
-  padding-inline: 10px;
-  background-color: var(--sk-surface);
-  border: 1px solid var(--sk-nav-border);
-  border-radius: var(--sk-radius-sm);
+  padding-inline: 12px;
+  background-color: var(--sk-nav-search);
+  border: 1px solid transparent;
+  border-radius: 8px;
   transition: border-color 130ms ease, box-shadow 130ms ease;
 }
 
@@ -2366,14 +2411,13 @@
   padding: 0 0 12px 0;
 }
 
-/* ---------------------------------------------------------- group titles */
+/* ------------------------------------------------------- recents title */
 
 /*
  * GO's group titles: 12px, regular weight, muted, 16px in from the edge, 16px above and 4px below.
  * Discreet on purpose - they separate, they do not compete with the entries.
  */
-.etskin-on .etskin-nav-recents-title,
-.etskin-on .etskin-nav-section-title {
+.etskin-on .etskin-nav-recents-title {
   padding: 16px 16px 4px 16px;
   font-size: 12px;
   font-weight: 400;
@@ -2384,37 +2428,30 @@
 /* -------------------------------------------------------------- recents */
 
 /*
- * The recent views read as the entries of a section: the same 32px rows, the same guide line, the
- * same 52px label start. The chips they used to be were a second visual language in the panel.
+ * The recent views as the new UI shows them: a wrap of pills under the title, in workspace-ui's
+ * chip colours (--ui-chip-bg, darker under the pointer as --ui-chip-hover).
  */
 .etskin-on .etskin-nav-chips {
-  position: relative;
-  padding-block: 2px;
-}
-
-.etskin-on .etskin-nav-chips::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 33px;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background-color: var(--sk-nav-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 8px 16px;
 }
 
 .etskin-on .etskin-nav-chip {
   display: block;
-  width: 100%;
-  height: 32px;
-  padding: 0 16px 0 52px;
+  max-width: 100%;
+  height: 30px;
+  padding: 0 12px;
   font-family: var(--sk-font);
   font-size: 14px;
   font-weight: 400;
-  line-height: 32px;
+  line-height: 30px;
   text-align: start;
   color: var(--sk-text);
-  background: transparent;
+  background-color: #e3e4e6;
   border: 0 none;
+  border-radius: 999px;
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
@@ -2423,7 +2460,7 @@
 }
 
 .etskin-on .etskin-nav-chip:hover {
-  background-color: var(--sk-neutral-soft);
+  background-color: #d9d8dd;
 }
 
 .etskin-on .etskin-nav-chip:focus-visible {
@@ -2494,10 +2531,9 @@
 
 /*
  * The open view. A section row that carries the mark - its entry is inside a closed section - is
- * filled yellow edge to edge, border included. An entry that carries it gets a yellow band that
- * starts at its own guide line and stops 8px short of the edge, so the line reads as running into
- * the band. The label takes the medium or semibold weight GO uses; the text colour stays the text
- * colour, which on this yellow is the most legible there is.
+ * filled edge to edge, border included. An entry that carries it gets a band with the new UI's 8px
+ * corners that starts at its own guide line and stops 8px short of the edge, so the line reads as
+ * running into the band. The label takes a medium or semibold weight.
  */
 .etskin-on .etskin-nav-row-top.etskin-nav-current,
 .etskin-on .etskin-nav-row-top.etskin-nav-current:hover {
@@ -2506,6 +2542,7 @@
   color: var(--sk-nav-on-highlight);
   background-color: var(--sk-nav-highlight);
   border-inline-start-color: var(--sk-nav-highlight);
+  border-radius: 8px;
 }
 
 .etskin-on .etskin-nav-row:not(.etskin-nav-row-top).etskin-nav-current,
@@ -2523,10 +2560,11 @@
   top: 0;
   bottom: 0;
   background-color: var(--sk-nav-highlight);
+  border-radius: 8px;
 }
 
 /*
- * An open section holding the open view keeps its yellow start border and goes medium, as GO does,
+ * An open section holding the open view keeps a start border in the highlight and goes medium,
  * so the eye can travel from the section to the band below it. A folder inside the section that
  * holds it just goes medium.
  */
@@ -2541,7 +2579,7 @@
 
 /* ---------------------------------------------------------------- icons */
 
-/* Thin, 20px and muted, as GO draws them; full text colour on the yellow. */
+/* Thin, 20px and muted, as GO draws them; full text colour on the highlight. */
 .etskin-on .etskin-nav-icon {
   position: relative;
   z-index: 1;
@@ -2575,6 +2613,36 @@
   width: 20px;
   height: 20px;
   object-fit: contain;
+}
+
+/* What a row below a section opens: folder, window, report, process, form, view or link. */
+
+.etskin-on .etskin-nav-icon-folder {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7h5l2 2h11v10H3z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-window {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18v14H3z M3 9h18'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-report {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h9l3 3v15H6z M15 3v4h4 M9 12h6 M9 16h5'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-process {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 5l10 7-10 7z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-form {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4h14v16H5z M9 9h6 M9 13h6 M9 17h3'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-view {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12c3-5 17-5 20 0-3 5-17 5-20 0z M12 15a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/%3E%3C/svg%3E");
+}
+
+.etskin-on .etskin-nav-icon-external {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6 M20 4l-9 9 M18 13v7H4V6h7'/%3E%3C/svg%3E");
 }
 
 /*
@@ -2731,12 +2799,8 @@
  * the flow. Clearing the box drops both classes and the panel is back to whatever the user had
  * expanded - the open state was never thrown away.
  */
-/*
- * While filtering, the matches are what matters: the group titles and the recent views would only
- * stand between them.
- */
-.etskin-on .etskin-nav-filtering .etskin-nav-tree > .etskin-nav-section-title,
-.etskin-on .etskin-nav-filtering .etskin-nav-tree > .etskin-nav-recents-slot {
+/* While filtering, the matches are what matters: the recent views would only stand between them. */
+.etskin-on .etskin-nav-filtering .etskin-nav-recents-slot {
   display: none;
 }
 
@@ -2834,14 +2898,6 @@
  */
 .etskin-on .etskin-nav-rail {
   display: none;
-}
-
-/* Between two groups of tiles, the rail's stand-in for a group title. */
-.etskin-on .etskin-nav-rail-gap {
-  flex: 0 0 auto;
-  width: 24px;
-  height: 1px;
-  background-color: var(--sk-nav-border);
 }
 
 .etskin-on .etskin-nav-collapsed .etskin-nav-rail {
@@ -3110,19 +3166,6 @@
   pointer-events: none;
 }
 
-/*
- * The record count, back from the blank column it used to sit in. Muted and unboxed: it is a
- * readout, and nothing on the strip should invite a click except the things that take one.
- */
-.etskin-on .etskin-tb-count {
-  font-family: var(--sk-font);
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--sk-text-muted);
-  white-space: nowrap;
-  padding-inline-end: 12px;
-}
-
 /* ---------------------------------------------------------- toolbar menus */
 
 /*
@@ -3196,71 +3239,59 @@
 
 /*
  * The document status, wherever it is shown: a grid cell here, or any screen that asks
- * OB.ETSkin.statusBadge for one. Five tones,
- * one rule each, and the tone is decided in JavaScript from the status value - see STATUS_TONES in
- * etendo-skin.js for which value takes which tone and why.
+ * OB.ETSkin.statusBadge for one. Five tones, one rule each, and the tone is decided in JavaScript
+ * from the status value - see STATUS_TONES in etendo-skin.js for which value takes which tone and
+ * why. That mapping is the skin's own and is kept as it is.
  *
- * The badge is sized to sit inside a 38px grid row without changing it, and it is allowed to
- * ellipsize rather than to widen its column: Closed - Order Created is a long name and a status
- * column that grew to fit it would take the room from the columns that carry the document.
+ * The look is the new UI's Tag: a filled pill, white text on the strong tones and dark text on the
+ * yellow and the grey, in workspace-ui's tag colours (success #008000, warning #FFCC00, error
+ * #DC143C, draft #E5E5E6) and its accent for the primary tag. It is allowed to ellipsize rather
+ * than to widen its column: Closed - Order Created is a long name and a status column that grew to
+ * fit it would take the room from the columns that carry the document.
  */
 .etskin-on .etskin-status {
   display: inline-block;
   max-width: 100%;
   padding: 2px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 15px;
-  letter-spacing: 0.01em;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
   vertical-align: middle;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border: 1px solid transparent;
+  border: 0 none;
   border-radius: 999px;
 }
 
 /* Not started, or not a state anybody acts on. */
 .etskin-on .etskin-status-neutral {
-  color: var(--sk-text-muted);
-  background-color: var(--sk-neutral-soft);
-  border-color: var(--sk-border);
+  color: #2a2c32;
+  background-color: #e5e5e6;
 }
 
-/* Under way. The working state is the primary tone rather than green, so that green is left to
-   mean finished and the two cannot be confused down a column. */
+/* The new UI's primary tag: transferred, re-opened. */
 .etskin-on .etskin-status-active {
-  color: var(--sk-primary);
-  background-color: var(--sk-primary-soft);
-  border-color: color-mix(in srgb, var(--sk-primary) 30%, transparent);
+  color: #fff;
+  background-color: #2a1757;
 }
 
-/* Finished. */
+/* Booked, closed, posted, accepted. */
 .etskin-on .etskin-status-done {
-  color: var(--sk-success);
-  background-color: color-mix(in srgb, var(--sk-success) 12%, var(--sk-surface));
-  border-color: color-mix(in srgb, var(--sk-success) 32%, transparent);
+  color: #fff;
+  background-color: #008000;
 }
 
-/* Wants attention but is not a failure. */
+/* Under way, modified, printed, being evaluated. */
 .etskin-on .etskin-status-warn {
-  color: var(--sk-warning);
-  background-color: color-mix(in srgb, var(--sk-warning) 14%, var(--sk-surface));
-  border-color: color-mix(in srgb, var(--sk-warning) 34%, transparent);
+  color: #2a2c32;
+  background-color: #ffcc00;
 }
 
-/* Voided, rejected, refused or in error. */
+/* Voided, rejected, inactive, not paid or in error. */
 .etskin-on .etskin-status-bad {
-  color: var(--sk-danger);
-  background-color: color-mix(in srgb, var(--sk-danger) 11%, var(--sk-surface));
-  border-color: color-mix(in srgb, var(--sk-danger) 32%, transparent);
-}
-
-/* A selected grid row inverts its own text colour, and a badge inside it must not be left reading
-   its tone against the selection fill. */
-.etskin-on .OBGridRowSelected .etskin-status,
-.etskin-on .OBGridRowSelectedOver .etskin-status {
-  background-color: var(--sk-surface);
+  color: #fff;
+  background-color: #dc143c;
 }
 
 /* ----------------------------------------------------------- accessibility */
@@ -3286,6 +3317,8 @@
  * color-mix is resolved where it is declared and would otherwise keep the old accent.
  */
 .etskin-on .etskin-go {
+  /* The split view's focus mark in the accent rather than Classic's yellow, which the new UI lacks. */
+  --sk-marker: var(--sk-go-ink);
   --sk-primary: var(--sk-go-ink);
   --sk-on-primary: var(--sk-surface);
   --sk-primary-hover: var(--sk-go-ink-hover);
@@ -3296,10 +3329,32 @@
 
 /* ---------------------------------------------------------------- GO toolbar */
 
-/* GO's action bar: muted glyphs in 8px squares, a neutral fill under the pointer. */
+/*
+ * The new UI's action bar: one pill holding the whole strip - muted glyphs in 8px squares, a neutral
+ * fill under the pointer. The pill is a pseudo-element inset inside the toolbar, because SmartClient
+ * places the toolbar and its members with inline geometry a margin would fight; the members are
+ * absolutely positioned children, so they paint over it.
+ */
 .etskin-on .etskin-go .OBToolbar {
   --sk-icon-color: var(--sk-go-icon);
-  border-bottom-color: var(--sk-nav-border);
+  border-bottom-color: transparent;
+}
+
+.etskin-on .etskin-go .OBToolbar::before {
+  content: "";
+  position: absolute;
+  inset: 4px 8px;
+  border-radius: 999px;
+  /* --ui-group-bg: white at 40% over the lavender. */
+  background-color: rgb(255 255 255 / 40%);
+  pointer-events: none;
+}
+
+/* Refresh sits in its own white circle, as the new UI draws it beside New. */
+.etskin-on .etskin-go [data-etskin-group="record"] {
+  border-radius: 999px;
+  background-color: var(--sk-surface);
+  box-shadow: 0 0 0 1px var(--sk-nav-border);
 }
 
 .etskin-on .etskin-go [class^="OBToolbarIconButton"] {
@@ -3315,15 +3370,17 @@
   --sk-icon-color: var(--sk-text);
 }
 
-/* Save is GO's primary button: the ink, filled, with the same corners as everything else. */
+/* Save is the form's primary button: the ink, filled, round like New. */
 .etskin-on .etskin-go .etskin-tb-primary {
-  border-radius: var(--sk-radius);
+  border-radius: 999px;
   box-shadow: none;
 }
 
+/* Actions reads as the new UI's "Available Process": a word and a chevron on the pill, no outline. */
 .etskin-on .etskin-go .etskin-tb-actions {
-  border-color: var(--sk-nav-border);
+  border-color: transparent;
   border-radius: var(--sk-radius);
+  background-color: transparent;
 }
 
 .etskin-on .etskin-go .etskin-tb-actions:hover {
@@ -3383,31 +3440,54 @@
 
 /* ------------------------------------------------------------------ GO grid */
 
-/* GO's table: 14px rows on a hairline, a quiet header, neutral hover and selection. */
+/*
+ * The new UI's table, measured from workspace-ui: 12.5px cells ruled both ways in --ui-line-soft, a
+ * lavender header (--ui-table-head-bg) with its columns parted by --ui-head-sep, a 5% neutral hover
+ * (--ui-hover) and a pale violet selection (--ui-row-selected).
+ */
 .etskin-on .etskin-go td[class^="OBGridCell"],
 .etskin-on .etskin-go td[class^="OBGridLinkCell"] {
-  font-size: 14px;
-  border-color: var(--sk-nav-border);
-  padding: 0 12px;
+  font-size: 12.5px;
+  border-width: 0 1px 1px 0;
+  border-color: #eff0f1;
+  padding: 0 8px;
 }
 
 .etskin-on .etskin-go td[class^="OBGridCell"][class*="Over"] {
-  background-color: var(--sk-go-fill-soft);
+  background-color: color-mix(in srgb, #000 5%, var(--sk-surface));
 }
 
 .etskin-on .etskin-go td[class^="OBGridCell"][class*="Selected"] {
-  background-color: var(--sk-go-fill);
+  background-color: #ece8f6;
 }
 
 .etskin-on .etskin-go .OBGridHeaderBar {
-  border-color: var(--sk-nav-border);
+  background-color: #cbcff1;
+  border-color: #b8bada;
+}
+
+.etskin-on .etskin-go td[class^="OBGridHeaderCell"],
+.etskin-on .etskin-go div[class^="OBGridHeaderCell"] {
+  border-width: 0 1px 0 0;
+  border-style: solid;
+  border-color: #b8bada;
 }
 
 .etskin-on .etskin-go [class^="OBGridHeaderCellTitle"] {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--sk-text);
-  padding: 0 12px;
+  font-size: 12.8px;
+  font-weight: 500;
+  color: rgb(0 0 0 / 87%);
+  padding: 0 8px;
+}
+
+/* A reference cell's link to its record (etendo-skin-grid.js), in the new UI's link blue. */
+.etskin-on .etskin-go .etskin-fk {
+  color: #004aca;
+  cursor: pointer;
+}
+
+.etskin-on .etskin-go .etskin-fk:hover {
+  text-decoration: underline;
 }
 
 /* ------------------------------------------------------------ GO child tabs */
@@ -3520,31 +3600,41 @@
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table) {
   margin-inline-start: -4px;
   width: calc(100% - 16px) !important;
-  background-image: linear-gradient(to right, var(--sk-section-title), transparent);
-  background-position: left bottom;
-  background-repeat: no-repeat;
-  /* Half the form's width, the fade included: a rule under a heading, not a divider across the form. */
-  background-size: 50% 1px;
 }
 
-[dir="rtl"] .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table),
-.etskin-on[dir="rtl"] .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table) {
-  background-image: linear-gradient(to left, var(--sk-section-title), transparent);
-  background-position: right bottom;
-}
-
+/*
+ * The new UI draws each section as a white card with an icon and a chevron in its header. The
+ * fields of a section are rows of the same form table as every other section, so nothing can wrap
+ * them; the header is what becomes the card's head - a rounded, outlined band with a glyph before
+ * the title - and the fields follow under it.
+ */
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] > table {
   width: 100% !important;
-  background-color: transparent;
-  box-shadow: none;
-  border-radius: 0;
+  background-color: var(--sk-surface);
+  /* workspace-ui's card: 12px corners, a #e3e5ea hairline, no shadow. */
+  box-shadow: inset 0 0 0 1px #e3e5ea;
+  border-radius: 12px;
   border: 0 none;
 }
 
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"] {
-  font-size: 14px;
-  color: var(--sk-section-title);
-  padding-inline-start: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d2433;
+  padding-inline-start: 16px;
+}
+
+.etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"]::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 12px;
+  vertical-align: -3px;
+  background-color: var(--sk-section-title);
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M6 3h8l4 4v14H6z M14 3v4h4'/%3E%3C/svg%3E");
+  -webkit-mask: var(--sk-icon) center / 16px 16px no-repeat;
+  mask: var(--sk-icon) center / 16px 16px no-repeat;
 }
 
 .etskin-on .etskin-go .etskin-section-chevron {
@@ -3941,7 +4031,7 @@
 .etskin-on .etskin-go .etskin-tb-new {
   --sk-icon-color: var(--sk-surface);
   background-color: var(--sk-go-ink);
-  border-radius: var(--sk-radius);
+  border-radius: 999px;
   transition: background-color 120ms ease;
 }
 
@@ -4000,18 +4090,55 @@
 /*
  * The frame around every tab takes GO's treatment, whatever the tab shows, so the strip never changes
  * colour from one tab to the next: the window strip on the grey of the approved top bar and side
- * navigation, like the desk, and the selected window tab the top edge of the sheet under it, outlined
- * by a hairline rather than underlined in the primary. A standard window is one white sheet - the gaps
+ * navigation, like the desk, and the selected window tab the top edge of the sheet under it, underlined
+ * in the ink as the new UI marks it. A standard window is one white sheet - the gaps
  * between its toolbar, form, split and child tabs white too instead of showing the desk. Only colours
  * change here: every size is SmartClient's, so the tabs and the windows work exactly as before.
  */
 .etskin-on .OBTabBarMain {
-  box-shadow: inset 0 -1px 0 0 var(--sk-nav-border);
+  background-color: var(--sk-tabbar-surface);
 }
 
 .etskin-on [class^="OBTabBarButtonMainTop"][class*="Selected"] {
-  box-shadow: inset 1px 0 0 0 var(--sk-nav-border), inset -1px 0 0 0 var(--sk-nav-border),
-    inset 0 1px 0 0 var(--sk-nav-border);
+  background-color: var(--sk-tab-active);
+  border-radius: 0;
+  box-shadow: inset 0 -2px 0 0 var(--sk-tab-active-line);
+}
+
+/* The new UI's window tab label: 14px medium in a dark slate, the selected one no heavier. */
+.etskin-on [class^="OBTabBarButtonMainTitle"] {
+  font-size: 14px;
+  color: #1d223a;
+}
+
+.etskin-on [class^="OBTabBarButtonMainTitle"][class*="Selected"] {
+  font-weight: 500;
+}
+
+/*
+ * The new UI's window tabs: a folder glyph before each window's name, and a house for the workspace.
+ * Core gives the tabs no hook of their own, so the label's markup tells them apart: a window tab can
+ * be closed, and its title cell nests a table holding the name and the close icon; the workspace
+ * cannot, and its title cell holds the bare word. The glyph goes on the cell that holds the word.
+ * The workspace keeps its word, because its title is also the document title and is saved into the
+ * URL's state - emptying it to shrink the tab to the house would leak into both.
+ */
+.etskin-on [class^="OBTabBarButtonMainTitle"] table td:first-child::before,
+.etskin-on td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 8px;
+  vertical-align: -3px;
+  background-color: currentColor;
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M3 6.5h6l2 2h10v10.5H3z'/%3E%3C/svg%3E");
+  -webkit-mask: var(--sk-icon) center / 16px 16px no-repeat;
+  mask: var(--sk-icon) center / 16px 16px no-repeat;
+}
+
+.etskin-on td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7 M5.5 9.5V20h5v-6h3v6h5V9.5'/%3E%3C/svg%3E");
 }
 
 .etskin-on [class^="OBTabBarButtonMainTop"][class*="Over"]:not([class*="Selected"]) {
@@ -4020,4 +4147,18 @@
 
 .etskin-on .etskin-go {
   background-color: var(--sk-surface);
+}
+
+/*
+ * The new UI's window ground, from workspace-ui: a gradient from the header's lavender down to its
+ * page grey over 420px, so the toolbar pill floats on lavender and the grid and the form's cards
+ * stand on it as white sheets.
+ */
+.etskin-on .etskin-go {
+  background-color: #f5f6fa;
+  background-image: linear-gradient(var(--sk-topbar-surface) 0, #f5f6fa 420px, #f5f6fa 100%);
+}
+
+.etskin-on .etskin-go .OBToolbar {
+  background-color: transparent;
 }

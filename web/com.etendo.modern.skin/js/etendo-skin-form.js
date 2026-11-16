@@ -503,9 +503,9 @@
     ]
   };
   var COLUMN_STORE = 'etskin.columns.v1';
-  // GO's table: a 44px row under a 40px header.
-  var ROW_HEIGHT = 44;
-  var HEADER_HEIGHT = 40;
+  // The new UI's table, measured from workspace-ui: a dense 32px row under a 32px header.
+  var ROW_HEIGHT = 32;
+  var HEADER_HEIGHT = 32;
   // The lines' share of a split window; the main list takes the rest.
   var LINES_SHARE = '38%';
   var FILTERS_TYPE = 'etskinFilters';

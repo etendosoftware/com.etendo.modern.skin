@@ -294,27 +294,33 @@
    * confident colour. So the grid asks for a badge by property name, and that name is
    * documentStatus.
    *
-   * The second is that a tone is not a colour. Five tones, each one a token pair, and the same
-   * five for every screen that shows a status through statusBadge - a status that is blue on one
-   * of them cannot be green in the grid behind it. Booked is the working state and takes the primary tone; closed is the
-   * finished one and takes the success tone, which is why green is not on the active document.
-   * Anything the map does not know is neutral, because an unknown status must read as unknown and
-   * not as fine.
+   * The second is that a tone is not a colour. Five tones, one rule each, and the same five for
+   * every screen that shows a status through statusBadge - a status that is blue on one of them
+   * cannot be green in the grid behind it. Which value takes which tone follows the new UI's
+   * statusConfig (workspace-ui MainUI/utils/columnsConstants.tsx) one for one: success is done,
+   * warning is warn, error is bad, primary is active and draft is neutral. Anything the map does
+   * not know is neutral, as the new UI's default is draft, because an unknown status must read as
+   * unknown and not as fine.
+   *
+   * The new UI paints the badge from AD_REF_LIST.EM_ETMETA_COLOR (com.etendoerp.metadata) and falls
+   * back to grey; reading that column here instead, and completing it in the metadata template, is
+   * a decision left open - see the README.
    */
   var STATUS_TONES = {
-    // Not started, or not a state anybody acts on.
-    'DR': 'neutral', 'TMP': 'neutral', 'TEMP': 'neutral', 'IN': 'neutral', 'CH': 'neutral',
-    'PR': 'neutral', 'NC': 'neutral', '??': 'neutral', 'XX': 'neutral',
-    // Under way: booked, posted, transferred, being evaluated.
-    'CO': 'active', 'IP': 'active', 'PO': 'active', 'TR': 'active', 'AP': 'active',
-    'UE': 'active', 'ME': 'active', 'AE': 'active',
-    // Finished.
-    'CL': 'done', 'CA': 'done',
-    // Wants attention but is not a failure.
-    'RE': 'warn', 'WP': 'warn',
-    // Voided, rejected, refused or in error.
-    'VO': 'bad', 'NA': 'bad', 'CJ': 'bad', 'PE': 'bad', 'TE': 'bad'
+    // success: accepted, closed, booked, posted, closed - order created.
+    'AP': 'done', 'CL': 'done', 'CO': 'done', 'PO': 'done', 'CA': 'done',
+    // warning: under way, modified, printed, processing, under evaluation.
+    'IP': 'warn', 'CH': 'warn', 'PR': 'warn', 'XX': 'warn', 'UE': 'warn', 'ME': 'warn', 'AE': 'warn',
+    // error: not accepted, voided, accounting or transfer error, inactive, rejected, not confirmed,
+    // not paid.
+    'NA': 'bad', 'VO': 'bad', 'PE': 'bad', 'TE': 'bad', 'IN': 'bad', 'CJ': 'bad', 'NC': 'bad',
+    'WP': 'bad',
+    // primary: transferred, re-opened.
+    'TR': 'active', 'RE': 'active',
+    // draft: draft, temporal, unknown.
+    'DR': 'neutral', 'TMP': 'neutral', 'TEMP': 'neutral', '??': 'neutral'
   };
+
 
   function escaped(value) {
     return String(value === null || value === undefined ? '' : value)
@@ -379,6 +385,34 @@
     }
   }
 
+  /*
+   * With native scrollbars ListGrid.updateSorter draws the corner sort button twice: setVisibility
+   * already draws it (the grid is drawn), then the explicit draw() finds it no longer undrawn and
+   * SmartClient logs a warning whose stack trace throws (TypeError reading '$123y') - dozens of
+   * console errors per window. Core keeps that button on purpose (showSortArrow both, issue 17362),
+   * so the draw is made idempotent instead of the button removed.
+   */
+  function guardSorterDraw() {
+    var proto = isc.ListGrid && isc.ListGrid.getPrototype && isc.ListGrid.getPrototype();
+    var original = proto && proto.updateSorter;
+    if (!original || original.etskinGuarded) {
+      return;
+    }
+    proto.updateSorter = function () {
+      var sorter = this.sorter;
+      var draw;
+      if (sorter && !sorter.etskinDrawGuarded) {
+        sorter.etskinDrawGuarded = true;
+        draw = sorter.draw;
+        sorter.draw = function () {
+          return this.getDrawnState() !== isc.Canvas.UNDRAWN ? this : draw.apply(this, arguments);
+        };
+      }
+      return original.apply(this, arguments);
+    };
+    proto.updateSorter.etskinGuarded = true;
+  }
+
   function applySmartClient(tokens) {
     var density = DENSITIES[tokens.density];
     var i;
@@ -391,6 +425,7 @@
     // which is the branch Etendo takes. Those are PNG-drawn scrollbars and they are the single
     // most dated element on screen. Native ones also scroll better.
     addProperties('Canvas', { showCustomScrollbars: false });
+    guardSorterDraw();
 
     addProperties('OBViewGrid', {
       cellHeight: density.cellHeight,
