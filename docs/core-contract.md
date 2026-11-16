@@ -80,6 +80,7 @@ called on that path.
 | `isc.OBViewGrid.prototype.getCellValue` | `etendo-skin-grid.js:436` | Status badges; reference cells wrapped as links. Reads `field.targetEntity`, `refColumnName`, `record[field.name]`. | Plain text cells, no badges. |
 | `isc.OBViewGrid.prototype.cellClick` | `etendo-skin-grid.js:454` | A click on a link opens the record with `OB.Utilities.openDirectView(windowId, refColumnName, targetEntity, id, fieldId)` (line 458) and stops there. Reads `isc.EH.lastEvent.nativeTarget` (line 330). | Links do nothing, or select the row only. |
 | `isc.OBViewGrid` properties `cellHeight`, `editGrid: false` | `etendo-skin-grid.js:366, 373` | Row height; the edit-link column is never built (Core reads `editGrid` while assembling fields). | The `_editLink` column appears (`isc.OBViewGrid.EDIT_LINK_FIELD_NAME`, line 56). |
+| `isc.OBTreeViewGrid.prototype.getTreeGridFields` | `etendo-skin-form.js:2111` | Core copies the list's columns into the tree each time it is shown (`OB.ToolbarUtils.showTreeGrid`); the first, the tree column, gets its own copy at 240px (`TREE_COLUMN_WIDTH`) so the indent, chevron, checkbox and folder leave room for the value. The list's field object is not touched. `adaptGrid` also gives `view.treeGrid` the list's row and header heights (line 1383). | Codes cut off in the tree column; tree rows back at 25px. |
 | `isc.OBViewForm.create` | `etendo-skin-form.js:139` | **Static** factory wrapped: adopts every new form (title marks on the instance, lines 86, 100). | Asterisks and link glyphs fall back to stock. |
 | `isc.OBViewForm.prototype.getTitleHTML` and the `*TitlePrefix` / `*TitleSuffix` properties | `etendo-skin-form.js:124` | Required marker and the link glyph's class. | Stock bold asterisk. |
 | `isc.OBViewForm.prototype.setNewState` | `etendo-skin-form.js:418, 2144` | Child pane split after a new record; reapplies the Fields choice. | Lines take the whole window; hidden fields come back on New. |
@@ -124,6 +125,7 @@ called on that path.
 | `OBTextItem`, `OBFKFilterTextItem`, `OBEncryptedItem`, `OBClientClassCanvasItem`, ... (`TEXT_ITEMS`) | `height` | `:352` |
 | `OBListItem`, `OBFKItem`, `OBYesNoItem`, `OBSearchItem`, `OBLinkItem` (`PICKER_ITEMS`) | `height`, `pickerIconWidth`, `pickerIconHeight`, `pickListCellHeight` | `:364` |
 | `OBFormButton` | `height` | `:458` |
+| `OBCalendar` | `getDateStyle` (a method: SmartClient's documented per-date style seam, which Core leaves returning `null`). Returns `etskin-cal-today` for today's cells in the day and week views; the month view never calls it. | `:439` |
 | `OBGrid`, `OBTreeGrid` | `filterEditorDefaults.height` (`changeDefaults`) | `:464` |
 
 A renamed class is skipped silently (`addProperties` checks `isc[className]`): the field or row keeps
@@ -177,6 +179,16 @@ to the stock look; nothing breaks functionally).
   `isc_OBLinkedItemCanvasItem` (the Notes, Attachments and Linked Items sections: the canvas is named
   after the form item that holds it, as `isc_OBNoteCanvasItem_0_canvas`). A renamed class or a
   SmartClient that stops writing the attribute leaves those sections in the stock look.
+- **Trees** (ETP-5929): `OBTreeGridCell*` (listed beside `OBGridCell*` in the cell rules), the stock
+  image names inside the inline `style` of the tree column's spans (`tree-grid/iconTree_closed`,
+  `iconTree_opened`, `iconFolder`, `iconFolder_open`, `iconFolder_into`, `iconFolder_close_into`,
+  `iconNode`; the `_into` ones are how Core marks a drop target), and SmartClient's `dragLine` and
+  `gridDragTracker`. A renamed image falls back to the stock icon.
+- **Calendar** (ETP-5929): `OBCalendarGridCell*`, `OBCalendarGridHeaderCell*`, `OBEventWindow`,
+  `OBEventWindowHeader`, `OBEventWindowBody`, and, only inside an `eventproxy` containing `Calendar_`,
+  SmartClient's `headerBar`, `labelColumn`, `calMonthDayHeader*`, `calMonthDayBody*`,
+  `calMonthOtherDay*` and `calMonthEventLink`. The window tab glyphs are scoped to `.OBTabBarMain`
+  because the calendar's Day / Week / Month tabs reuse `OBTabBarButtonMain*`.
 - **SmartClient's own names**: `menuTitleField`, `menuKeyField`, `menuIconField`, `menuSubmenuField`,
   `menuBody`, `menuButton`, `selectItemPickerIcon`, `tabStyleActive`, `tabStyleActiveSelected`,
   `tabStyleInactive`, `normal`, `pageBackground`, `LoadingPrompt`, `loadingImage`.

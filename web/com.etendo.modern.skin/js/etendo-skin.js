@@ -432,6 +432,16 @@
       recordComponentHeight: density.cellHeight - 7
     });
 
+    // SmartClient 10 has no marker for today. getDateStyle is its documented seam for a date's
+    // cells (day and week views; the month view never asks), and Core leaves it returning null.
+    // ponytail: the returned name replaces the state styles, so today's column shows no
+    // drag-selection tint; compose with the stock name if that is ever missed.
+    addProperties('OBCalendar', {
+      getDateStyle: function (date) {
+        return date && date.toDateString() === new Date().toDateString() ? 'etskin-cal-today' : null;
+      }
+    });
+
     addProperties('OBTabSetMain', { tabBarThickness: density.tabBar });
 
     // The close X of a window tab is the tab's own icon, and its click is Core's close. The stock
