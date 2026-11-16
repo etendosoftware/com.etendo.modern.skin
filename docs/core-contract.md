@@ -125,6 +125,7 @@ called on that path.
 | `OBTextItem`, `OBFKFilterTextItem`, `OBEncryptedItem`, `OBClientClassCanvasItem`, ... (`TEXT_ITEMS`) | `height` | `:352` |
 | `OBListItem`, `OBFKItem`, `OBYesNoItem`, `OBSearchItem`, `OBLinkItem` (`PICKER_ITEMS`) | `height`, `pickerIconWidth`, `pickerIconHeight`, `pickListCellHeight` | `:364` |
 | `OBFormButton` | `height` | `:458` |
+| `OBCalendar` | `getDateStyle` (a method: SmartClient's documented per-date style seam, which Core leaves returning `null`). Returns `etskin-cal-today` for today's cells in the day and week views; the month view never calls it. | `:439` |
 | `OBGrid`, `OBTreeGrid` | `filterEditorDefaults.height` (`changeDefaults`) | `:464` |
 
 A renamed class is skipped silently (`addProperties` checks `isc[className]`): the field or row keeps
@@ -183,6 +184,11 @@ to the stock look; nothing breaks functionally).
   `iconTree_opened`, `iconFolder`, `iconFolder_open`, `iconFolder_into`, `iconFolder_close_into`,
   `iconNode`; the `_into` ones are how Core marks a drop target), and SmartClient's `dragLine` and
   `gridDragTracker`. A renamed image falls back to the stock icon.
+- **Calendar** (ETP-5929): `OBCalendarGridCell*`, `OBCalendarGridHeaderCell*`, `OBEventWindow`,
+  `OBEventWindowHeader`, `OBEventWindowBody`, and, only inside an `eventproxy` containing `Calendar_`,
+  SmartClient's `headerBar`, `labelColumn`, `calMonthDayHeader*`, `calMonthDayBody*`,
+  `calMonthOtherDay*` and `calMonthEventLink`. The window tab glyphs are scoped to `.OBTabBarMain`
+  because the calendar's Day / Week / Month tabs reuse `OBTabBarButtonMain*`.
 - **SmartClient's own names**: `menuTitleField`, `menuKeyField`, `menuIconField`, `menuSubmenuField`,
   `menuBody`, `menuButton`, `selectItemPickerIcon`, `tabStyleActive`, `tabStyleActiveSelected`,
   `tabStyleInactive`, `normal`, `pageBackground`, `LoadingPrompt`, `loadingImage`.

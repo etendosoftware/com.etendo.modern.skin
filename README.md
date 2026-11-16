@@ -476,7 +476,7 @@ class or `--sk-*` token a UIKit view reads is changed.
 The menu's words are core's labels where core has one (Fields, Columns, New, Save, Close) and this
 module's `ETMSK_L_form*` messages for the rest, with the English in the script as the fallback.
 
-### Trees
+### Trees and calendars
 
 - **Trees.** A tab shown as a tree (Account Tree, Organization, Product Category, any tree grid) uses
   the list's cell rules, row height and header, and the new UI's tree column: a chevron to open and
@@ -485,6 +485,10 @@ module's `ETMSK_L_form*` messages for the rest, with the English in the script a
   targets are Core's. The tree column is widened to 240px when the tree is shown, because Core copies
   the list's 100px into it. Dragging a node keeps Core's behaviour: the folder it would drop into is
   tinted and ruled in the accent, and the line between rows is a solid accent rule.
+- **Calendars.** `OBCalendar`, behind the calendar views and the calendar widget, gets white cells,
+  the list's lavender header, events as accent cards and a tint on today's column in the day and week
+  views (SmartClient's `getDateStyle`). SmartClient 10 has no today marker in the month view, so the
+  month view has none.
 
 ### The boot screen
 

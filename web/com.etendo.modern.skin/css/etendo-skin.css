@@ -4316,11 +4316,12 @@
  * Core gives the tabs no hook of their own, so the label's markup tells them apart: a window tab can
  * be closed, and its title cell nests a table holding the name and the close icon; the workspace
  * cannot, and its title cell holds the bare word. The glyph goes on the cell that holds the word.
+ * The calendar's Day / Week / Month tabs reuse the same button class, so the rule names the strip.
  * The workspace keeps its word, because its title is also the document title and is saved into the
  * URL's state - emptying it to shrink the tab to the house would leak into both.
  */
-.etskin-on [class^="OBTabBarButtonMainTitle"] table td:first-child::before,
-.etskin-on td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
+.etskin-on .OBTabBarMain [class^="OBTabBarButtonMainTitle"] table td:first-child::before,
+.etskin-on .OBTabBarMain td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
   content: "";
   display: inline-block;
   width: 16px;
@@ -4333,7 +4334,7 @@
   mask: var(--sk-icon) center / 16px 16px no-repeat;
 }
 
-.etskin-on td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
+.etskin-on .OBTabBarMain td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
   --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7 M5.5 9.5V20h5v-6h3v6h5V9.5'/%3E%3C/svg%3E");
 }
 
@@ -4425,4 +4426,100 @@
   border-radius: 6px;
   box-shadow: 0 2.5px 6.25px rgb(0 3 13 / 10%);
   padding: 2px 8px;
+}
+
+/* --------------------------------------------------------------- calendar */
+
+/*
+ * OBCalendar, behind the calendar views and the calendar widget. The new UI has no calendar grid, so
+ * this is its table language: white cells ruled in #eff0f1, the lavender head with #b8bada separators,
+ * the pale violet selection, and events as accent cards. SmartClient's own names (headerBar,
+ * labelColumn, calMonth*) are shared with other widgets and are only matched inside a calendar, by
+ * the eventproxy it stamps on its canvases.
+ */
+.etskin-on td[class^="OBCalendarGridCell"],
+.etskin-on td.etskin-cal-today {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  color: var(--sk-text);
+  background-color: var(--sk-surface);
+  border-style: solid;
+  border-width: 0 1px 1px 0;
+  border-color: #eff0f1;
+}
+
+.etskin-on td[class^="OBCalendarGridCell"][class*="Disabled"] {
+  background-color: #f5f6fa;
+}
+
+.etskin-on td[class^="OBCalendarGridCell"][class*="Selected"] {
+  background-color: #ece8f6;
+}
+
+/* Today's column in the day and week views (getDateStyle, etendo-skin.js). */
+.etskin-on td.etskin-cal-today {
+  background-color: rgb(42 23 87 / 7%);
+}
+
+.etskin-on div[eventproxy*="Calendar_"] .headerBar {
+  background-color: #cbcff1;
+}
+
+.etskin-on [class^="OBCalendarGridHeaderCell"] {
+  font-family: var(--sk-font);
+  font-size: 12.8px;
+  font-weight: 500;
+  color: rgb(0 0 0 / 87%);
+  border-color: #b8bada;
+}
+
+.etskin-on div[eventproxy*="Calendar_"] .labelColumn {
+  font-family: var(--sk-font);
+  font-size: 11px;
+  padding: 0 4px;
+  color: var(--sk-text-muted);
+  background-color: var(--sk-surface);
+  border-color: #eff0f1;
+}
+
+.etskin-on .OBEventWindow {
+  background-color: #ece8f6;
+  border: 0;
+  border-left: 3px solid #2a1757;
+  border-radius: 6px;
+}
+
+.etskin-on .OBEventWindowHeader,
+.etskin-on .OBEventWindowBody {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  color: #2a1757;
+  background-color: transparent;
+  padding: 2px 6px 0;
+}
+
+.etskin-on .OBEventWindowHeader {
+  font-weight: 600;
+}
+
+.etskin-on div[eventproxy*="Calendar_"] [class^="calMonthDayHeader"],
+.etskin-on div[eventproxy*="Calendar_"] [class^="calMonthDayBody"],
+.etskin-on div[eventproxy*="Calendar_"] [class^="calMonthOtherDay"] {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  color: var(--sk-text);
+  background-color: var(--sk-surface);
+  border-color: #eff0f1;
+}
+
+.etskin-on div[eventproxy*="Calendar_"] [class^="calMonthOtherDay"] {
+  color: var(--sk-text-faint);
+  background-color: #f5f6fa;
+}
+
+.etskin-on div[eventproxy*="Calendar_"] .calMonthEventLink {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  color: #2a1757;
+  text-decoration: none;
 }
