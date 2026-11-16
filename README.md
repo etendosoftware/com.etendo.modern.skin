@@ -443,6 +443,13 @@ class or `--sk-*` token a UIKit view reads is changed.
   A section's fields are rows of the form's one table, so nothing can wrap them; the section
   header becomes the card's head instead - a rounded, outlined white band with a glyph before the
   title - and the fields follow under it. The status bar already sits above the form.
+- **Notes, attachments and linked items.** The three sections at the foot of every form take the new
+  UI's values. The new note is a dashed box and each note a soft card with its author bar, deleted
+  with a small cross. The attachment actions are rounded chips, without the brackets Core writes
+  around them (`OBLinkButtonItem.getTitle`, only inside the Attachments section). The linked items
+  are two white panes, the records drawn as links. SmartClient lays these sections out with absolute
+  positions, so only colour, border, radius and type change: every box keeps its size, and the
+  new UI's drop zone has no counterpart - adding a file is still Core's dialog.
 - **The toolbar and the frame.** The strip is one pill, as in the new UI: New (filled, indigo) and
   Save carry their word - New in the list, Save in the form - then refresh in its own circle, delete,
   undo and the occasional glyphs (clone, export, print, link, email, attach) inline, then Actions,

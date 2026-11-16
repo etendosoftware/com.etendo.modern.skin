@@ -71,8 +71,8 @@ called on that path.
 
 | Target | Where | What the skin does | If it changes |
 | --- | --- | --- | --- |
-| `isc.OBViewGrid.prototype.draw` | `etendo-skin-form.js:2078` | Before the first draw of a standard view's grid: row and header heights, folded filter row, column choice (`adaptGrid`). | Grid shows Core's columns and the filter row; on a late adapt, +70% open time on Sales Order (ETP-5923). |
-| `isc.OBViewGrid.prototype.filterData` | `etendo-skin-form.js:2090` | Refreshes the count on the Filters button. | "Filters · N" stays stale after a filter change. |
+| `isc.OBViewGrid.prototype.draw` | `etendo-skin-form.js:2104` | Before the first draw of a standard view's grid: row and header heights, folded filter row, column choice (`adaptGrid`). | Grid shows Core's columns and the filter row; on a late adapt, +70% open time on Sales Order (ETP-5923). |
+| `isc.OBViewGrid.prototype.filterData` | `etendo-skin-form.js:2116` | Refreshes the count on the Filters button. | "Filters · N" stays stale after a filter change. |
 | `isc.OBViewGrid.prototype.draw`, `filterData` | `etendo-skin-grid.js:400, 411` | Aligns header cells and marks the filtered state on the stock filter button. | Misaligned headers; no filtered mark. |
 | `isc.OBViewGrid.prototype.updateRowCountDisplay` | `etendo-skin-grid.js:375` | **Replaced** (unless the grid has an edit-link column): refreshes the top bar title count and sets `view.recordCount` on child tabs, which Core's `updateTabTitle` already draws as "Lines (13)". | No count in the title or on child tabs. |
 | `isc.OBViewGrid.prototype.checkShowFilterFunnelIcon` | `etendo-skin-grid.js:422` | Passes a fake message bar (`QUIET_BAR`, line 248) that reports itself visible, so Core skips the implicit filter banner. Depends on Core guarding with `messageBar && !messageBar.isVisible()`. | The two-line implicit filter banner comes back. |
@@ -82,12 +82,13 @@ called on that path.
 | `isc.OBViewGrid` properties `cellHeight`, `editGrid: false` | `etendo-skin-grid.js:366, 373` | Row height; the edit-link column is never built (Core reads `editGrid` while assembling fields). | The `_editLink` column appears (`isc.OBViewGrid.EDIT_LINK_FIELD_NAME`, line 56). |
 | `isc.OBViewForm.create` | `etendo-skin-form.js:139` | **Static** factory wrapped: adopts every new form (title marks on the instance, lines 86, 100). | Asterisks and link glyphs fall back to stock. |
 | `isc.OBViewForm.prototype.getTitleHTML` and the `*TitlePrefix` / `*TitleSuffix` properties | `etendo-skin-form.js:124` | Required marker and the link glyph's class. | Stock bold asterisk. |
-| `isc.OBViewForm.prototype.setNewState` | `etendo-skin-form.js:392, 2118` | Child pane split after a new record; reapplies the Fields choice. | Lines take the whole window; hidden fields come back on New. |
-| `isc.OBViewForm.prototype.setFields`, `editRecord`, `editNewRecord` | `etendo-skin-form.js:2109, 2133, 2149` | Applies the Fields choice before and after Core loads the record. | Hidden fields come back. |
-| `isc.OBViewForm.prototype.showErrors` | `etendo-skin-form.js:2167` | Suppresses autofocus when the first field in error is hidden by the user. | SmartClient throws focusing a hidden item. |
+| `isc.OBViewForm.prototype.setNewState` | `etendo-skin-form.js:418, 2144` | Child pane split after a new record; reapplies the Fields choice. | Lines take the whole window; hidden fields come back on New. |
+| `isc.OBViewForm.prototype.setFields`, `editRecord`, `editNewRecord` | `etendo-skin-form.js:2135, 2159, 2175` | Applies the Fields choice before and after Core loads the record. | Hidden fields come back. |
+| `isc.OBViewForm.prototype.showErrors` | `etendo-skin-form.js:2193` | Suppresses autofocus when the first field in error is hidden by the user. | SmartClient throws focusing a hidden item. |
+| `isc.OBLinkButtonItem.prototype.getTitle` | `etendo-skin-form.js:338` | Strips Core's `[ ` and ` ]` from the titles of the Attachments section's actions (Add, Download, Remove...), only when the button sits in an `isc.OBAttachmentsLayout`. Other users of the class (alerts, pick and execute, modules) keep their brackets. | Bracketed titles inside the chips. |
 | `isc.OBStatusBar.prototype.updateContentTitle` | `etendo-skin-form.js:309` | Writes the record title into the status bar (`isc.OBStatusBarTextLabel`). | No record title on the form. |
 | `isc.OBStandardView.prototype.updateTabTitle` | `etendo-skin-topbar.js:385` | Root views refresh the top bar title (grid ↔ form, record change). Wrapped once, guarded by the `etskinTitled` flag on the prototype. | Stale title when opening the form on a selected record. |
-| `isc.OBTabSetMain.prototype.tabSelected` | `etendo-skin-form.js:2247` | Re-syncs an open Fields / Columns menu with the new window. | The menu keeps showing the previous window. |
+| `isc.OBTabSetMain.prototype.tabSelected` | `etendo-skin-form.js:2273` | Re-syncs an open Fields / Columns menu with the new window. | The menu keeps showing the previous window. |
 | `isc.OBToolbar.prototype.initWidget` | `etendo-skin-toolbar.js:606` | Rearranges `leftMembers` / `rightMembers` before Core lays them out. Calls `OB.ToolbarRegistry.getButtons(tabId)` itself (line 394), as Core would. | Stock toolbar (all icons, process buttons on the right). |
 | `isc.OBToolbar.prototype.addRightMembers`, `updateButtonState` | `etendo-skin-toolbar.js:617, 648` | Moves process buttons into the Actions menu; re-stamps widths and classes. | Process buttons back on the strip. |
 | `isc.OBToolbar.prototype.getRightMembers` | `etendo-skin-toolbar.js:636` | **Replaced**: returns only the process buttons (`isc.isA.OBToolbarActionButton`, line 134), which is what Core's display-logic refresh expects. | Process buttons stop following display logic. |
@@ -104,8 +105,8 @@ called on that path.
 | Quick Launch wrapper `setStyleName` (instance) | `etendo-skin-topbar.js:107` | Keeps a marker class through `OBQuickRun`'s two `setStyleName` calls per flyout. | Quick Launch loses the pill style while open. |
 | Alert button `setTitle` (instance) | `etendo-skin-topbar.js:156` | Empties the label (the bell is a CSS mask) and keeps the count as the unread dot. `OB.I18N.getLabel` calls it back asynchronously. | Text over the bell; no dot. |
 | `OB.TopLayout.CompanyImageLogo`, `OB.TopLayout.reflow` | `etendo-skin-topbar.js:661, 765` | Moves Core's logo canvas next to "Etendo". | Logo in its stock place. |
-| `OB.ViewFormProperties.handleFieldErrors`, `OB.ViewFormProperties.processFICReturn`, `OB.ViewFormProperties.setFocusInErrorField` | `etendo-skin-form.js:2186, 2202, 2224` | Core copies these onto every form at creation, so they are wrapped at the source: the hidden required fields notice and the focus on a visible field in error. | No notice; SmartClient error focusing a hidden field. |
-| `OB.ToolbarRegistry.registerButton` | `etendo-skin-form.js:1985, 2033` | Registers `etskinFields` and `etskinFilters` (`isc.OBToolbarIconButton`). | No Fields / Columns or Filters buttons. |
+| `OB.ViewFormProperties.handleFieldErrors`, `OB.ViewFormProperties.processFICReturn`, `OB.ViewFormProperties.setFocusInErrorField` | `etendo-skin-form.js:2212, 2228, 2250` | Core copies these onto every form at creation, so they are wrapped at the source: the hidden required fields notice and the focus on a visible field in error. | No notice; SmartClient error focusing a hidden field. |
+| `OB.ToolbarRegistry.registerButton` | `etendo-skin-form.js:2011, 2059` | Registers `etskinFields` and `etskinFilters` (`isc.OBToolbarIconButton`). | No Fields / Columns or Filters buttons. |
 | `OB.Layout.ViewManager.loadedWindowClassName` | `etendo-skin-nav.js:744` | Cleared before every open from the side panel (a development window leaves it set and `ob-view-manager.js` reuses it). | The first open renders the last development window instead. |
 | `isc.OBApplicationMenuTree.create(...).itemClick` | `etendo-skin-nav.js:962` | The side panel opens entries through Core's own menu tree. | Clicks in the side panel do nothing. |
 | Toolbar canvases `disableShortcut`, `enableShortcut`, `show`, `hide` (instances) | `etendo-skin-toolbar.js:202, 550` | No-op shortcuts for the skin's canvases; `show`/`hide` that do not draw a button moved into the Actions menu. | Buttons drawn over the logo; `TypeError` in `refreshCustomButtons`. |
@@ -132,14 +133,14 @@ its stock size.
 
 | Global | Where | Used for |
 | --- | --- | --- |
-| `OB.User.id`, `OB.User.roleId` | `etendo-skin-form.js:620, 1173` | `localStorage` keys of the Fields / Columns choice. |
+| `OB.User.id`, `OB.User.roleId` | `etendo-skin-form.js:646, 1199` | `localStorage` keys of the Fields / Columns choice. |
 | `OB.User.isPortal` | `etendo-skin-nav.js:66` | No side panel for portal users. |
 | `OB.I18N.labels` | all scripts | Core's own labels and the `ETMSK_L_*` messages. |
 | `OB.RecentUtilities.getRecentValue` | `etendo-skin-nav.js:375` | Recent views in the side panel. |
 | `OB.Constants.IDENTIFIER` | `etendo-skin-topbar.js:323` | The record crumb in the title. |
 | `OB.Utilities.openDirectView` | `etendo-skin-grid.js:458` | Reference cells as links. |
-| `isc.OBStandardView.STATE_TOP_MAX`, `view.setHalfSplit` | `etendo-skin-form.js:344, 356` | Splitting the window when the lines open. |
-| `isc.OBMessageBar.TYPE_WARNING` | `etendo-skin-form.js:1126` | The hidden required fields notice. |
+| `isc.OBStandardView.STATE_TOP_MAX`, `view.setHalfSplit` | `etendo-skin-form.js:370, 382` | Splitting the window when the lines open. |
+| `isc.OBMessageBar.TYPE_WARNING` | `etendo-skin-form.js:1152` | The hidden required fields notice. |
 | `isc.isA.OBStandardWindow`, `isc.isA.SectionItem`, `HiddenItem`, `ButtonItem`, `Tree` | form, grid | Deciding what a view, item or data set is. |
 | `isc.Page.setEvent('resize')`, `isc.Page.getWidth` | `etendo-skin-topbar.js:770`; toolbar | Refitting the top bar and toolbar. |
 | `isc.Menu`, `isc.Canvas`, `isc.HLayout`, `isc.LayoutSpacer`, `isc.OBToolbarIconButton`, `isc.OBStatusBarTextLabel` | all scripts | Building the skin's own canvases. |
@@ -149,7 +150,7 @@ its stock size.
 | What | Where | If it changes |
 | --- | --- | --- |
 | `document.querySelector('.OBTabBarMain')` + `MutationObserver` on `class` | `etendo-skin-nav.js:676`, `etendo-skin-topbar.js:395` | Selected tab no longer tracked: highlight and title lag. Depends on Core marking the selected tab with a `Selected` class. |
-| Capture listeners on `document` (`click`, `input`, `keydown`, `mousedown`) | `etendo-skin-nav.js:997`, `etendo-skin-form.js:2259` | Only for the skin's own panels and menus (`.etskin-*`). |
+| Capture listeners on `document` (`click`, `input`, `keydown`, `mousedown`) | `etendo-skin-nav.js:997`, `etendo-skin-form.js:2285` | Only for the skin's own panels and menus (`.etskin-*`). |
 | `localStorage`: `etskin.fields.v1.*`, `etskin.columns.v1.*`, `etskin.nav.collapsed` | form, nav | Choices per user, role and tab; lost when storage is cleared (ETP-5940). |
 
 ## CSS: SmartClient class names matched
@@ -171,6 +172,11 @@ to the stock look; nothing breaks functionally).
   `.OBToolbar`, `.OBTabBar*`, `.OBStatusBar*`, `.OBLoadingPrompt*` (5 each), and single uses
   (`.OBViewGridBody`, `.OBViewActive`, `.OBViewInActive`, `.OBTabSetMain`, `.OBTopLayout`,
   `.OBPickListBody`, `.OBCenteredBox`, ...).
+- **Instance IDs** in the `eventproxy` attribute SmartClient stamps on every canvas's wrapper:
+  `OBSectionItemButton` (section heads), `isc_OBNoteCanvasItem`, `isc_OBAttachmentCanvasItem` and
+  `isc_OBLinkedItemCanvasItem` (the Notes, Attachments and Linked Items sections: the canvas is named
+  after the form item that holds it, as `isc_OBNoteCanvasItem_0_canvas`). A renamed class or a
+  SmartClient that stops writing the attribute leaves those sections in the stock look.
 - **SmartClient's own names**: `menuTitleField`, `menuKeyField`, `menuIconField`, `menuSubmenuField`,
   `menuBody`, `menuButton`, `selectItemPickerIcon`, `tabStyleActive`, `tabStyleActiveSelected`,
   `tabStyleInactive`, `normal`, `pageBackground`, `LoadingPrompt`, `loadingImage`.
