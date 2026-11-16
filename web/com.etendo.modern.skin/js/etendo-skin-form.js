@@ -1291,7 +1291,8 @@
    */
   function applyColumns(view) {
     var grid = view && view.viewGrid;
-    var changes = [];
+    var show = [];
+    var hide = [];
     var cols, i, want, had;
     if (!grid || !grid.fieldIsVisible) {
       return;
@@ -1300,22 +1301,22 @@
     for (i = 0; i < cols.length; i++) {
       want = columnWanted(view, cols[i]);
       if (want !== !!grid.fieldIsVisible(cols[i].name)) {
-        changes.push({ name: cols[i].name, show: want });
+        (want ? show : hide).push(cols[i].name);
       }
     }
-    if (!changes.length) {
+    if (!show.length && !hide.length) {
       return;
     }
     had = !grid.etskinFolded;
     if (had) {
       setFolded(grid, true);
     }
-    for (i = 0; i < changes.length; i++) {
-      if (changes[i].show) {
-        grid.showField(changes[i].name);
-      } else {
-        grid.hideField(changes[i].name);
-      }
+    // One call per direction: both take a list, and each call lays the whole grid out again.
+    if (show.length) {
+      grid.showField(show);
+    }
+    if (hide.length) {
+      grid.hideField(hide);
     }
     if (had) {
       setFolded(grid, false);
@@ -1325,12 +1326,14 @@
   /*
    * Once per grid: GO's row and header heights, the filter row folded away behind the Filters button
    * - hidden, not removed, and the criteria exactly as they are - and the columns the user chose. The columns Core showed
-   * are remembered first, as the defaults of a tab this file has no list for.
+   * are remembered first, as the defaults of a tab this file has no list for. It runs just before the
+   * grid's first draw, where changing heights and columns is cheap: on a drawn grid every one of those
+   * changes lays the whole grid out again.
    */
   function adaptGrid(view) {
     var grid = view && view.viewGrid;
     var cols, i;
-    if (!grid || grid.etskinGoGrid || !grid.fieldIsVisible || !grid.isDrawn || !grid.isDrawn()) {
+    if (!grid || grid.etskinGoGrid || !grid.fieldIsVisible) {
       return;
     }
     grid.etskinGoGrid = true;
@@ -2068,6 +2071,34 @@
     document.documentElement.style.setProperty('--sk-save-label', JSON.stringify(text('save')));
     registerButton();
     registerFiltersButton();
+
+    var originalGridDraw = isc.OBViewGrid.getPrototype().draw;
+    var originalGridFilter = isc.OBViewGrid.getPrototype().filterData;
+    isc.OBViewGrid.addProperties({
+      draw: function () {
+        if (!this.isDrawn() && isGoView(this.view) && this.view.viewGrid === this) {
+          try {
+            adaptGrid(this.view);
+          } catch (e) {
+            // A grid that cannot be adapted is drawn as Core made it.
+          }
+        }
+        return originalGridDraw.apply(this, arguments);
+      },
+      // Every filter change - typed, cleared, the implicit filter switched off - ends here, so the
+      // count on the Filters button follows it instead of waiting for the next press.
+      filterData: function () {
+        var result = originalGridFilter.apply(this, arguments);
+        if (isGoView(this.view) && this.view.viewGrid === this) {
+          try {
+            refreshFiltersButton(this.view);
+          } catch (e) {
+            // A stale count is a stale count, not a broken filter.
+          }
+        }
+        return result;
+      }
+    });
 
     var originalSetFields = isc.OBViewForm.getPrototype().setFields;
     var originalGoNewState = isc.OBViewForm.getPrototype().setNewState;
