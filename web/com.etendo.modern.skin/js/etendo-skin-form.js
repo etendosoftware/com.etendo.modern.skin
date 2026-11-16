@@ -323,6 +323,32 @@
     }
   }
 
+  // ------------------------------------------------------- attachment actions
+
+  /*
+   * Core titles every attachment action as a bracketed link - '[ ' + label + ' ]' - and the stylesheet
+   * draws them as the new UI's rounded chips, where the brackets have no place. They are taken off
+   * where the title is read, and only for the buttons of a form's Attachments section: the same
+   * class is the link of the alert manager, pick and execute and other modules, which keep theirs.
+   */
+  try {
+    if (isc.OBLinkButtonItem && isc.OBAttachmentsLayout) {
+      var originalLinkTitle = isc.OBLinkButtonItem.getPrototype().getTitle;
+      isc.OBLinkButtonItem.addProperties({
+        getTitle: function () {
+          var title = originalLinkTitle.apply(this, arguments);
+          var layout = this.parentElement && this.parentElement.parentElement;
+          if (typeof title === 'string' && layout && isc.isA.OBAttachmentsLayout(layout)) {
+            return title.replace(/^\[\s*([\s\S]*?)\s*\]$/, '$1');
+          }
+          return title;
+        }
+      });
+    }
+  } catch (e) {
+    // The brackets stay, which is how Core draws them.
+  }
+
   // ------------------------------------------------------------ child panes
 
   /*

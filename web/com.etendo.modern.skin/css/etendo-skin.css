@@ -1052,6 +1052,193 @@
   margin-top: -4px;
 }
 
+/* ------------------------------------------- notes, attachments, linked items */
+
+/*
+ * The three sections at the foot of every form, in the new UI's values (workspace-ui, measured from
+ * the live app). SmartClient lays them out with absolute positions, so only colour, border, radius
+ * and type change here: every box keeps the size SmartClient gave it. Each section is reached
+ * through the eventproxy attribute SmartClient stamps with the canvas's ID, which is named after
+ * the form item that holds it - isc_OBNoteCanvasItem_N_canvas, isc_OBAttachmentCanvasItem_N_canvas,
+ * isc_OBLinkedItemCanvasItem_N_canvas - and everything the section draws sits inside it.
+ */
+
+/* Notes: the new note is the new UI's dashed "Add Note" box, and each note a soft card. */
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] textarea[class^="OBFormFieldInput"] {
+  background-color: var(--sk-surface);
+  border: 2px dashed #8f99c7;
+  border-radius: 16px;
+  padding: 8px 12px;
+  font-family: var(--sk-font);
+  font-size: 14px;
+  color: var(--sk-text);
+  box-shadow: none;
+}
+
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] textarea[class^="OBFormFieldInput"]:focus {
+  border-style: solid;
+  border-color: var(--sk-go-ink);
+}
+
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] td[class^="OBFormButton"] {
+  background-color: var(--sk-go-ink);
+  color: #ffffff;
+  border-radius: 999px;
+  text-transform: none;
+}
+
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] td[class^="OBFormButton"][class*="Disabled"] {
+  background-color: color-mix(in srgb, var(--sk-text) 8%, transparent);
+  color: var(--sk-text-muted);
+}
+
+/*
+ * A note is two cells: a 5px one that Core paints as the author bar (its class says whether the note
+ * is the current user's) and the text. The bar takes the new UI's lavender, the user's own its ink.
+ */
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] td[class^="OBNoteListGrid"][class$="NoteCell"] {
+  background-color: #8f99c7;
+  border: 0 none;
+  border-radius: var(--sk-radius) 0 0 var(--sk-radius);
+}
+
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] td.OBNoteListGridCurrentUserNoteCell {
+  background-color: var(--sk-go-ink);
+}
+
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] td.OBNoteListGridCell {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  color: var(--sk-text);
+  background-color: #f7f7f9;
+  border: 0 none;
+  border-radius: 0 var(--sk-radius) var(--sk-radius) 0;
+  padding-inline: 10px;
+}
+
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] .OBNoteListGridAuthor,
+.etskin-on div[eventproxy^="isc_OBAttachmentCanvasItem"] td.OBNoteListGridAuthor {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  font-style: normal;
+  color: var(--sk-text-muted);
+}
+
+/*
+ * Core writes the delete link as "[ Delete ]". It is drawn as the new UI's small cross: the word
+ * stays in the link, at no size, so a screen reader still reads it and the click is Core's own.
+ */
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] a.OBNoteListGridDelete {
+  display: inline-block;
+  font-size: 0;
+  text-decoration: none;
+  margin-inline-start: 6px;
+  padding: 2px 4px;
+  vertical-align: middle;
+}
+
+/* inline-block, so the link takes the cross's size: at no font size an inline link has no height. */
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] a.OBNoteListGridDelete::after {
+  display: inline-block;
+  content: "\2715";
+  font-family: var(--sk-font);
+  font-size: 12px;
+  color: var(--sk-text-muted);
+}
+
+.etskin-on div[eventproxy^="isc_OBNoteCanvasItem"] a.OBNoteListGridDelete:hover::after {
+  color: var(--sk-danger);
+}
+
+/* Attachments: the actions as the new UI's rounded chips (their brackets go in etendo-skin-form.js). */
+/*
+ * The buttons fit their text (autoFit), so the padding widens them, and SmartClient places each one
+ * against the last with no gap. The transparent side borders are that gap: the fill and the ring are
+ * clipped to the padding box, inside them.
+ */
+.etskin-on div[eventproxy^="isc_OBAttachmentCanvasItem"] td.OBLinkButtonItem {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  text-align: center;
+  padding: 0 12px;
+  background-color: var(--sk-surface);
+  background-clip: padding-box;
+  border: 0 none;
+  border-inline: 4px solid transparent;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px #e5e7eb;
+  cursor: pointer;
+}
+
+.etskin-on div[eventproxy^="isc_OBAttachmentCanvasItem"] td.OBLinkButtonItem:hover {
+  background-color: #f9fafb;
+  color: var(--sk-text);
+}
+
+.etskin-on div[eventproxy^="isc_OBAttachmentCanvasItem"] td.OBNoteListGrid {
+  font-family: var(--sk-font);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sk-text);
+}
+
+/* Linked items: two white panes with a hairline, rows divided by a light line, as in the new UI. */
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] .listGrid {
+  background-color: var(--sk-surface);
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] .OBGridHeaderBar,
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] div[class^="OBGridHeaderCell"],
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td[class^="OBGridHeaderCell"] {
+  background-color: #f7f7f9;
+  border-color: #e5e7eb;
+}
+
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td[class^="OBGridHeaderCellTitle"] {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sk-text-muted);
+}
+
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td[class^="OBGridCell"],
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td[class^="OBGridLinkCell"] {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sk-text);
+  background-color: var(--sk-surface);
+  border-bottom: 1px solid #e5e7eb;
+  padding-inline: 12px;
+}
+
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td[class^="OBGridCell"][class*="Over"],
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td[class^="OBGridLinkCell"][class*="Over"] {
+  background-color: #f9fafb;
+}
+
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td[class^="OBGridCell"][class*="Selected"],
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td[class^="OBGridLinkCell"][class*="Selected"] {
+  background-color: #ece8f6;
+}
+
+/* The linked records themselves are links to their window: the ink the grid's reference links use. */
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td[class^="OBGridLinkCell"] {
+  color: var(--sk-go-ink);
+  cursor: pointer;
+}
+
+.etskin-on div[eventproxy^="isc_OBLinkedItemCanvasItem"] td.OBGridNotificationText {
+  font-family: var(--sk-font);
+  font-size: 13px;
+  color: var(--sk-text-muted);
+}
+
 /* ---------------------------------------------------- navbar and app menu */
 
 /*
