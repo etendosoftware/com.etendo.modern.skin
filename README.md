@@ -194,6 +194,10 @@ instance.
 **None.** No file of Etendo Core is edited, included or shipped by this module. The application skin
 is registered through `ComponentProvider`, and the login page is reached through `SignInProvider`.
 
+What the skin does rely on - every Core and SmartClient function it wraps, the globals it reads, the
+DOM it watches and the class names its stylesheet matches, with what breaks if each one changes - is
+listed in [docs/core-contract.md](docs/core-contract.md).
+
 ## Typography
 
 Inter is bundled rather than pulled from a CDN: an ERP is routinely installed behind a firewall,
