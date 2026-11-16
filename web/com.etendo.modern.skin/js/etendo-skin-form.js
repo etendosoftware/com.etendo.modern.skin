@@ -2108,6 +2108,38 @@
     registerButton();
     registerFiltersButton();
 
+    /*
+     * A process definition's parameter window draws every button the same: Done, Cancel, the
+     * report exports and the process's own buttons. The new UI fills only the action that runs the
+     * process and outlines the rest, so the others get a second base style before they are drawn
+     * (etendo-skin.css, OBFormButtonSecondary). Done - or View, the HTML run of a report - stays. A
+     * process with only its own buttons (Create Invoices from Orders: Refresh, Done) keeps the last
+     * one filled.
+     */
+    var originalButtonLayout = isc.OBParameterWindowView && isc.OBParameterWindowView.getPrototype().buildButtonLayout;
+    if (originalButtonLayout) {
+      isc.OBParameterWindowView.addProperties({
+        buildButtonLayout: function () {
+          var layout = originalButtonLayout.apply(this, arguments);
+          var primary = this.okButton || this.htmlButton;
+          var i;
+          // ponytail: "last own button is the main one" is a convention, not metadata; a process that
+          // puts its main action first gets it outlined. Read a flag from the AD if that shows up.
+          for (i = layout ? layout.length - 1 : -1; !primary && i >= 0; i--) {
+            if (isc.isA.OBFormButton(layout[i])) {
+              primary = layout[i];
+            }
+          }
+          for (i = 0; layout && i < layout.length; i++) {
+            if (isc.isA.OBFormButton(layout[i]) && layout[i] !== primary) {
+              layout[i].baseStyle = 'OBFormButtonSecondary';
+            }
+          }
+          return layout;
+        }
+      });
+    }
+
     var originalTreeFields = isc.OBTreeViewGrid && isc.OBTreeViewGrid.getPrototype().getTreeGridFields;
     if (originalTreeFields) {
       isc.OBTreeViewGrid.addProperties({

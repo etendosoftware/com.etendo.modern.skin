@@ -4523,3 +4523,86 @@
   color: #2a1757;
   text-decoration: none;
 }
+
+/* -------------------------------------------------------- process windows */
+
+/*
+ * A process definition's parameter window (ETP-5927), in a tab or in a popup: the new UI's buttons
+ * and frame. Its fields are the form's (etendo-skin.css, form fields) and its grid parameter is a
+ * grid like any other.
+ *
+ * Buttons: a pill, sentence case, the ink for the action that runs the process and an outline for
+ * the rest (etendo-skin-form.js gives those OBFormButtonSecondary). Stock writes the titles in
+ * capitals.
+ */
+.etskin-on div[eventproxy^="isc_processDefinition_"] [class^="OBFormButton"],
+.etskin-on .OBPopupBody [class^="OBFormButton"] {
+  text-transform: none;
+  font-weight: 500;
+  font-size: 14px;
+  color: #fff;
+  background-color: var(--sk-go-ink);
+  border: 1px solid var(--sk-go-ink);
+  border-radius: 999px;
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] [class^="OBFormButton"][class*="Over"],
+.etskin-on .OBPopupBody [class^="OBFormButton"][class*="Over"] {
+  background-color: color-mix(in srgb, var(--sk-go-ink) 85%, #fff);
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] [class^="OBFormButtonSecondary"],
+.etskin-on .OBPopupBody [class^="OBFormButtonSecondary"] {
+  color: rgb(0 3 13 / 70%);
+  background-color: var(--sk-surface);
+  border-color: rgb(0 3 13 / 20%);
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] [class^="OBFormButtonSecondary"][class*="Over"],
+.etskin-on .OBPopupBody [class^="OBFormButtonSecondary"][class*="Over"] {
+  color: #fff;
+  background-color: var(--sk-go-ink);
+  border-color: var(--sk-go-ink);
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] [class^="OBFormButton"][class*="Disabled"],
+.etskin-on .OBPopupBody [class^="OBFormButton"][class*="Disabled"] {
+  color: rgb(0 3 13 / 40%);
+  background-color: rgb(0 3 13 / 6%);
+  border-color: transparent;
+}
+
+/*
+ * In a tab, the window's ground: the standard windows' gradient instead of the desk's lavender, and
+ * the parameters on a white sheet.
+ */
+.etskin-on div[eventproxy^="isc_processDefinition_"][eventproxy$="_0"] {
+  background-color: #f5f6fa;
+  background-image: linear-gradient(var(--sk-topbar-surface) 0, #f5f6fa 420px, #f5f6fa 100%);
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] .OBToolbar {
+  background-color: transparent;
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] .OBFormContainerLayout {
+  background-color: var(--sk-surface);
+  border: 1px solid #e3e5ea;
+  border-radius: 12px;
+}
+
+/* In a popup: a white head with the title on the left, as the new UI's modal. */
+.etskin-on .OBPopupHeader {
+  background: var(--sk-surface);
+  background-image: none;
+  border-bottom: 1px solid #e3e5ea;
+}
+
+.etskin-on .OBPopupHeaderText {
+  font-family: var(--sk-font);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--sk-text);
+  text-align: left;
+  padding-inline-start: 8px;
+}

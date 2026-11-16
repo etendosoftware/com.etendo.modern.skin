@@ -476,6 +476,17 @@ class or `--sk-*` token a UIKit view reads is changed.
 The menu's words are core's labels where core has one (Fields, Columns, New, Save, Close) and this
 module's `ETMSK_L_form*` messages for the rest, with the English in the script as the fallback.
 
+### Process windows
+
+A process definition's parameter window (a report, Create Invoices from Orders, Add Payment) takes
+the new UI's buttons: a pill in sentence case, the ink for the action that runs the process and an
+outline for the rest. `OBParameterWindowView.buildButtonLayout` gives every button but the main one
+the base style `OBFormButtonSecondary` before it is drawn; the main one is Done, else a report's
+View, else the last of the process's own buttons. In a tab the window stands on the standard
+windows' gradient with its parameters on a white sheet; in a popup the head is white with the title
+on the left. The window's toolbar is not rearranged (only a standard window's is), and its fields and
+grid follow the form and grid rules.
+
 ### Trees and calendars
 
 - **Trees.** A tab shown as a tree (Account Tree, Organization, Product Category, any tree grid) uses
