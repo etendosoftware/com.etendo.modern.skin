@@ -443,6 +443,13 @@ class or `--sk-*` token a UIKit view reads is changed.
   A section's fields are rows of the form's one table, so nothing can wrap them; the section
   header becomes the card's head instead - a rounded, outlined white band with a glyph before the
   title - and the fields follow under it. The status bar already sits above the form.
+- **Form fields** (decided in ETP-6282). The field takes the new UI's look: no box, a pale neutral fill
+  with rounded top corners over a 2px rule, the pale violet and the ink when focused, a dotted rule and
+  no fill when read-only, the danger colour when wrong. The label stays **above** the field, unlike the
+  new UI's label on the left: the Application Dictionary lays every form out as a four-column grid
+  (column spans, new lines, row spans), and moving the labels to the left broke that grid in a
+  prototype - fields overflowed, checkboxes moved and sections lost half their width. The height stays
+  the skin's 32px rather than the new UI's 42px, to keep the form as dense as the grid.
 - **Notes, attachments and linked items.** The three sections at the foot of every form take the new
   UI's values. The new note is a dashed box and each note a soft card with its author bar, deleted
   with a small cross. The attachment actions are rounded chips, without the brackets Core writes

@@ -3721,26 +3721,39 @@
 /* ------------------------------------------------------------------ GO form */
 
 /*
- * Fields as GO draws them: a box with a hairline and 8px corners on the pale fill, the ink and a
- * ring when focused, the danger colour when wrong, no fill when read-only. The combos and the
- * pickers are two cells - the input and its button - so the box goes on the control that holds
- * both, and the input inside it gives up its own.
+ * Fields as the new UI draws them (workspace-ui TextInput, decided in ETP-6282): no box, a 5% neutral
+ * fill with rounded top corners over a 2px rule; darker on hover; the pale violet and the ink when
+ * focused; the danger colour when wrong; no fill and a dotted rule when read-only. The label stays
+ * above the field, so the Application Dictionary's four-column layout is untouched, and the height
+ * stays the skin's (32px). The combos and the pickers are two cells - the input and its button - so
+ * the field goes on the control that holds both, and the input inside it gives up its own.
  */
 .etskin-on .etskin-go [class^="OBFormFieldInput"],
 .etskin-on .etskin-go [class^="OBFormFieldDateInput"],
 .etskin-on .etskin-go [class^="OBFormFieldNumberInput"],
 .etskin-on .etskin-go [class^="OBFormFieldSelectControl"] {
-  background-color: var(--sk-surface);
-  border: 1px solid var(--sk-nav-border);
-  border-radius: var(--sk-radius);
+  color: rgb(0 3 13 / 80%);
+  background-color: rgb(0 3 13 / 5%);
+  border: 0 none;
+  border-bottom: 2px solid rgb(0 3 13 / 30%);
+  border-radius: 4px 4px 0 0;
   box-shadow: none;
 }
 
 .etskin-on .etskin-go [class^="OBFormFieldSelectControl"] [class^="OBFormFieldSelectInput"] {
+  color: inherit;
   background-color: transparent;
   border: 0 none;
   border-radius: 0;
   box-shadow: none;
+}
+
+.etskin-on .etskin-go [class^="OBFormFieldInput"]:hover,
+.etskin-on .etskin-go [class^="OBFormFieldDateInput"]:hover,
+.etskin-on .etskin-go [class^="OBFormFieldNumberInput"]:hover,
+.etskin-on .etskin-go [class^="OBFormFieldSelectControl"]:hover {
+  background-color: rgb(0 3 13 / 10%);
+  border-bottom-color: rgb(0 3 13 / 100%);
 }
 
 .etskin-on .etskin-go [class^="OBFormFieldInput"][class*="Focused"],
@@ -3750,17 +3763,19 @@
 .etskin-on .etskin-go [class^="OBFormFieldDateInput"]:focus,
 .etskin-on .etskin-go [class^="OBFormFieldNumberInput"]:focus,
 .etskin-on .etskin-go [class^="OBFormFieldSelectControl"]:focus-within {
-  background-color: var(--sk-surface);
-  border-color: var(--sk-go-ink);
-  box-shadow: 0 0 0 2px var(--sk-focus-ring);
+  color: #2a1757;
+  background-color: #ece8f6;
+  border-bottom-color: #2a1757;
+  box-shadow: none;
 }
 
 .etskin-on .etskin-go [class^="OBFormFieldInput"][class*="Error"],
 .etskin-on .etskin-go [class^="OBFormFieldDateInput"][class*="Error"],
 .etskin-on .etskin-go [class^="OBFormFieldNumberInput"][class*="Error"],
 .etskin-on .etskin-go [class^="OBFormFieldSelectControl"][class*="Error"] {
-  border-color: var(--sk-danger);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sk-danger) 16%, transparent);
+  background-color: color-mix(in srgb, var(--sk-danger) 8%, transparent);
+  border-bottom-color: var(--sk-danger);
+  box-shadow: none;
 }
 
 .etskin-on .etskin-go [class^="OBFormFieldInput"][class*="Disabled"],
@@ -3768,8 +3783,8 @@
 .etskin-on .etskin-go [class^="OBFormFieldNumberInput"][class*="Disabled"],
 .etskin-on .etskin-go [class^="OBFormFieldSelectControl"][class*="Disabled"] {
   background-color: transparent;
-  border-style: solid;
-  border-color: var(--sk-nav-border);
+  border-bottom: 2px dotted rgb(0 3 13 / 40%);
+  border-radius: 8px 8px 0 0;
 }
 
 .etskin-on .etskin-go [class^="OBFormFieldLabel"] {
