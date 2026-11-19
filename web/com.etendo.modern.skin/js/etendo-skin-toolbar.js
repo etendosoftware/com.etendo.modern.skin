@@ -605,7 +605,11 @@
       isc.OBToolbar.addProperties({
         initWidget: function () {
           try {
-            arrange(this);
+            // Only a window's toolbar is arranged. A process definition's parameter window has an
+            // OBToolbar too, with nothing on it, and got a stray divider and an Actions button.
+            if (isc.isA.OBStandardView(this.view)) {
+              arrange(this);
+            }
           } catch (e) {
             if (typeof console !== 'undefined' && console.warn) {
               console.warn('Etendo Modern Skin could not arrange the toolbar', e);
