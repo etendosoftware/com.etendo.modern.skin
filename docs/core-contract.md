@@ -136,6 +136,7 @@ its stock size.
 
 | Global | Where | Used for |
 | --- | --- | --- |
+| `OB.Application.contextUrl` | `etendo-skin-form.js:2368` | The absolute path of `etendo-skin-classic.css` linked into classic popups. |
 | `OB.User.id`, `OB.User.roleId` | `etendo-skin-form.js:646, 1199` | `localStorage` keys of the Fields / Columns choice. |
 | `OB.User.isPortal` | `etendo-skin-nav.js:66` | No side panel for portal users. |
 | `OB.I18N.labels` | all scripts | Core's own labels and the `ETMSK_L_*` messages. |
@@ -154,6 +155,7 @@ its stock size.
 | --- | --- | --- |
 | `document.querySelector('.OBTabBarMain')` + `MutationObserver` on `class` | `etendo-skin-nav.js:676`, `etendo-skin-topbar.js:395` | Selected tab no longer tracked: highlight and title lag. Depends on Core marking the selected tab with a `Selected` class. |
 | Capture listeners on `document` (`click`, `input`, `keydown`, `mousedown`) | `etendo-skin-nav.js:997`, `etendo-skin-form.js:2285` | Only for the skin's own panels and menus (`.etskin-*`). |
+| Capture `load` listener on `document` for `iframe[name="OBClassicPopup_iframe"]`, and on each of its frames' documents | `etendo-skin-form.js:2349, 2382` | The legacy page of a classic process popup (DocAction, Post, Create from Shipment) is no longer restyled: stock 2.50 look inside the skin's popup. Depends on Core naming the iframe `OBClassicPopup_iframe`, the pages linking `Openbravo_ERP_250.css` and staying same-origin. The listener links `etendo-skin-classic.css` (id `etskin-classic`) and adds `etskin-on` to the frame's `<html>`. |
 | `localStorage`: `etskin.fields.v1.*`, `etskin.columns.v1.*`, `etskin.nav.collapsed` | form, nav | Choices per user, role and tab; lost when storage is cleared (ETP-5940). |
 
 ## CSS: SmartClient class names matched
@@ -188,6 +190,13 @@ to the stock look; nothing breaks functionally).
   `iconTree_opened`, `iconFolder`, `iconFolder_open`, `iconFolder_into`, `iconFolder_close_into`,
   `iconNode`; the `_into` ones are how Core marks a drop target), and SmartClient's `dragLine` and
   `gridDragTracker`. A renamed image falls back to the stock icon.
+- **Classic popups** (ETP-5928, `etendo-skin-classic.css`, inside the popup's frames only): the 2.50
+  page classes `Popup_ContentPane_InfoBar`, `Popup_ContentPane_SeparatorBar`, `Popup_SeparatorBar_bg`,
+  `Popup_InfoBar_Icon_cell`, `Popup_InfoBar_text`, `LabelText`, `TitleCell`, `required`, `required_focus`,
+  `readonly`, `readonly_focus`, `FieldGroupTitle*`, `FieldGroupContent`, `ButtonLink*` (with the state
+  suffixes `_default`, `_hover`, `_active`, `_focus`, `_disabled` the page's script swaps), `Button`,
+  `Button_left`, `Button_text`, `Button_right`, `Button_Icon`, the id `buttonOK`, and `MessageBox*`
+  (`MessageBoxERROR`, `WARNING`, `SUCCESS`, `INFO`).
 - **Calendar** (ETP-5929): `OBCalendarGridCell*`, `OBCalendarGridHeaderCell*`, `OBEventWindow`,
   `OBEventWindowHeader`, `OBEventWindowBody`, and, only inside an `eventproxy` containing `Calendar_`,
   SmartClient's `headerBar`, `labelColumn`, `calMonthDayHeader*`, `calMonthDayBody*`,

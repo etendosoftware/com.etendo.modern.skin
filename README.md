@@ -494,6 +494,25 @@ windows' gradient with its parameters on a white sheet; in a popup the head is w
 on the left. The window's toolbar is not rearranged (only a standard window's is), and its fields and
 grid follow the form and grid rules.
 
+### Classic process popups
+
+The buttons backed by a classic `AD_Process` (Book / Complete, Reactivate, Void on orders; Post and
+Unpost; Create from Shipment; Copy Lines...) open an `OBClassicPopup`: the SmartClient window, which
+takes the white head of the process windows, around an iframe whose page is legacy HTML styled by
+the 2.50 skin. The kernel bundle never reaches that page, so `etendo-skin-form.js` links
+`etendo-skin-classic.css` into it, and into its frames, when it loads (a capture `load` listener, same
+origin only, and only on pages that carry `Openbravo_ERP_250.css`). Inside, the process name is muted
+text instead of a grey band, labels and fields are the form's (5% fill, 2px rule, violet focus,
+dotted read-only), buttons are pills (the default action, or OK, in the ink, the rest outlined), a
+group title reads as a section title and the message box is a flat tinted card. The page's markup and
+scripts are untouched, and the stylesheet is only linked while the skin is on.
+
+What stays stock inside those pages: the legacy data grid (`DataGrid_*`, as in Create from Shipment),
+the picker and calendar icons beside a field, and any page-specific class the shared rules do not
+name. The page paints stock for a moment before the link applies. Legacy windows and reports opened
+in a tab (`OBClassicWindow`, such as the Journal Entries Report that Post opens) are not popups and
+are not dressed (ETP-5918).
+
 ### Trees and calendars
 
 - **Trees.** A tab shown as a tree (Account Tree, Organization, Product Category, any tree grid) uses
