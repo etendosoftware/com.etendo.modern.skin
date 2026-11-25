@@ -494,6 +494,14 @@ windows' gradient with its parameters on a white sheet; in a popup the head is w
 on the left. The window's toolbar is not rearranged (only a standard window's is), and its fields and
 grid follow the form and grid rules.
 
+The pick and execute grid inside a process (Add Payment's orders and invoices, Create Lines From, a
+grid parameter in a tab) is drawn as a window's grid: the 32px rows and header, the lavender header
+with its separators, the ruled 12.5px cells, the pale violet selection and, in an edited row, the
+form's fields. The grid carries the window's class itself (`styleName` on `OBPickAndExecuteGrid`),
+because a process in a tab has no standard window around it. Its row height is Core's style token
+`OB.Styles.Process.PickAndExecute.gridCellHeight`, which Core also sizes a grid parameter by (45px
+plus that height per displayed row), so the parameter shows the same number of rows, each taller.
+
 ### Classic process popups
 
 The buttons backed by a classic `AD_Process` (Book / Complete, Reactivate, Void on orders; Post and

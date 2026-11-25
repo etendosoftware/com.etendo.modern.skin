@@ -2158,6 +2158,20 @@
       });
     }
 
+    // A process's pick and execute grid (Add Payment, Create Lines From) is the window's grid too: its
+    // rows and header, and the window's class on the grid itself, so the grid and field rules written
+    // under it reach the grid in a process tab, which has no standard window around it. Core passes the
+    // row height from the skin's style token, which the grid parameter also sizes itself by.
+    if (OB.Styles && OB.Styles.Process && OB.Styles.Process.PickAndExecute) {
+      OB.Styles.Process.PickAndExecute.gridCellHeight = ROW_HEIGHT;
+    }
+    if (isc.OBPickAndExecuteGrid) {
+      isc.OBPickAndExecuteGrid.addProperties({
+        headerHeight: HEADER_HEIGHT,
+        styleName: isc.OBPickAndExecuteGrid.getPrototype().styleName + ' ' + GO_CLASS
+      });
+    }
+
     var originalGridDraw = isc.OBViewGrid.getPrototype().draw;
     var originalGridFilter = isc.OBViewGrid.getPrototype().filterData;
     isc.OBViewGrid.addProperties({

@@ -81,6 +81,7 @@ called on that path.
 | `isc.OBViewGrid.prototype.cellClick` | `etendo-skin-grid.js:454` | A click on a link opens the record with `OB.Utilities.openDirectView(windowId, refColumnName, targetEntity, id, fieldId)` (line 458) and stops there. Reads `isc.EH.lastEvent.nativeTarget` (line 330). | Links do nothing, or select the row only. |
 | `isc.OBViewGrid` properties `cellHeight`, `editGrid: false` | `etendo-skin-grid.js:366, 373` | Row height; the edit-link column is never built (Core reads `editGrid` while assembling fields). | The `_editLink` column appears (`isc.OBViewGrid.EDIT_LINK_FIELD_NAME`, line 56). |
 | `isc.OBParameterWindowView.prototype.buildButtonLayout` | `etendo-skin-form.js:2119` | Gives every button of a process definition's parameter window except the main one - `okButton` (Done), else `htmlButton` (a report's View), else the last of the process's own buttons - the base style `OBFormButtonSecondary`, before they are drawn, so the stylesheet can outline them. Reads `this.okButton`, `this.htmlButton` and the returned layout array. | All the buttons drawn filled, as in stock. |
+| `isc.OBPickAndExecuteGrid` properties `headerHeight`, `styleName` | `etendo-skin-form.js:2169` | The process grid gets the window grid's 32px header and `etskin-go` after Core's `listGrid`, so the grid and field rules written under that class reach it in a process tab too (a popup already sits inside the window). | Stock 30px header; in a process tab, a white header and boxed edit cells. |
 | `isc.OBTreeViewGrid.prototype.getTreeGridFields` | `etendo-skin-form.js:2111` | Core copies the list's columns into the tree each time it is shown (`OB.ToolbarUtils.showTreeGrid`); the first, the tree column, gets its own copy at 240px (`TREE_COLUMN_WIDTH`) so the indent, chevron, checkbox and folder leave room for the value. The list's field object is not touched. `adaptGrid` also gives `view.treeGrid` the list's row and header heights (line 1383). | Codes cut off in the tree column; tree rows back at 25px. |
 | `isc.OBViewForm.create` | `etendo-skin-form.js:139` | **Static** factory wrapped: adopts every new form (title marks on the instance, lines 86, 100). | Asterisks and link glyphs fall back to stock. |
 | `isc.OBViewForm.prototype.getTitleHTML` and the `*TitlePrefix` / `*TitleSuffix` properties | `etendo-skin-form.js:124` | Required marker and the link glyph's class. | Stock bold asterisk. |
@@ -108,6 +109,7 @@ called on that path.
 | Alert button `setTitle` (instance) | `etendo-skin-topbar.js:156` | Empties the label (the bell is a CSS mask) and keeps the count as the unread dot. `OB.I18N.getLabel` calls it back asynchronously. | Text over the bell; no dot. |
 | `OB.TopLayout.CompanyImageLogo`, `OB.TopLayout.reflow` | `etendo-skin-topbar.js:661, 765` | Moves Core's logo canvas next to "Etendo". | Logo in its stock place. |
 | `OB.ViewFormProperties.handleFieldErrors`, `OB.ViewFormProperties.processFICReturn`, `OB.ViewFormProperties.setFocusInErrorField` | `etendo-skin-form.js:2212, 2228, 2250` | Core copies these onto every form at creation, so they are wrapped at the source: the hidden required fields notice and the focus on a visible field in error. | No notice; SmartClient error focusing a hidden field. |
+| `OB.Styles.Process.PickAndExecute.gridCellHeight` | `etendo-skin-form.js:2166` | Set to 32 (`ROW_HEIGHT`) at load. `OBPickAndExecuteView` passes it as the grid's `cellHeight`, and `ob-formitem-pickeditgrid.js` sizes a grid parameter as 45 + this × `displayedRowsNumber`. | Stock 25px rows in every pick and execute grid. |
 | `OB.ToolbarRegistry.registerButton` | `etendo-skin-form.js:2011, 2059` | Registers `etskinFields` and `etskinFilters` (`isc.OBToolbarIconButton`). | No Fields / Columns or Filters buttons. |
 | `OB.Layout.ViewManager.loadedWindowClassName` | `etendo-skin-nav.js:744` | Cleared before every open from the side panel (a development window leaves it set and `ob-view-manager.js` reuses it). | The first open renders the last development window instead. |
 | `isc.OBApplicationMenuTree.create(...).itemClick` | `etendo-skin-nav.js:962` | The side panel opens entries through Core's own menu tree. | Clicks in the side panel do nothing. |
@@ -136,7 +138,7 @@ its stock size.
 
 | Global | Where | Used for |
 | --- | --- | --- |
-| `OB.Application.contextUrl` | `etendo-skin-form.js:2368` | The absolute path of `etendo-skin-classic.css` linked into classic popups. |
+| `OB.Application.contextUrl` | `etendo-skin-form.js:2382` | The absolute path of `etendo-skin-classic.css` linked into classic popups. |
 | `OB.User.id`, `OB.User.roleId` | `etendo-skin-form.js:646, 1199` | `localStorage` keys of the Fields / Columns choice. |
 | `OB.User.isPortal` | `etendo-skin-nav.js:66` | No side panel for portal users. |
 | `OB.I18N.labels` | all scripts | Core's own labels and the `ETMSK_L_*` messages. |
@@ -155,7 +157,7 @@ its stock size.
 | --- | --- | --- |
 | `document.querySelector('.OBTabBarMain')` + `MutationObserver` on `class` | `etendo-skin-nav.js:676`, `etendo-skin-topbar.js:395` | Selected tab no longer tracked: highlight and title lag. Depends on Core marking the selected tab with a `Selected` class. |
 | Capture listeners on `document` (`click`, `input`, `keydown`, `mousedown`) | `etendo-skin-nav.js:997`, `etendo-skin-form.js:2285` | Only for the skin's own panels and menus (`.etskin-*`). |
-| Capture `load` listener on `document` for `iframe[name="OBClassicPopup_iframe"]`, and on each of its frames' documents | `etendo-skin-form.js:2349, 2382` | The legacy page of a classic process popup (DocAction, Post, Create from Shipment) is no longer restyled: stock 2.50 look inside the skin's popup. Depends on Core naming the iframe `OBClassicPopup_iframe`, the pages linking `Openbravo_ERP_250.css` and staying same-origin. The listener links `etendo-skin-classic.css` (id `etskin-classic`) and adds `etskin-on` to the frame's `<html>`. |
+| Capture `load` listener on `document` for `iframe[name="OBClassicPopup_iframe"]`, and on each of its frames' documents | `etendo-skin-form.js:2363, 2396` | The legacy page of a classic process popup (DocAction, Post, Create from Shipment) is no longer restyled: stock 2.50 look inside the skin's popup. Depends on Core naming the iframe `OBClassicPopup_iframe`, the pages linking `Openbravo_ERP_250.css` and staying same-origin. The listener links `etendo-skin-classic.css` (id `etskin-classic`) and adds `etskin-on` to the frame's `<html>`. |
 | `localStorage`: `etskin.fields.v1.*`, `etskin.columns.v1.*`, `etskin.nav.collapsed` | form, nav | Choices per user, role and tab; lost when storage is cleared (ETP-5940). |
 
 ## CSS: SmartClient class names matched
