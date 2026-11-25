@@ -2393,9 +2393,14 @@
         dressClassicFrame(target.contentWindow);
       }
     };
+    // A classic report in a tab (OBClassicWindow) is the same legacy page in an unnamed iframe; its
+    // SmartClient canvas is the iframe's parent, named after the class.
     document.addEventListener('load', function (event) {
-      if (event.target && event.target.name === 'OBClassicPopup_iframe') {
-        dressClassicFrame(event.target.contentWindow);
+      var target = event.target;
+      var holder = target && target.parentNode;
+      if (target && target.tagName === 'IFRAME' && (target.name === 'OBClassicPopup_iframe' ||
+          (holder && holder.getAttribute && /^isc_OBClassicWindow_/.test(holder.getAttribute('eventproxy') || '')))) {
+        dressClassicFrame(target.contentWindow);
       }
     }, true);
 
