@@ -543,6 +543,8 @@
   var NEW_WIDTH = 96;
   var SAVE_WIDTH = 104;
   var GO_CLASS = 'etskin-go';
+  var CLASSIC_SHEET = 'web/com.etendo.modern.skin/css/etendo-skin-classic.css';
+  var CLASSIC_SHEET_ID = 'etskin-classic';
   var BUTTON_TYPE = 'etskinFields';
   var STORE = 'etskin.fields.v1';
   var MENU_WIDTH = 320;
@@ -2353,6 +2355,49 @@
         }
       });
     }
+
+    // A classic process popup (DocAction, Post, Create from Shipment) is an iframe of legacy HTML the
+    // kernel bundle never reaches: etendo-skin-classic.css is linked into it, and into its frames, as
+    // they load. Only pages carrying the 2.50 stylesheet are touched; a cross-origin frame throws on
+    // .document and is skipped. The page paints stock for a moment before the link applies.
+    var dressClassicFrame = function (win) {
+      var doc, link, i;
+      try {
+        doc = win.document;
+      } catch (e) {
+        return;
+      }
+      if (!doc || !doc.documentElement) {
+        return;
+      }
+      if (!doc.etskinClassicWatched) {
+        doc.etskinClassicWatched = true;
+        doc.addEventListener('load', onClassicFrameLoad, true);
+      }
+      if (doc.querySelector('link[href*="Openbravo_ERP_250.css"]') && !doc.getElementById(CLASSIC_SHEET_ID)) {
+        link = doc.createElement('link');
+        link.id = CLASSIC_SHEET_ID;
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = OB.Application.contextUrl + CLASSIC_SHEET;
+        (doc.head || doc.documentElement).appendChild(link);
+        doc.documentElement.className += ' etskin-on';
+      }
+      for (i = 0; i < win.frames.length; i++) {
+        dressClassicFrame(win.frames[i]);
+      }
+    };
+    var onClassicFrameLoad = function (event) {
+      var target = event.target;
+      if (target && (target.tagName === 'IFRAME' || target.tagName === 'FRAME')) {
+        dressClassicFrame(target.contentWindow);
+      }
+    };
+    document.addEventListener('load', function (event) {
+      if (event.target && event.target.name === 'OBClassicPopup_iframe') {
+        dressClassicFrame(event.target.contentWindow);
+      }
+    }, true);
 
     document.addEventListener('click', onClick, true);
     document.addEventListener('input', onInput, true);
