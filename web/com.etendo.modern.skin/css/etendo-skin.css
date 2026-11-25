@@ -4944,3 +4944,307 @@
 .etskin-on .etskin-tray-copilot .OBNavBarTextButton {
   background: transparent !important;
 }
+
+/* ------------------------------------------------------- stock PNG glyphs */
+
+/*
+ * Core's PNG icons that were still on the main windows (ETP-6449): the form status bar's record
+ * arrows, maximize, restore and close; the combo, date and search pickers; the Image field's
+ * upload, erase and placeholder; the link to a new tab; the grid's sort arrows; a window tab's
+ * close X. Each is listed by its file name - an icon not named here keeps its stock PNG - and
+ * redrawn as an SVG mask in the ink: the image's own pixels are moved out of its box
+ * (object-position) and the element's background, cut by the mask, is the glyph. Core swaps the
+ * file for the state, so the state is read from the name: _Over and _Down take the ink of the
+ * button model's hover, _Disabled 30% of the ink.
+ */
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-previous.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-previous_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-previous_Down.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-previous_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 18l-6-6 6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 18l-6-6 6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-previous_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-previous_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-previous_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-next.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-next_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-next_Down.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-next_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-next_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-next_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-next_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-maximize.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-maximize_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-maximize_Down.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-maximize_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3H3v5 M16 3h5v5 M21 16v5h-5 M3 16v5h5'/%3E%3C/svg%3E") center / 15px 15px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3H3v5 M16 3h5v5 M21 16v5h-5 M3 16v5h5'/%3E%3C/svg%3E") center / 15px 15px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-maximize_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-maximize_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-maximize_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-restore.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-restore_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-restore_Down.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-restore_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3v5H3 M16 3v5h5 M21 16h-5v5 M3 16h5v5'/%3E%3C/svg%3E") center / 15px 15px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3v5H3 M16 3v5h5 M21 16h-5v5 M3 16h5v5'/%3E%3C/svg%3E") center / 15px 15px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-restore_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-restore_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-restore_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-close.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-close_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-close_Down.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12 M18 6L6 18'/%3E%3C/svg%3E") center / 15px 15px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12 M18 6L6 18'/%3E%3C/svg%3E") center / 15px 15px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-close_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/statusbar/iconButton-close_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/comboBoxPicker.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/comboBoxPicker_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/comboBoxPicker_Down.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/comboBoxPicker_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/comboBoxPicker_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/comboBoxPicker_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/comboBoxPicker_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/date_control.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/date_control_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/date_control_Down.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/date_control_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h16v14H4z M4 10h16 M8 3v4 M16 3v4'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h16v14H4z M4 10h16 M8 3v4 M16 3v4'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/date_control_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/date_control_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/date_control_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/search_picker.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/search_picker_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/search_picker_Down.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/search_picker_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14z M20 20l-4-4'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14z M20 20l-4-4'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/search_picker_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/search_picker_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/search_picker_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/upload_icon.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/upload_icon_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/upload_icon_Down.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/upload_icon_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4 M7 9l5-5 5 5 M4 20h16'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4 M7 9l5-5 5 5 M4 20h16'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/upload_icon_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/upload_icon_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/upload_icon_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/erase_icon.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/erase_icon_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/erase_icon_Down.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/erase_icon_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/erase_icon_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/erase_icon_Down.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/erase_icon_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/ico-to-new-tab.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6 M20 4l-9 9 M18 14v6H4V6h6'/%3E%3C/svg%3E") center / 8px 8px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6 M20 4l-9 9 M18 14v6H4V6h6'/%3E%3C/svg%3E") center / 8px 8px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/grid/gridHeader_sortAscending.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5 M6 11l6-6 6 6'/%3E%3C/svg%3E") center / 10px 10px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5 M6 11l6-6 6 6'/%3E%3C/svg%3E") center / 10px 10px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/grid/gridHeader_sortDescending.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14 M6 13l6 6 6-6'/%3E%3C/svg%3E") center / 10px 10px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14 M6 13l6 6 6-6'/%3E%3C/svg%3E") center / 10px 10px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Selected.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Selected_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Inactive.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Over_Inactive.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Selected_Inactive.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Selected_Over_Inactive.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12 M18 6L6 18'/%3E%3C/svg%3E") center / 10px 10px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12 M18 6L6 18'/%3E%3C/svg%3E") center / 10px 10px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Selected_Over.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Over_Inactive.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/tab/tabBarButtonMain_CloseIcon_Selected_Over_Inactive.png"] {
+  background-color: #2a1757;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/imageNotAvailable.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/imageNotAvailable_Disabled.png"] {
+  object-position: -9999px 0;
+  background-color: var(--sk-glyph-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v14H4z M4 16l5-5 4 4 3-3 4 4 M8.5 8a1.5 1.5 0 1 0 0 3a1.5 1.5 0 1 0 0-3z'/%3E%3C/svg%3E") center / 32px 32px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v14H4z M4 16l5-5 4 4 3-3 4 4 M8.5 8a1.5 1.5 0 1 0 0 3a1.5 1.5 0 1 0 0-3z'/%3E%3C/svg%3E") center / 32px 32px no-repeat;
+}
+
+.etskin-on img[src$="/org.openbravo.client.application/images/form/imageNotAvailable_Disabled.png"] {
+  background-color: rgb(0 3 13 / 30%);
+}
+
+/* The Image field's placeholder is a neutral picture, not a control. */
+.etskin-on img[src$="/org.openbravo.client.application/images/form/imageNotAvailable.png"],
+.etskin-on img[src$="/org.openbravo.client.application/images/form/imageNotAvailable_Disabled.png"] {
+  background-color: #c4c8d4;
+}
+
+
+/*
+ * Checkboxes (ETP-6435, folded into ETP-6449): the stock checked state was a bare tick with no box.
+ * Both families - the form's and SmartClient's DynamicForm one in the grids - become the new UI's
+ * box: an outlined white square, filled with the ink and a white tick when checked. The image is an
+ * inline background on a span, hence the importants; the names are listed, one rule per state.
+ */
+
+.etskin-on span[style*="/form/unchecked.png"],
+.etskin-on span[style*="/DynamicForm/unchecked.png"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%23ffffff' stroke='%233f4a7e' stroke-width='1.5'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+.etskin-on span[style*="/form/unchecked_Over.png"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%23ffffff' stroke='%232a1757' stroke-width='1.5'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+.etskin-on span[style*="/form/unchecked_Down.png"],
+.etskin-on span[style*="/DynamicForm/unchecked_Down.png"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%23ffffff' stroke='%232a1757' stroke-width='1.5'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+.etskin-on span[style*="/form/unchecked_Disabled.png"],
+.etskin-on span[style*="/DynamicForm/unchecked_Disabled.png"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%23f3f4f6' stroke='%23b3b5bb' stroke-width='1.5'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+.etskin-on span[style*="/form/checked.png"],
+.etskin-on span[style*="/DynamicForm/checked.png"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%232a1757' stroke='%232a1757' stroke-width='1.5'/%3E%3Cpath d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+.etskin-on span[style*="/form/checked_Over.png"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%231b0f3a' stroke='%231b0f3a' stroke-width='1.5'/%3E%3Cpath d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+.etskin-on span[style*="/form/checked_Down.png"],
+.etskin-on span[style*="/DynamicForm/checked_Down.png"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%231b0f3a' stroke='%231b0f3a' stroke-width='1.5'/%3E%3Cpath d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+.etskin-on span[style*="/form/checked_Disabled.png"],
+.etskin-on span[style*="/DynamicForm/checked_Disabled.png"] {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%23c4c8d4' stroke='%23c4c8d4' stroke-width='1.5'/%3E%3Cpath d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
