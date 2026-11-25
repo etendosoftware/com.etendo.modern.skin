@@ -4600,9 +4600,13 @@
   background-color: transparent;
 }
 
+/* The sheet's edge is a shadow, not a border: SmartClient sizes the canvas without counting a CSS
+   border, so a 1px border made the view 2px taller than its room. The scrollbar that appeared narrowed
+   the layout, the reflow made it fit again, the scrollbar went away, and the window shook sideways in
+   a loop (ETP-6446). */
 .etskin-on div[eventproxy^="isc_processDefinition_"] .OBFormContainerLayout {
   background-color: var(--sk-surface);
-  border: 1px solid #e3e5ea;
+  box-shadow: 0 0 0 1px #e3e5ea;
   border-radius: 12px;
 }
 
