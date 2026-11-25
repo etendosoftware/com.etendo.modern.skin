@@ -534,6 +534,23 @@ class or `--sk-*` token a UIKit view reads is changed.
 The menu's words are core's labels where core has one (Fields, Columns, New, Save, Close) and this
 module's `ETMSK_L_form*` messages for the rest, with the English in the script as the fallback.
 
+### Stock icons redrawn as SVG
+
+Core's PNG icons that were still on the main windows are redrawn as SVG masks in the ink (ETP-6449),
+sharp at any pixel density: the form status bar's previous, next, maximize, restore and close; the
+combo, date and search pickers; the Image field's upload and erase and its placeholder; the link to
+a new tab; the grid's sort arrows; a window tab's close X. Each is matched by its file name
+(`img[src$="/…/name.png"]`, listed one by one with its `_Over`, `_Down` and `_Disabled` variants), its
+own pixels are moved out of its box with `object-position` and its masked background is the glyph:
+the ink, `#2a1757` for `_Over` / `_Down`, 30% of the ink for `_Disabled`. Checkboxes (ETP-6435) are
+the new UI's box: an outlined white square, filled with the ink and a white tick when checked.
+
+PNGs that stay on purpose:
+
+- `web/images/copilot-toolbar.png`: Copilot's own artwork, shipped by `com.etendoerp.copilot`.
+- Core's `blank*.gif` spacers: transparent, they draw nothing.
+- Any icon not in the list above keeps its stock PNG, as the convention says.
+
 ### The workspace (side navigation)
 
 The workspace reads as the new UI's Home (ETP-6451). `etendo-skin-nav.js` wraps

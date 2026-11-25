@@ -181,7 +181,7 @@ to the stock look; nothing breaks functionally).
 - **State suffixes** they depend on: `Selected`, `Over`, `Disabled`, `DisabledOver`, `Focused`,
   `Error`, `Required`, `Down`, `Dark`, `SelectedViewInactive`.
 - **Class selectors**: `.OBToolbarIconButton_icon_<name>` (77, one per stock toolbar icon, listed by
-  name on purpose), `.OBNavBar*` (34), `.OBGridFilter*` (16), `.OBMyOB*` workspace widgets (13), `.OBWidget*` and `.OBQueryList*` widget cards and their list (ETP-6451),
+  name on purpose), `.OBNavBar*` (34), `.OBGridFilter*` (16), `.OBMyOB*` workspace widgets (13), stock image file names inside `img[src$=…]` and inline `style` (ETP-6449: `statusbar/iconButton-*`, `form/comboBoxPicker`, `date_control`, `search_picker`, `upload_icon`, `erase_icon`, `imageNotAvailable`, `ico-to-new-tab`, `checked`, `unchecked`, `grid/gridHeader_sort*`, `tab/tabBarButtonMain_CloseIcon*`; a renamed file keeps its stock PNG), `.OBWidget*` and `.OBQueryList*` widget cards and their list (ETP-6451),
   `.OBMessageBar*` (12), `.OBViewForm` (9), `.OBQuickLaunch` (7), `.OBApplicationMenu*` (6),
   `.OBToolbar`, `.OBTabBar*`, `.OBStatusBar*`, `.OBLoadingPrompt*` (5 each), and single uses
   (`.OBViewGridBody`, `.OBViewActive`, `.OBViewInActive`, `.OBTabSetMain`, `.OBTopLayout`,
