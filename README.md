@@ -531,6 +531,11 @@ class or `--sk-*` token a UIKit view reads is changed.
   brings it into view. SmartClient's scroller arrows and tab menu (navy and yellow in stock) are
   turned off on `OBTabSetMain` and `OBTabSetChild`.
 
+Grid cells in error (inline editing, ETP-6434) keep their error tint in every state: a danger
+tint that deepens under the pointer and when selected, over a 2px danger rule at the cell's foot. The
+stock skin's `editFailedCSSText` (inline solid red) is emptied on `OBGrid`, so the `Error` classes
+decide.
+
 The menu's words are core's labels where core has one (Fields, Columns, New, Save, Close) and this
 module's `ETMSK_L_form*` messages for the rest, with the English in the script as the fallback.
 

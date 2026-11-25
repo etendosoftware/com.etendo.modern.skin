@@ -123,16 +123,17 @@ called on that path.
 | Class | Property | Where |
 | --- | --- | --- |
 | `Canvas` | `showCustomScrollbars: false` | `:451` |
-| `OBViewGrid` | `cellHeight`, `recordComponentHeight` | `:454` |
-| `OBTabSetMain` | `tabBarThickness`; `showTabScroller: false`, `showTabPicker: false` (the strip scrolls sideways instead, see the `wheel` row below) | `:469` |
-| `OBTabSetChild` | `showTabScroller: false`, `showTabPicker: false` | `:474` |
-| `OBTabBarMain` | `layoutTopMargin: 8`, `layoutStartMargin: 12`, `membersMargin: 4` (the window tabs 36px tall on the strip's floor, 12px in, 4px apart) | `:479` |
-| `OBTabBarButtonMain` | `showSelectedIcon: false`, `capSize: 0` (no stock end caps; the stylesheet pads the label instead) | `:487` |
-| `OBTextItem`, `OBFKFilterTextItem`, `OBEncryptedItem`, `OBClientClassCanvasItem`, ... (`TEXT_ITEMS`) | `height` | `:490` |
-| `OBListItem`, `OBFKItem`, `OBYesNoItem`, `OBSearchItem`, `OBLinkItem` (`PICKER_ITEMS`) | `height`, `pickerIconWidth`, `pickerIconHeight`, `pickListCellHeight` | `:494` |
-| `OBFormButton` | `height` | `:502` |
-| `OBCalendar` | `getDateStyle` (a method: SmartClient's documented per-date style seam, which Core leaves returning `null`). Returns `etskin-cal-today` for today's cells in the day and week views; the month view never calls it. | `:463` |
-| `OBGrid`, `OBTreeGrid` | `filterEditorDefaults.height` (`changeDefaults`) | `:508` |
+| `OBGrid` | `editFailedCSSText: ''` (the stock skin's inline solid red on a cell that failed validation; the `Error` classes take over, ETP-6434) | `:457` |
+| `OBViewGrid` | `cellHeight`, `recordComponentHeight` | `:459` |
+| `OBTabSetMain` | `tabBarThickness`; `showTabScroller: false`, `showTabPicker: false` (the strip scrolls sideways instead, see the `wheel` row below) | `:474` |
+| `OBTabSetChild` | `showTabScroller: false`, `showTabPicker: false` | `:479` |
+| `OBTabBarMain` | `layoutTopMargin: 8`, `layoutStartMargin: 12`, `membersMargin: 4` (the window tabs 36px tall on the strip's floor, 12px in, 4px apart) | `:484` |
+| `OBTabBarButtonMain` | `showSelectedIcon: false`, `capSize: 0` (no stock end caps; the stylesheet pads the label instead) | `:492` |
+| `OBTextItem`, `OBFKFilterTextItem`, `OBEncryptedItem`, `OBClientClassCanvasItem`, ... (`TEXT_ITEMS`) | `height` | `:495` |
+| `OBListItem`, `OBFKItem`, `OBYesNoItem`, `OBSearchItem`, `OBLinkItem` (`PICKER_ITEMS`) | `height`, `pickerIconWidth`, `pickerIconHeight`, `pickListCellHeight` | `:499` |
+| `OBFormButton` | `height` | `:507` |
+| `OBCalendar` | `getDateStyle` (a method: SmartClient's documented per-date style seam, which Core leaves returning `null`). Returns `etskin-cal-today` for today's cells in the day and week views; the month view never calls it. | `:468` |
+| `OBGrid`, `OBTreeGrid` | `filterEditorDefaults.height` (`changeDefaults`) | `:513` |
 
 A renamed class is skipped silently (`addProperties` checks `isc[className]`): the field or row keeps
 its stock size.
