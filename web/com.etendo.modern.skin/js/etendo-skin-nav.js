@@ -40,6 +40,7 @@
   var RAIL_WIDTH = 56;
   var COLLAPSE_KEY = 'etskin.nav.collapsed';
   var RECENT_LIST = 'UINAVBA_MenuRecentList';
+  var RECENT_DOCUMENTS = 'OBUIAPP_RecentDocumentsList';
 
   var sidebar = null; // the isc.Canvas
   var menuDelegate = null; // an OBApplicationMenuTree, used only for itemClick
@@ -376,7 +377,53 @@
     return recent && recent.length ? recent : [];
   }
 
+  // The records last opened in a form, the list the workspace's Recent Documents showed. Core keeps
+  // it in the view manager's recent manager; a missing manager just means no section.
+  function recentDocuments() {
+    var manager = OB.Layout && OB.Layout.ViewManager && OB.Layout.ViewManager.recentManager;
+    var list = manager && manager.getRecentValue && manager.getRecentValue(RECENT_DOCUMENTS);
+    return list && list.length ? list : [];
+  }
+
+  function renderRecentDocuments() {
+    var docs = recentDocuments();
+    var html = [];
+    var i, title;
+
+    for (i = 0; i < docs.length && i < 6; i++) {
+      title = docs[i] && docs[i].recentTitle;
+      if (!title) {
+        continue;
+      }
+      html.push(
+        '<button type="button" class="etskin-nav-chip" data-d="' +
+          i +
+          '" title="' +
+          esc((docs[i].tabTitle ? docs[i].tabTitle + ' - ' : '') + title) +
+          '">' +
+          esc(title) +
+          '</button>'
+      );
+    }
+    if (!html.length) {
+      return '';
+    }
+    return (
+      '<div class="etskin-nav-recents">' +
+      '<div class="etskin-nav-recents-title">' +
+      esc(label('OBKMO_RecentDocuments', 'Recent Documents')) +
+      '</div>' +
+      '<div class="etskin-nav-chips">' +
+      html.join('') +
+      '</div></div>'
+    );
+  }
+
   function renderRecents() {
+    return renderRecentViews() + renderRecentDocuments();
+  }
+
+  function renderRecentViews() {
     var recent = recentEntries();
     var html = [];
     var i, title;
@@ -893,12 +940,22 @@
     }
 
     var chip = closestWithClass(target, 'etskin-nav-chip');
-    if (chip) {
+    if (chip && chip.getAttribute('data-r') !== null) {
       var recent = recentEntries()[Number(chip.getAttribute('data-r'))];
       if (recent) {
         markCurrent(null);
         delegateClick({ recentObject: recent, title: recent.tabTitle });
         refreshRecents();
+      }
+      return;
+    }
+
+    if (chip && chip.getAttribute('data-d') !== null) {
+      var doc = recentDocuments()[Number(chip.getAttribute('data-d'))];
+      if (doc) {
+        doc.id = doc.targetTabId;
+        doc.command = 'DEFAULT';
+        OB.Layout.ViewManager.openView(doc.viewId, doc, null, true);
       }
       return;
     }
@@ -1011,6 +1068,15 @@
     };
     watchTabBar();
 
+    // Opening a record adds it to the recent documents; core announces it through the store.
+    if (OB.PropertyStore && OB.PropertyStore.addListener) {
+      OB.PropertyStore.addListener(function (name) {
+        if (name === RECENT_DOCUMENTS) {
+          refreshRecents();
+        }
+      });
+    }
+
     hideApplicationMenuButton();
     applyCollapsed(collapsed(), false);
 
@@ -1021,10 +1087,88 @@
     };
   }
 
+  /*
+   * The workspace as the new UI's Home. Its left column listed Recent Views and Recent Documents,
+   * which the panel now shows, so those two and the Manage Workspace heading are hidden, and what
+   * is left - Core's own Refresh, Add Widget and Admin Others labels, with the dialogs Core opens
+   * under them - becomes a row of actions above the widgets: the workspace stacks its two members
+   * instead of setting them side by side, and the column lays its members out in a row, at the
+   * trailing end as the new UI's Add widget button. Every label keeps Core's action. Core shows the
+   * two lists again when it leaves admin mode, so their show is made a no-op.
+   */
+  function noop() {}
+
+  function arrangeWorkspace(myob) {
+    var column = myob.leftColumnLayout;
+    var members, i;
+    if (!column) {
+      return;
+    }
+    members = column.getMembers();
+    for (i = 0; i < members.length; i++) {
+      if (
+        members[i] !== column.refreshLayout &&
+        members[i] !== column.addWidgetLayout &&
+        members[i] !== column.adminOtherMyOBLayout
+      ) {
+        members[i].hide();
+        members[i].show = noop;
+      }
+    }
+    column.setStyleName('OBMyOBLeftColumn etskin-home-actions');
+    column.vertical = false;
+    column.align = 'right';
+    column.membersMargin = 8;
+    column.leaveScrollbarGap = false;
+    column.setWidth('100%');
+    column.setHeight(1);
+    column.setOverflow('visible');
+    members = [column.refreshLayout, column.addWidgetLayout, column.adminOtherMyOBLayout];
+    for (i = 0; i < members.length; i++) {
+      if (members[i] && members[i].getMember(0)) {
+        members[i].setWidth(1);
+        members[i].setOverflow('visible');
+        // An open dialog widens the cell; the label stays at its trailing end, over the dialog's.
+        members[i].defaultLayoutAlign = 'right';
+        members[i].getMember(0).setWidth(1);
+        members[i].getMember(0).setWrap(false);
+      }
+    }
+    myob.vertical = true;
+    // Core sized the portal for a row ('*' wide, full height); in a stack the two swap.
+    if (myob.portalLayout) {
+      myob.portalLayout.setWidth('100%');
+      myob.portalLayout.setHeight('*');
+    }
+  }
+
+  function wrapWorkspace() {
+    var proto = isc.OBMyOpenbravo && isc.OBMyOpenbravo.getPrototype();
+    var original = proto && proto.createPortalLayout;
+    if (!original) {
+      return;
+    }
+    // Core's dialogs are as wide as the column they open in; in a row, that is as wide as a label.
+    if (isc.OBMyOBDialog) {
+      isc.OBMyOBDialog.addProperties({ width: 280 });
+    }
+    // Wrapped after the portal is built, so both members exist; the column is built just before.
+    proto.createPortalLayout = function () {
+      var result = original.apply(this, arguments);
+      try {
+        arrangeWorkspace(this);
+      } catch (e) {
+        // The stock column is still there: nothing lost but the look.
+      }
+      return result;
+    };
+  }
+
   // ------------------------------------------------------------------ main
 
   try {
     if (wanted() && OB.Layout && OB.Layout.initialize) {
+      wrapWorkspace();
       var originalInitialize = OB.Layout.initialize;
       OB.Layout.initialize = function () {
         var result = originalInitialize.apply(this, arguments);

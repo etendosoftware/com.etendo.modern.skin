@@ -91,6 +91,7 @@ called on that path.
 | `isc.OBLinkButtonItem.prototype.getTitle` | `etendo-skin-form.js:338` | Strips Core's `[ ` and ` ]` from the titles of the Attachments section's actions (Add, Download, Remove...), only when the button sits in an `isc.OBAttachmentsLayout`. Other users of the class (alerts, pick and execute, modules) keep their brackets. | Bracketed titles inside the chips. |
 | `isc.OBStatusBar.prototype.updateContentTitle` | `etendo-skin-form.js:309` | Writes the record title into the status bar (`isc.OBStatusBarTextLabel`). | No record title on the form. |
 | `isc.OBStandardView.prototype.updateTabTitle` | `etendo-skin-topbar.js:385` | Root views refresh the top bar title (grid ↔ form, record change). Wrapped once, guarded by the `etskinTitled` flag on the prototype. | Stale title when opening the form on a selected record. |
+| `isc.OBMyOpenbravo.prototype.createPortalLayout` | `etendo-skin-nav.js:1156` | Side navigation only. After Core builds the portal (the left column is built just before), the workspace stacks its members (`vertical`), the left column's Recent Views, Recent Documents and Manage Workspace members are hidden with their instance `show` made a no-op (Core's `setUserMode` would show them again), and the column lays Core's Refresh, Add Widget and Admin Others labels out in a row at the trailing end (`etskin-home-actions`). The portal is set to `100%` wide and `*` tall. Also `isc.OBMyOBDialog` gets `width: 280` on its prototype (line 1153). Reads `leftColumnLayout`, `refreshLayout`, `addWidgetLayout`, `adminOtherMyOBLayout`, `portalLayout`. | Stock left column beside the widgets; Recent Views shown twice. |
 | `isc.OBTabSetMain.prototype.tabSelected` | `etendo-skin-form.js:2273` | Re-syncs an open Fields / Columns menu with the new window. | The menu keeps showing the previous window. |
 | `isc.OBToolbar.prototype.initWidget` | `etendo-skin-toolbar.js:606` | Rearranges `leftMembers` / `rightMembers` before Core lays them out. Calls `OB.ToolbarRegistry.getButtons(tabId)` itself (line 394), as Core would. | Stock toolbar (all icons, process buttons on the right). |
 | `isc.OBToolbar.prototype.addRightMembers`, `updateButtonState` | `etendo-skin-toolbar.js:617, 648` | Moves process buttons into the Actions menu; re-stamps widths and classes. | Process buttons back on the strip. |
@@ -101,18 +102,18 @@ called on that path.
 
 | Target | Where | What the skin does | If it changes |
 | --- | --- | --- | --- |
-| `OB.Layout.initialize` | `etendo-skin-nav.js:1029`, `etendo-skin-topbar.js:784` | Both scripts build after Core's layout exists: the side panel (moves `OB.MainView.TabSet` into a new row with `removeMember`/`addMember`, line 981) and the top bar. | No side panel, stock top bar. |
-| `OB.MainView.TabSet.tabSelected` (instance) | `etendo-skin-nav.js:1004`, `etendo-skin-topbar.js:370` | Syncs the highlighted menu entry and the title. | Highlight and title lag (the `MutationObserver` below still catches most changes). |
+| `OB.Layout.initialize` | `etendo-skin-nav.js:1173`, `etendo-skin-topbar.js:784` | Both scripts build after Core's layout exists: the side panel (moves `OB.MainView.TabSet` into a new row with `removeMember`/`addMember`, line 981) and the top bar. | No side panel, stock top bar. |
+| `OB.MainView.TabSet.tabSelected` (instance) | `etendo-skin-nav.js:1061`, `etendo-skin-topbar.js:370` | Syncs the highlighted menu entry and the title. | Highlight and title lag (the `MutationObserver` below still catches most changes). |
 | `OB.NavBar.addMembers` (instance) | `etendo-skin-topbar.js:623` | Dresses components added after `initialize` (e.g. the debug tools module). | One undressed button in the top bar. |
-| `OB.NavBar` members: `getMembers`, `reorderMember`, `reflow`, `getVisibleWidth`, `removeMember` | `etendo-skin-topbar.js:568, 574`; `etendo-skin-nav.js:943` | Reorders the top bar, hides the stock Application menu button. | Top bar order breaks; the stock menu button stays. |
+| `OB.NavBar` members: `getMembers`, `reorderMember`, `reflow`, `getVisibleWidth`, `removeMember` | `etendo-skin-topbar.js:568, 574`; `etendo-skin-nav.js:996` | Reorders the top bar, hides the stock Application menu button. | Top bar order breaks; the stock menu button stays. |
 | Quick Launch wrapper `setStyleName` (instance) | `etendo-skin-topbar.js:107` | Keeps a marker class through `OBQuickRun`'s two `setStyleName` calls per flyout. | Quick Launch loses the pill style while open. |
 | Alert button `setTitle` (instance) | `etendo-skin-topbar.js:156` | Empties the label (the bell is a CSS mask) and keeps the count as the unread dot. `OB.I18N.getLabel` calls it back asynchronously. | Text over the bell; no dot. |
 | `OB.TopLayout.CompanyImageLogo`, `OB.TopLayout.reflow` | `etendo-skin-topbar.js:661, 765` | Moves Core's logo canvas next to "Etendo". | Logo in its stock place. |
 | `OB.ViewFormProperties.handleFieldErrors`, `OB.ViewFormProperties.processFICReturn`, `OB.ViewFormProperties.setFocusInErrorField` | `etendo-skin-form.js:2212, 2228, 2250` | Core copies these onto every form at creation, so they are wrapped at the source: the hidden required fields notice and the focus on a visible field in error. | No notice; SmartClient error focusing a hidden field. |
 | `OB.Styles.Process.PickAndExecute.gridCellHeight` | `etendo-skin-form.js:2166` | Set to 32 (`ROW_HEIGHT`) at load. `OBPickAndExecuteView` passes it as the grid's `cellHeight`, and `ob-formitem-pickeditgrid.js` sizes a grid parameter as 45 + this × `displayedRowsNumber`. | Stock 25px rows in every pick and execute grid. |
 | `OB.ToolbarRegistry.registerButton` | `etendo-skin-form.js:2011, 2059` | Registers `etskinFields` and `etskinFilters` (`isc.OBToolbarIconButton`). | No Fields / Columns or Filters buttons. |
-| `OB.Layout.ViewManager.loadedWindowClassName` | `etendo-skin-nav.js:744` | Cleared before every open from the side panel (a development window leaves it set and `ob-view-manager.js` reuses it). | The first open renders the last development window instead. |
-| `isc.OBApplicationMenuTree.create(...).itemClick` | `etendo-skin-nav.js:962` | The side panel opens entries through Core's own menu tree. | Clicks in the side panel do nothing. |
+| `OB.Layout.ViewManager.loadedWindowClassName` | `etendo-skin-nav.js:791` | Cleared before every open from the side panel (a development window leaves it set and `ob-view-manager.js` reuses it). | The first open renders the last development window instead. |
+| `isc.OBApplicationMenuTree.create(...).itemClick` | `etendo-skin-nav.js:1019` | The side panel opens entries through Core's own menu tree. | Clicks in the side panel do nothing. |
 | Toolbar canvases `disableShortcut`, `enableShortcut`, `show`, `hide` (instances) | `etendo-skin-toolbar.js:202, 550` | No-op shortcuts for the skin's canvases; `show`/`hide` that do not draw a button moved into the Actions menu. | Buttons drawn over the logo; `TypeError` in `refreshCustomButtons`. |
 
 ## SmartClient defaults set
@@ -142,9 +143,11 @@ its stock size.
 | --- | --- | --- |
 | `OB.Application.contextUrl` | `etendo-skin-form.js:2382` | The absolute path of `etendo-skin-classic.css` linked into classic popups. |
 | `OB.User.id`, `OB.User.roleId` | `etendo-skin-form.js:646, 1199` | `localStorage` keys of the Fields / Columns choice. |
-| `OB.User.isPortal` | `etendo-skin-nav.js:66` | No side panel for portal users. |
+| `OB.User.isPortal` | `etendo-skin-nav.js:67` | No side panel for portal users. |
 | `OB.I18N.labels` | all scripts | Core's own labels and the `ETMSK_L_*` messages. |
-| `OB.RecentUtilities.getRecentValue` | `etendo-skin-nav.js:375` | Recent views in the side panel. |
+| `OB.Layout.ViewManager.recentManager.getRecentValue('OBUIAPP_RecentDocumentsList')`, `OB.Layout.ViewManager.openView(viewId, recent, null, true)` | `etendo-skin-nav.js:384, 958` | Recent Documents in the side panel, opened as Core's workspace opened them (`id = targetTabId`, `command = 'DEFAULT'`). | No Recent Documents section, or a chip that does nothing. |
+| `OB.PropertyStore.addListener` | `etendo-skin-nav.js:1073` | Redraws the recents when `OBUIAPP_RecentDocumentsList` changes. | The list updates only on the next open from the panel. |
+| `OB.RecentUtilities.getRecentValue` | `etendo-skin-nav.js:376` | Recent views in the side panel. |
 | `OB.Constants.IDENTIFIER` | `etendo-skin-topbar.js:323` | The record crumb in the title. |
 | `OB.Utilities.openDirectView` | `etendo-skin-grid.js:458` | Reference cells as links. |
 | `isc.OBStandardView.STATE_TOP_MAX`, `view.setHalfSplit` | `etendo-skin-form.js:370, 382` | Splitting the window when the lines open. |
@@ -157,8 +160,8 @@ its stock size.
 
 | What | Where | If it changes |
 | --- | --- | --- |
-| `document.querySelector('.OBTabBarMain')` + `MutationObserver` on `class` | `etendo-skin-nav.js:676`, `etendo-skin-topbar.js:395` | Selected tab no longer tracked: highlight and title lag. Depends on Core marking the selected tab with a `Selected` class. |
-| Capture listeners on `document` (`click`, `input`, `keydown`, `mousedown`) | `etendo-skin-nav.js:997`, `etendo-skin-form.js:2285` | Only for the skin's own panels and menus (`.etskin-*`). |
+| `document.querySelector('.OBTabBarMain')` + `MutationObserver` on `class` | `etendo-skin-nav.js:723`, `etendo-skin-topbar.js:395` | Selected tab no longer tracked: highlight and title lag. Depends on Core marking the selected tab with a `Selected` class. |
+| Capture listeners on `document` (`click`, `input`, `keydown`, `mousedown`) | `etendo-skin-nav.js:1054`, `etendo-skin-form.js:2285` | Only for the skin's own panels and menus (`.etskin-*`). |
 | Capture `load` listener on `document` for `iframe[name="OBClassicPopup_iframe"]` and for the unnamed iframe whose parent canvas has an `eventproxy` starting `isc_OBClassicWindow_` (a classic report or window in a tab), and on each of their frames' documents | `etendo-skin-form.js:2363, 2398` | The legacy pages of classic process popups (DocAction, Post, Create from Shipment) and classic reports (Trial Balance, General Ledger, Journal Entries) are no longer restyled: stock 2.50 look. Depends on Core naming the popup iframe `OBClassicPopup_iframe`, on SmartClient's `isc_OBClassicWindow_N` canvas id, on the pages linking `Openbravo_ERP_250.css` and staying same-origin. The listener links `etendo-skin-classic.css` (id `etskin-classic`) and adds `etskin-on` to the frame's `<html>`. |
 | `wheel` listener on `document` (not passive) for targets inside `.OBTabBarMain` / `.OBTabBarChild` | `etendo-skin.js:424` | With the stock scroller off, a strip wider than its box no longer scrolls with the wheel or the trackpad; selecting a tab still scrolls it into view. Depends on Core's tab bar class names and on SmartClient keeping the strip's `overflow: hidden` element as the scrolling box. |
 | `localStorage`: `etskin.fields.v1.*`, `etskin.columns.v1.*`, `etskin.nav.collapsed` | form, nav | Choices per user, role and tab; lost when storage is cleared (ETP-5940). |
@@ -177,7 +180,7 @@ to the stock look; nothing breaks functionally).
 - **State suffixes** they depend on: `Selected`, `Over`, `Disabled`, `DisabledOver`, `Focused`,
   `Error`, `Required`, `Down`, `Dark`, `SelectedViewInactive`.
 - **Class selectors**: `.OBToolbarIconButton_icon_<name>` (77, one per stock toolbar icon, listed by
-  name on purpose), `.OBNavBar*` (34), `.OBGridFilter*` (16), `.OBMyOB*` workspace widgets (13),
+  name on purpose), `.OBNavBar*` (34), `.OBGridFilter*` (16), `.OBMyOB*` workspace widgets (13), `.OBWidget*` and `.OBQueryList*` widget cards and their list (ETP-6451),
   `.OBMessageBar*` (12), `.OBViewForm` (9), `.OBQuickLaunch` (7), `.OBApplicationMenu*` (6),
   `.OBToolbar`, `.OBTabBar*`, `.OBStatusBar*`, `.OBLoadingPrompt*` (5 each), and single uses
   (`.OBViewGridBody`, `.OBViewActive`, `.OBViewInActive`, `.OBTabSetMain`, `.OBTopLayout`,

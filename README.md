@@ -224,9 +224,9 @@ framework is counting on, so the sheet-on-a-desk look is built out of things tha
   wherever a pane happens to start.
 - The sheet is not inset. It gets rounded top corners and the canvas shows through around the tab
   strip, which reads the same at a glance.
-- The React skin's chips do not transfer to the workspace list: SmartClient sizes those rows to the
-  column rather than to their text, so a filled pill becomes a full-width lozenge with the drag
-  handle and the add button sitting outside it.
+- The workspace's left column is gone with the side navigation (ETP-6451): its Recent Views and
+  Recent Documents are in the panel, and its actions are a row above the widgets. In top bar mode
+  the stock column stays, styled as before.
 - Both tab strips mark the selected tab the new UI's way, with a 2px underline in the ink, drawn
   as an inset shadow: every tab button carries an inline `width` and `height` SmartClient measured,
   so a border would grow it. The same reason puts the toolbar's pill on a `::before` inset inside
@@ -297,7 +297,9 @@ corners from its guide line to 8px short of the edge, where GO used its brand ye
 holding it is filled while closed and keeps a 3px start border while open. They are the
 `--sk-nav-*` tokens, kept apart from the palette presets and from `--sk-marker`. The recent views
 are the new UI's wrap of grey pills, under two discreet group titles that reuse
-core labels (`OBKMO_RecentViews` and `UINAVBA_APPLICATION_MENU`). Only one section is open at a
+core labels (`OBKMO_RecentViews` and `UINAVBA_APPLICATION_MENU`). Below them, under `OBKMO_RecentDocuments`,
+the records last opened in a form, the list the workspace used to show: a chip opens its record
+in the form, as the workspace did, and the list follows Core's `OBUIAPP_RecentDocumentsList`. Only one section is open at a
 time, as in GO: opening a section folds the one that was open, while folders inside a section keep
 whatever the user left open. GO's collapsed rail opens a flyout on hover; Classic's tree is up to
 four levels deep, so a tile keeps expanding the panel onto its section instead.
@@ -477,8 +479,11 @@ class or `--sk-*` token a UIKit view reads is changed.
   As in the new UI, each window tab shows a folder glyph before its name and the workspace a house,
   and the selected tab is underlined in the ink. The stylesheet tells them apart by the label's
   markup (a closable tab nests a table for its close icon), since core gives tabs no other hook. The
-  workspace keeps its word beside the house: its title is also the document title and is saved in
-  the URL's state, so emptying it to narrow the tab would leak into both.
+  workspace shows only the house: its word is not painted (`font-size: 0`) but stays in the title,
+  because that title is also the document title and is saved in the URL's state.
+  With no window open the workspace tab stays on the strip. The new UI shows no strip at all then,
+  but SmartClient 10 has no setter for `tabBarThickness`: hiding the tab would leave an empty 44px
+  band, not the new UI's tabless Home.
   Every window tab, the workspace included, has the new UI's shape: 36px tall on a 44px strip, 12px
   in from its leading edge and 4px apart, 12px top corners in every state, and at most 220px wide -
   a longer name ends in an ellipsis. The strip's layout margins and the tab's `capSize` are
@@ -490,6 +495,21 @@ class or `--sk-*` token a UIKit view reads is changed.
 
 The menu's words are core's labels where core has one (Fields, Columns, New, Save, Close) and this
 module's `ETMSK_L_form*` messages for the rest, with the English in the script as the fallback.
+
+### The workspace (side navigation)
+
+The workspace reads as the new UI's Home (ETP-6451). `etendo-skin-nav.js` wraps
+`OBMyOpenbravo.createPortalLayout`, so this happens when Core builds the workspace:
+
+- The left column's Recent Views, Recent Documents and Manage Workspace heading are hidden. The
+  first two are in the side panel.
+- Core's own Refresh, Add Widget and Admin Others labels become a row of quiet buttons at the
+  trailing end above the widgets. Each keeps Core's action, and the dialogs Core opens appear under
+  the button that opened them (280px wide).
+- The widgets are the new UI's cards: `#f5f6fa`, 16px corners, a 14px semibold title. A query list
+  widget's grid has no fills, muted 12px column titles, hairline rows and links in blue.
+
+With the top bar navigation or the skin off, the stock workspace is unchanged.
 
 ### Process windows
 

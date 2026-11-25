@@ -1864,12 +1864,44 @@
  */
 .etskin-on .OBMyOBLeftColumn {
   background-color: var(--sk-surface);
-  /*
-   * The column is now a drawer on the trailing edge, opened by Manage workspace and closed the
-   * rest of the time, so the rule that separated it from the portal moves to the side it is
-   * actually on.
-   */
   border-inline-start: 1px solid var(--sk-border);
+}
+
+/*
+ * With the side navigation, etendo-skin-nav.js turns the column into the new UI Home's row of
+ * actions above the widgets (workspace-ui screens/Home): no surface of its own, 16px from the
+ * edges, and each of Core's labels a quiet button - 14px medium on a 5% wash with a 10% hairline,
+ * 8px corners. Core's dialogs open under the label that opened them, as a card.
+ */
+.etskin-on .etskin-home-actions {
+  background-color: transparent;
+  border: 0 none;
+  padding: 16px 16px 0;
+}
+
+/* Prefix match: SmartClient appends the state (Over, Focused) to the label's class. */
+.etskin-on .etskin-home-actions [class^="OBMyOBLeftColumnLink"] {
+  padding: 6px 12px;
+  font-size: 14px !important;
+  font-weight: 500;
+  line-height: 20px;
+  color: #00030d !important;
+  background-color: rgba(0, 3, 13, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(0, 3, 13, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.etskin-on .etskin-home-actions [class^="OBMyOBLeftColumnLink"]:hover {
+  background-color: rgba(0, 3, 13, 0.1);
+  color: #00030d !important;
+}
+
+.etskin-on .etskin-home-actions [class^="OBMyOBDialog"],
+.etskin-on .etskin-home-actions .OBMyOBDialog {
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px #e3e5ea;
+  background-color: var(--sk-surface);
 }
 
 /*
@@ -1980,6 +2012,74 @@
   border: 1px solid var(--sk-border);
   border-radius: var(--sk-radius-sm);
   box-shadow: var(--sk-shadow-md);
+}
+
+/*
+ * The new UI Home's widget card (workspace-ui WidgetCard): #f5f6fa, 16px corners, no outline, a
+ * 14px semibold title. The stock borders keep their width - SmartClient counted them when it sized
+ * the header and the body - and only lose their colour.
+ */
+.etskin-on .OBWidgetHeader,
+.etskin-on .OBWidgetBody {
+  /* the important beats a transparent fill on the body from a broader rule */
+  background-color: #f5f6fa !important;
+  border-color: transparent;
+}
+
+/* The stock grey box around the list and its empty foot row. */
+.etskin-on .OBWidgetBody .listGrid {
+  border-color: transparent !important;
+}
+
+.etskin-on .OBWidgetHeader {
+  border-radius: 16px 16px 0 0;
+}
+
+.etskin-on .OBWidgetBody {
+  border-radius: 0 0 16px 16px;
+}
+
+.etskin-on .OBWidgetHeaderText {
+  font-size: 14px;
+  color: #00030d;
+}
+
+/*
+ * A query list widget's grid as the new UI's list (QueryListRenderer): no fills, 12px semibold
+ * column titles in --color-baseline-50, rows ruled in a 10% hairline, links in its blue, and the
+ * row count and Show all in the small muted type of its pager.
+ */
+.etskin-on .OBWidgetBody .OBGridHeaderBar,
+.etskin-on .OBWidgetBody .OBGridBody,
+.etskin-on .OBWidgetBody .OBQueryListGridBody,
+.etskin-on .OBWidgetBody [class^="OBGridCell"],
+.etskin-on .OBWidgetBody [class^="OBGridHeaderCell"] {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+.etskin-on .OBWidgetBody [class^="OBGridHeaderCell"] {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6d7ab6;
+  border-color: transparent;
+}
+
+.etskin-on .OBWidgetBody [class^="OBGridCell"] {
+  color: #00030d;
+  border-bottom: 1px solid rgba(0, 3, 13, 0.1);
+}
+
+.etskin-on .OBWidgetBody .OBGridLinkButton,
+.etskin-on .OBWidgetBody .OBQueryListShowAllLabel {
+  color: #2563eb !important;
+}
+
+.etskin-on .OBWidgetBody .OBQueryListRowsNumberLabel,
+.etskin-on .OBWidgetBody .OBQueryListShowAllLabel {
+  font-family: var(--sk-font);
+  font-size: 12px;
+  color: #6d7ab6;
 }
 
 /* -------------------------------------------------------------- statusbar */
@@ -4375,7 +4475,14 @@
   mask: var(--sk-icon) center / 16px 16px no-repeat;
 }
 
+.etskin-on .OBTabBarMain td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table)) {
+  /* The workspace shows only its house, as the new UI's Home button. The word stays in the markup
+     (and in the document title and the URL state); it is only not painted. */
+  font-size: 0;
+}
+
 .etskin-on .OBTabBarMain td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
+  margin-inline-end: 0;
   --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7 M5.5 9.5V20h5v-6h3v6h5V9.5'/%3E%3C/svg%3E");
 }
 
