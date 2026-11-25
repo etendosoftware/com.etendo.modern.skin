@@ -472,7 +472,17 @@ class or `--sk-*` token a UIKit view reads is changed.
 - **Form sections.** The new UI draws each section as a white card with an icon and a chevron.
   A section's fields are rows of the form's one table, so nothing can wrap them; the section
   header becomes the card's head instead - a rounded, outlined white band with a glyph before the
-  title - and the fields follow under it. The status bar already sits above the form.
+  title - and the fields follow under it. The card is drawn on the slot SmartClient gives the header
+  (exact height, clipped), 8px below its top, so every card has the same 8px gap and its hairline is
+  never cut (ETP-6448); the hairline is `#d1d5db`, a step darker than the new UI's gray-200, so the
+  cards read apart. A spacer whose fields the display logic hid on both sides (the SII section of a
+  Sales Order outside Spain) goes to no height, so it no longer leaves a 20px hole between two cards.
+- **Record header.** The status bar above the form (identifier, Document Status, totals) is the new
+  UI's record header: a card with 12px corners, a 50% gray-100 fill and a soft shadow, inset to line
+  up with the form instead of a square band. It is a pseudo-element inside the bar, which SmartClient
+  sizes and places.
+- **Form and lines.** The child tab strip under a form takes the new UI's panel surface (`#f5f6fa`)
+  with a hairline along its top, so the form ends where the lines begin.
 - **Form fields** (decided in ETP-6282). The field takes the new UI's look: no box, a pale neutral fill
   with rounded top corners over a 2px rule, the pale violet and the ink when focused, a dotted rule and
   no fill when read-only, the danger colour when wrong. The label stays **above** the field, unlike the
