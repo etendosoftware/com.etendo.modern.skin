@@ -192,7 +192,7 @@ to the stock look; nothing breaks functionally).
   `isc_OBLinkedItemCanvasItem` (the Notes, Attachments and Linked Items sections: the canvas is named
   after the form item that holds it, as `isc_OBNoteCanvasItem_0_canvas`). A renamed class or a
   SmartClient that stops writing the attribute leaves those sections in the stock look.
-- **Process windows** (ETP-5927): `OBFormButton*` and `OBFormButtonSecondary*` inside an `eventproxy`
+- **Process windows** (ETP-5927, ETP-6436): `OBFormButton*`, `OBFormButtonSecondary*` and `OBFormFieldSelectControl*` (the combo's table) inside an `eventproxy`
   starting `isc_processDefinition_` (a parameter window in a tab) or inside `OBPopupBody`;
   `OBFormContainerLayout`, `OBPopupHeader`, `OBPopupHeaderText`.
 - **Trees** (ETP-5929): `OBTreeGridCell*` (listed beside `OBGridCell*` in the cell rules), the stock
