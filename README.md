@@ -483,6 +483,10 @@ class or `--sk-*` token a UIKit view reads is changed.
   in from its leading edge and 4px apart, 12px top corners in every state, and at most 220px wide -
   a longer name ends in an ellipsis. The strip's layout margins and the tab's `capSize` are
   SmartClient properties, so SmartClient still sizes and places every tab.
+- **Tab overflow.** When the window tabs or a window's child tabs do not fit, the strip scrolls
+  sideways, as the new UI's does: the wheel and the trackpad move it, and selecting a tab still
+  brings it into view. SmartClient's scroller arrows and tab menu (navy and yellow in stock) are
+  turned off on `OBTabSetMain` and `OBTabSetChild`.
 
 The menu's words are core's labels where core has one (Fields, Columns, New, Save, Close) and this
 module's `ETMSK_L_form*` messages for the rest, with the English in the script as the fallback.

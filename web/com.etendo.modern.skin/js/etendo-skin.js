@@ -413,6 +413,30 @@
     proto.updateSorter.etskinGuarded = true;
   }
 
+  /*
+   * The tab strips scroll sideways, as the new UI's do, instead of showing SmartClient's scroller
+   * and tab menu (turned off in applySmartClient). The strip keeps its stock overflow: hidden, and
+   * selecting a tab still scrolls it into view, so only the wheel and the trackpad are added: either
+   * axis moves a strip that is wider than its box. The browser fires the scroll event SmartClient
+   * listens to, so its own scroll position stays in step.
+   */
+  function scrollTabStripsOnWheel() {
+    document.addEventListener('wheel', function (event) {
+      var node = event.target;
+      var delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      while (node && node.nodeType === 1) {
+        if (/(^| )OBTabBar(Main|Child)( |$)/.test(node.className)) {
+          if (node.scrollWidth > node.clientWidth && delta) {
+            node.scrollLeft += delta;
+            event.preventDefault();
+          }
+          return;
+        }
+        node = node.parentNode;
+      }
+    }, { passive: false });
+  }
+
   function applySmartClient(tokens) {
     var density = DENSITIES[tokens.density];
     var i;
@@ -442,7 +466,13 @@
       }
     });
 
-    addProperties('OBTabSetMain', { tabBarThickness: density.tabBar });
+    addProperties('OBTabSetMain', {
+      tabBarThickness: density.tabBar,
+      showTabScroller: false,
+      showTabPicker: false
+    });
+    addProperties('OBTabSetChild', { showTabScroller: false, showTabPicker: false });
+    scrollTabStripsOnWheel();
 
     // The new UI's window strip: tabs 8px shorter than the strip and sitting on its floor, 12px in
     // from its leading edge, 4px apart. Layout margins, so SmartClient sizes the tabs itself.

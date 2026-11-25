@@ -121,16 +121,17 @@ called on that path.
 
 | Class | Property | Where |
 | --- | --- | --- |
-| `Canvas` | `showCustomScrollbars: false` | `:427` |
-| `OBViewGrid` | `cellHeight`, `recordComponentHeight` | `:430` |
-| `OBTabSetMain` | `tabBarThickness` | `:445` |
-| `OBTabBarMain` | `layoutTopMargin: 8`, `layoutStartMargin: 12`, `membersMargin: 4` (the window tabs 36px tall on the strip's floor, 12px in, 4px apart) | `:449` |
-| `OBTabBarButtonMain` | `showSelectedIcon: false`, `capSize: 0` (no stock end caps; the stylesheet pads the label instead) | `:457` |
-| `OBTextItem`, `OBFKFilterTextItem`, `OBEncryptedItem`, `OBClientClassCanvasItem`, ... (`TEXT_ITEMS`) | `height` | `:460` |
-| `OBListItem`, `OBFKItem`, `OBYesNoItem`, `OBSearchItem`, `OBLinkItem` (`PICKER_ITEMS`) | `height`, `pickerIconWidth`, `pickerIconHeight`, `pickListCellHeight` | `:464` |
-| `OBFormButton` | `height` | `:472` |
-| `OBCalendar` | `getDateStyle` (a method: SmartClient's documented per-date style seam, which Core leaves returning `null`). Returns `etskin-cal-today` for today's cells in the day and week views; the month view never calls it. | `:439` |
-| `OBGrid`, `OBTreeGrid` | `filterEditorDefaults.height` (`changeDefaults`) | `:478` |
+| `Canvas` | `showCustomScrollbars: false` | `:451` |
+| `OBViewGrid` | `cellHeight`, `recordComponentHeight` | `:454` |
+| `OBTabSetMain` | `tabBarThickness`; `showTabScroller: false`, `showTabPicker: false` (the strip scrolls sideways instead, see the `wheel` row below) | `:469` |
+| `OBTabSetChild` | `showTabScroller: false`, `showTabPicker: false` | `:474` |
+| `OBTabBarMain` | `layoutTopMargin: 8`, `layoutStartMargin: 12`, `membersMargin: 4` (the window tabs 36px tall on the strip's floor, 12px in, 4px apart) | `:479` |
+| `OBTabBarButtonMain` | `showSelectedIcon: false`, `capSize: 0` (no stock end caps; the stylesheet pads the label instead) | `:487` |
+| `OBTextItem`, `OBFKFilterTextItem`, `OBEncryptedItem`, `OBClientClassCanvasItem`, ... (`TEXT_ITEMS`) | `height` | `:490` |
+| `OBListItem`, `OBFKItem`, `OBYesNoItem`, `OBSearchItem`, `OBLinkItem` (`PICKER_ITEMS`) | `height`, `pickerIconWidth`, `pickerIconHeight`, `pickListCellHeight` | `:494` |
+| `OBFormButton` | `height` | `:502` |
+| `OBCalendar` | `getDateStyle` (a method: SmartClient's documented per-date style seam, which Core leaves returning `null`). Returns `etskin-cal-today` for today's cells in the day and week views; the month view never calls it. | `:463` |
+| `OBGrid`, `OBTreeGrid` | `filterEditorDefaults.height` (`changeDefaults`) | `:508` |
 
 A renamed class is skipped silently (`addProperties` checks `isc[className]`): the field or row keeps
 its stock size.
@@ -159,6 +160,7 @@ its stock size.
 | `document.querySelector('.OBTabBarMain')` + `MutationObserver` on `class` | `etendo-skin-nav.js:676`, `etendo-skin-topbar.js:395` | Selected tab no longer tracked: highlight and title lag. Depends on Core marking the selected tab with a `Selected` class. |
 | Capture listeners on `document` (`click`, `input`, `keydown`, `mousedown`) | `etendo-skin-nav.js:997`, `etendo-skin-form.js:2285` | Only for the skin's own panels and menus (`.etskin-*`). |
 | Capture `load` listener on `document` for `iframe[name="OBClassicPopup_iframe"]` and for the unnamed iframe whose parent canvas has an `eventproxy` starting `isc_OBClassicWindow_` (a classic report or window in a tab), and on each of their frames' documents | `etendo-skin-form.js:2363, 2398` | The legacy pages of classic process popups (DocAction, Post, Create from Shipment) and classic reports (Trial Balance, General Ledger, Journal Entries) are no longer restyled: stock 2.50 look. Depends on Core naming the popup iframe `OBClassicPopup_iframe`, on SmartClient's `isc_OBClassicWindow_N` canvas id, on the pages linking `Openbravo_ERP_250.css` and staying same-origin. The listener links `etendo-skin-classic.css` (id `etskin-classic`) and adds `etskin-on` to the frame's `<html>`. |
+| `wheel` listener on `document` (not passive) for targets inside `.OBTabBarMain` / `.OBTabBarChild` | `etendo-skin.js:424` | With the stock scroller off, a strip wider than its box no longer scrolls with the wheel or the trackpad; selecting a tab still scrolls it into view. Depends on Core's tab bar class names and on SmartClient keeping the strip's `overflow: hidden` element as the scrolling box. |
 | `localStorage`: `etskin.fields.v1.*`, `etskin.columns.v1.*`, `etskin.nav.collapsed` | form, nav | Choices per user, role and tab; lost when storage is cleared (ETP-5940). |
 
 ## CSS: SmartClient class names matched
