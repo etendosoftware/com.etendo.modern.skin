@@ -157,7 +157,7 @@ its stock size.
 | --- | --- | --- |
 | `document.querySelector('.OBTabBarMain')` + `MutationObserver` on `class` | `etendo-skin-nav.js:676`, `etendo-skin-topbar.js:395` | Selected tab no longer tracked: highlight and title lag. Depends on Core marking the selected tab with a `Selected` class. |
 | Capture listeners on `document` (`click`, `input`, `keydown`, `mousedown`) | `etendo-skin-nav.js:997`, `etendo-skin-form.js:2285` | Only for the skin's own panels and menus (`.etskin-*`). |
-| Capture `load` listener on `document` for `iframe[name="OBClassicPopup_iframe"]`, and on each of its frames' documents | `etendo-skin-form.js:2363, 2396` | The legacy page of a classic process popup (DocAction, Post, Create from Shipment) is no longer restyled: stock 2.50 look inside the skin's popup. Depends on Core naming the iframe `OBClassicPopup_iframe`, the pages linking `Openbravo_ERP_250.css` and staying same-origin. The listener links `etendo-skin-classic.css` (id `etskin-classic`) and adds `etskin-on` to the frame's `<html>`. |
+| Capture `load` listener on `document` for `iframe[name="OBClassicPopup_iframe"]` and for the unnamed iframe whose parent canvas has an `eventproxy` starting `isc_OBClassicWindow_` (a classic report or window in a tab), and on each of their frames' documents | `etendo-skin-form.js:2363, 2398` | The legacy pages of classic process popups (DocAction, Post, Create from Shipment) and classic reports (Trial Balance, General Ledger, Journal Entries) are no longer restyled: stock 2.50 look. Depends on Core naming the popup iframe `OBClassicPopup_iframe`, on SmartClient's `isc_OBClassicWindow_N` canvas id, on the pages linking `Openbravo_ERP_250.css` and staying same-origin. The listener links `etendo-skin-classic.css` (id `etskin-classic`) and adds `etskin-on` to the frame's `<html>`. |
 | `localStorage`: `etskin.fields.v1.*`, `etskin.columns.v1.*`, `etskin.nav.collapsed` | form, nav | Choices per user, role and tab; lost when storage is cleared (ETP-5940). |
 
 ## CSS: SmartClient class names matched
@@ -192,13 +192,19 @@ to the stock look; nothing breaks functionally).
   `iconTree_opened`, `iconFolder`, `iconFolder_open`, `iconFolder_into`, `iconFolder_close_into`,
   `iconNode`; the `_into` ones are how Core marks a drop target), and SmartClient's `dragLine` and
   `gridDragTracker`. A renamed image falls back to the stock icon.
-- **Classic popups** (ETP-5928, `etendo-skin-classic.css`, inside the popup's frames only): the 2.50
+- **Classic popups and windows** (ETP-5928, ETP-5918, `etendo-skin-classic.css`, inside their frames only): the 2.50
   page classes `Popup_ContentPane_InfoBar`, `Popup_ContentPane_SeparatorBar`, `Popup_SeparatorBar_bg`,
   `Popup_InfoBar_Icon_cell`, `Popup_InfoBar_text`, `LabelText`, `TitleCell`, `required`, `required_focus`,
   `readonly`, `readonly_focus`, `FieldGroupTitle*`, `FieldGroupContent`, `ButtonLink*` (with the state
   suffixes `_default`, `_hover`, `_active`, `_focus`, `_disabled` the page's script swaps), `Button`,
   `Button_left`, `Button_text`, `Button_right`, `Button_Icon`, the id `buttonOK`, and `MessageBox*`
-  (`MessageBoxERROR`, `WARNING`, `SUCCESS`, `INFO`).
+  (`MessageBoxERROR`, `WARNING`, `SUCCESS`, `INFO`). For the classic reports (ETP-5918) also:
+  `Main_ToolBar_bg`, `Main_ToolBar_Button*` (and the imported Default sheet's `border-color ... !important`
+  on it), `Main_ToolBar_Button_Icon_Refresh`, `Main_Bottom_bg*`, `Main_ContentPane_Left*`,
+  `Main_ContentPane_Right*`, `Main_ContentPane_Client`, `tabBackGround`, `tabBackGroundInit`,
+  `tabTabbarBackGround`, `List_width`, `DataGrid_Header_Table`, `DataGrid_Body_Table`,
+  `DataGrid_Header_Cell*`, `DataGrid_Body_Row*`, `DataGrid_Body_Cell*`, `LabelLink`, `dojoValidate*` and
+  `Combo_focus` (both `!important` in stock).
 - **Calendar** (ETP-5929): `OBCalendarGridCell*`, `OBCalendarGridHeaderCell*`, `OBEventWindow`,
   `OBEventWindowHeader`, `OBEventWindowBody`, and, only inside an `eventproxy` containing `Calendar_`,
   SmartClient's `headerBar`, `labelColumn`, `calMonthDayHeader*`, `calMonthDayBody*`,
