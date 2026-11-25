@@ -123,13 +123,14 @@ called on that path.
 | --- | --- | --- |
 | `Canvas` | `showCustomScrollbars: false` | `:427` |
 | `OBViewGrid` | `cellHeight`, `recordComponentHeight` | `:430` |
-| `OBTabSetMain` | `tabBarThickness` | `:435` |
-| `OBTabBarButtonMain` | `showSelectedIcon: false` | `:443` |
-| `OBTextItem`, `OBFKFilterTextItem`, `OBEncryptedItem`, `OBClientClassCanvasItem`, ... (`TEXT_ITEMS`) | `height` | `:352` |
-| `OBListItem`, `OBFKItem`, `OBYesNoItem`, `OBSearchItem`, `OBLinkItem` (`PICKER_ITEMS`) | `height`, `pickerIconWidth`, `pickerIconHeight`, `pickListCellHeight` | `:364` |
-| `OBFormButton` | `height` | `:458` |
+| `OBTabSetMain` | `tabBarThickness` | `:445` |
+| `OBTabBarMain` | `layoutTopMargin: 8`, `layoutStartMargin: 12`, `membersMargin: 4` (the window tabs 36px tall on the strip's floor, 12px in, 4px apart) | `:449` |
+| `OBTabBarButtonMain` | `showSelectedIcon: false`, `capSize: 0` (no stock end caps; the stylesheet pads the label instead) | `:457` |
+| `OBTextItem`, `OBFKFilterTextItem`, `OBEncryptedItem`, `OBClientClassCanvasItem`, ... (`TEXT_ITEMS`) | `height` | `:460` |
+| `OBListItem`, `OBFKItem`, `OBYesNoItem`, `OBSearchItem`, `OBLinkItem` (`PICKER_ITEMS`) | `height`, `pickerIconWidth`, `pickerIconHeight`, `pickListCellHeight` | `:464` |
+| `OBFormButton` | `height` | `:472` |
 | `OBCalendar` | `getDateStyle` (a method: SmartClient's documented per-date style seam, which Core leaves returning `null`). Returns `etskin-cal-today` for today's cells in the day and week views; the month view never calls it. | `:439` |
-| `OBGrid`, `OBTreeGrid` | `filterEditorDefaults.height` (`changeDefaults`) | `:464` |
+| `OBGrid`, `OBTreeGrid` | `filterEditorDefaults.height` (`changeDefaults`) | `:478` |
 
 A renamed class is skipped silently (`addProperties` checks `isc[className]`): the field or row keeps
 its stock size.

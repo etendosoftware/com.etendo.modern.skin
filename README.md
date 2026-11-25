@@ -479,6 +479,10 @@ class or `--sk-*` token a UIKit view reads is changed.
   markup (a closable tab nests a table for its close icon), since core gives tabs no other hook. The
   workspace keeps its word beside the house: its title is also the document title and is saved in
   the URL's state, so emptying it to narrow the tab would leak into both.
+  Every window tab, the workspace included, has the new UI's shape: 36px tall on a 44px strip, 12px
+  in from its leading edge and 4px apart, 12px top corners in every state, and at most 220px wide -
+  a longer name ends in an ellipsis. The strip's layout margins and the tab's `capSize` are
+  SmartClient properties, so SmartClient still sizes and places every tab.
 
 The menu's words are core's labels where core has one (Fields, Columns, New, Save, Close) and this
 module's `ETMSK_L_form*` messages for the rest, with the English in the script as the fallback.
