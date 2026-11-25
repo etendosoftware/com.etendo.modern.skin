@@ -2200,6 +2200,44 @@
       }
     });
 
+  /*
+   * A spacer has no display logic of its own, so when the display logic hides every field of a
+   * section around it - the SII section of a Sales Order outside Spain, for one - the spacer stays
+   * and leaves a 20px hole between two section cards that are otherwise 8px apart. A spacer whose
+   * nearest fields on both sides are hidden goes to no height with them, and gets its height back
+   * when one of them comes back. Runs after every server answer, when the display logic has been applied.
+   */
+  function syncOrphanSpacers(form) {
+    var items = form && form.getItems ? form.getItems() : null;
+    var i, j, before, after, orphan, changed;
+    for (i = 0; items && i < items.length; i++) {
+      if (!items[i] || items[i].Class !== 'SpacerItem') {
+        continue;
+      }
+      before = null;
+      after = null;
+      for (j = i - 1; j >= 0 && !before; j--) {
+        before = items[j].Class === 'SpacerItem' ? null : items[j];
+      }
+      for (j = i + 1; j < items.length && !after; j++) {
+        after = items[j].Class === 'SpacerItem' ? null : items[j];
+      }
+      orphan = !!before && !!after && !before.isVisible() && !after.isVisible();
+      // Height, not hide(): SmartClient still draws the row of a hidden spacer at its full height.
+      if (orphan && !items[i].etskinOrphan) {
+        items[i].etskinOrphan = true;
+        items[i].etskinHeight = items[i].height;
+        items[i].height = 0;
+        changed = true;
+      } else if (!orphan && items[i].etskinOrphan) {
+        items[i].etskinOrphan = false;
+        items[i].height = items[i].etskinHeight;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
     var originalSetFields = isc.OBViewForm.getPrototype().setFields;
     var originalGoNewState = isc.OBViewForm.getPrototype().setNewState;
     var originalEditRecord = isc.OBViewForm.getPrototype().editRecord;
@@ -2306,6 +2344,9 @@
           } finally {
             setTimeout(function () {
               try {
+                if (syncOrphanSpacers(form) && form.markForRedraw) {
+                  form.markForRedraw();
+                }
                 syncMissingNotice(form.view);
                 refreshMenu('');
               } catch (e) {

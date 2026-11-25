@@ -3923,11 +3923,29 @@
  */
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] > table {
   width: 100% !important;
-  background-color: var(--sk-surface);
-  /* workspace-ui's card: 12px corners, a #e3e5ea hairline, no shadow. */
-  box-shadow: inset 0 0 0 1px #e3e5ea;
-  border-radius: 12px;
+  position: relative;
+  /* The title follows the card down by half the gap above it. */
+  top: 4px;
+  background-color: transparent;
   border: 0 none;
+}
+
+/*
+ * The card is drawn on the slot SmartClient gives the header, not on the table inside it: the slot
+ * has the exact height and clips, while the table is 1px taller than the slot, which cut the
+ * hairline's bottom edge off every closed section. The card leaves 8px of the slot above it, so
+ * every card has the same gap (workspace-ui's sections are gap-2) - before the first one too.
+ * workspace-ui's card: 12px corners and a hairline, no shadow; the hairline is a step darker than its
+ * gray-200 so the cards read apart on the white sheet (ETP-6448).
+ */
+.etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"][eventproxy$="_background"]:has(> table)::before {
+  content: "";
+  position: absolute;
+  inset: 8px 0 0 0;
+  background-color: var(--sk-surface);
+  box-shadow: inset 0 0 0 1px #d1d5db;
+  border-radius: 12px;
+  pointer-events: none;
 }
 
 .etskin-on .etskin-go div[eventproxy*="OBSectionItemButton"] td[class^="OBSectionItemButton_Title"] {
@@ -3986,10 +4004,52 @@
   margin-inline: 2px 6px !important;
 }
 
-/* The record's heading and its facts, on white rather than on the tint. */
+/* A spacer etendo-skin-form.js took to no height (an orphan of a hidden section) still had the
+   12px of the cell's line box; the cell gives it up as well. */
+.etskin-on .etskin-go .OBViewForm td.formCell:has(> span[style*="height:0px"]:only-child) {
+  font-size: 0;
+  line-height: 0;
+}
+
+/*
+ * The record's heading and its facts as the new UI's record header (workspace-ui FormView
+ * StatusBar): a card with 12px corners, a 50% gray-100 fill and a soft shadow, inset to line up with
+ * the form's sections instead of a square band across the whole sheet. SmartClient sizes and places
+ * the bar, so the card is a pseudo-element inside it; the bar's own fill and rule go.
+ */
 .etskin-on .etskin-go .OBStatusBar {
-  background-color: var(--sk-surface);
-  border-bottom-color: var(--sk-nav-border);
+  background-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.etskin-on .etskin-go .OBStatusBar::before {
+  content: "";
+  position: absolute;
+  /* 2px clear above and below, or the bar's own clipping would cut the shadow off. */
+  inset: 2px 16px 2px 20px;
+  border-radius: 12px;
+  background-color: #f9fafb;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
+  pointer-events: none;
+}
+
+/*
+ * Where the form ends and the lines begin: the child tab strip under a form takes the new UI's
+ * panel surface (--color-baseline-10) with a hairline along its top. A pseudo-element draws the
+ * line, above the tab buttons SmartClient places over the strip, since a border would grow it.
+ */
+.etskin-on .etskin-go .OBTabBarChild {
+  background-color: #f5f6fa;
+}
+
+.etskin-on .etskin-go .OBTabBarChild::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background-color: #d1d5db;
+  z-index: 2147483000;
+  pointer-events: none;
 }
 
 .etskin-on .etskin-go .etskin-record-title {
