@@ -4312,8 +4312,34 @@
 
 .etskin-on [class^="OBTabBarButtonMainTop"][class*="Selected"] {
   background-color: var(--sk-tab-active);
-  border-radius: 0;
   box-shadow: inset 0 -2px 0 0 var(--sk-tab-active-line);
+}
+
+/*
+ * Every window tab has the new UI's shape (workspace-ui WindowTab): 36px tall - the strip's layout
+ * margins in etendo-skin.js - with 12px top corners, whatever its state, the workspace included.
+ */
+.etskin-on .OBTabBarMain [class^="OBTabBarButtonMainTop"] {
+  border-radius: 12px 12px 0 0;
+}
+
+/* The new UI's 8px inset, the 8px before the close X, and a 220px cap on the whole tab: the name
+   gives way with an ellipsis. SmartClient sizes the tab to its label, so capping the name caps it. */
+.etskin-on .OBTabBarMain [class^="OBTabBarButtonMainTitle"] {
+  padding: 0 8px;
+}
+
+.etskin-on .OBTabBarMain [class^="OBTabBarButtonMainTitle"] table td:first-child {
+  display: inline-block;
+  /* 220 less the insets, the close X and the gap before it; the folder glyph is inside this cell */
+  max-width: 178px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.etskin-on .OBTabBarMain [class^="OBTabBarButtonMainTitle"] table td + td {
+  padding-left: 8px !important;
 }
 
 /* The new UI's window tab label: 14px medium in a dark slate, the selected one no heavier. */
@@ -4354,7 +4380,8 @@
 }
 
 .etskin-on [class^="OBTabBarButtonMainTop"][class*="Over"]:not([class*="Selected"]) {
-  background-color: var(--sk-go-fill);
+  /* workspace-ui --color-baseline-0, the new UI's tab hover */
+  background-color: #fcfcfd;
 }
 
 .etskin-on .etskin-go {

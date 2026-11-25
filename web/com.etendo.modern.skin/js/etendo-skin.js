@@ -444,13 +444,17 @@
 
     addProperties('OBTabSetMain', { tabBarThickness: density.tabBar });
 
+    // The new UI's window strip: tabs 8px shorter than the strip and sitting on its floor, 12px in
+    // from its leading edge, 4px apart. Layout margins, so SmartClient sizes the tabs itself.
+    addProperties('OBTabBarMain', { layoutTopMargin: 8, layoutStartMargin: 12, membersMargin: 4 });
+
     // The close X of a window tab is the tab's own icon, and its click is Core's close. The stock
     // skin gives the selected tab a white variant of it (_Selected) for its dark selected tab; on
     // this skin's white selected tab that X vanished the moment the tab was chosen. The selected
     // tab now draws the same dark X as the others - still the same icon, the same click, the same
     // close. The hover variant stays, and the workspace tab still has no X because Core makes it
     // unclosable.
-    addProperties('OBTabBarButtonMain', { showSelectedIcon: false });
+    addProperties('OBTabBarButtonMain', { showSelectedIcon: false, capSize: 0 });
 
     for (i = 0; i < TEXT_ITEMS.length; i++) {
       addProperties(TEXT_ITEMS[i], { height: density.fieldHeight });
