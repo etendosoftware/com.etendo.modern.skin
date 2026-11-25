@@ -409,13 +409,15 @@
   transition: background-color 120ms ease;
 }
 
-.etskin-on [class^="OBToolbarIconButton"][class*="Over"] {
+/* Never on a glyph cell (OBToolbarIconButton_icon_*): its background is the glyph's colour under
+   the mask, and a state fill there replaced the glyph with a faint square (ETP-6447). */
+.etskin-on [class^="OBToolbarIconButton"][class*="Over"]:not([class*="_icon_"]) {
   background-color: var(--sk-neutral-soft);
   border: 0 none !important;
 }
 
-.etskin-on [class^="OBToolbarIconButton"][class*="Down"],
-.etskin-on [class^="OBToolbarIconButton"][class*="Selected"] {
+.etskin-on [class^="OBToolbarIconButton"][class*="Down"]:not([class*="_icon_"]),
+.etskin-on [class^="OBToolbarIconButton"][class*="Selected"]:not([class*="_icon_"]) {
   background-color: var(--sk-primary-soft);
   border: 0 none !important;
 }
@@ -4758,4 +4760,127 @@
   color: var(--sk-text);
   text-align: left;
   padding-inline-start: 8px;
+}
+
+/* ------------------------------------------------------ button state model */
+
+/*
+ * One state model for every button of the window toolbar and the top bar (ETP-6447), in the new
+ * UI's IconButton values (workspace-ui ComponentLibrary IconButton and the toolbar's BUTTON_STYLES):
+ *
+ *   state      quiet button                     primary button (New, Save)
+ *   normal     no fill, glyph #3f4a7e           fill #2a1757, glyph and word #fcfcfd
+ *   hover      fill #2a1757, glyph #fcfcfd      fill #1b0f3a, glyph and word #fcfcfd
+ *   active     as hover (Down, Selected)        as hover
+ *   disabled   no fill, glyph 30% ink           the normal look at 20% opacity
+ *   focus      a 2px ring in #2a1757 outside the button
+ *
+ * Every pair is a light glyph on the dark fill or a dark glyph on no fill, so no state can lose
+ * the glyph. The glyph and the word of a button read --sk-icon-color, and only this block sets it
+ * for a toolbar button, on the button's outer canvas; its cell inherits. That outer canvas carries
+ * no state class - SmartClient puts Over, Down, Disabled on the cell, whose background is the
+ * glyph's mask - so the fill goes on the canvas and asks its cell for the state. The importants
+ * are deliberate: earlier per-button rules (the white circle of Refresh, the outline of Filters)
+ * keep their shape but not their own states.
+ */
+.etskin-on {
+  --sk-btn-ink: #3f4a7e;
+  --sk-btn-fill-hover: #2a1757;
+  --sk-btn-ink-hover: #fcfcfd;
+  --sk-btn-ink-disabled: rgba(0, 3, 13, 0.3);
+  --sk-btn-primary-fill: #2a1757;
+  --sk-btn-primary-fill-hover: #1b0f3a;
+  --sk-btn-ring: 0 0 0 2px #fcfcfd, 0 0 0 4px #2a1757;
+}
+
+.etskin-on .etskin-go .OBToolbar div:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"]) {
+  --sk-icon-color: var(--sk-btn-ink);
+  border-radius: 999px;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.etskin-on .etskin-go .OBToolbar td[class^="OBToolbarIconButton_icon_"] {
+  --sk-icon-color: inherit !important;
+  color: var(--sk-icon-color);
+  opacity: 1;
+}
+
+.etskin-on .etskin-go .OBToolbar div:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Over"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Down"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Selected"]:not([class*="Disabled"])) {
+  --sk-icon-color: var(--sk-btn-ink-hover);
+  background-color: var(--sk-btn-fill-hover) !important;
+  border-color: transparent !important;
+}
+
+.etskin-on .etskin-go .OBToolbar div:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Disabled"]) {
+  --sk-icon-color: var(--sk-btn-ink-disabled);
+}
+
+.etskin-on .etskin-go .OBToolbar div:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Focused"]):focus-within {
+  box-shadow: var(--sk-btn-ring) !important;
+}
+
+/* The words of the text buttons follow the glyph. */
+.etskin-on .etskin-go .etskin-tb-filters::after,
+.etskin-on .etskin-go .etskin-tb-fields::after,
+.etskin-on .etskin-go .etskin-tb-new::after,
+.etskin-on .etskin-go .etskin-tb-savelabel::after {
+  color: var(--sk-icon-color) !important;
+}
+
+/* The primary variant: New, and Save in the form. The :has() matches the quiet rule's weight. */
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"]),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"]) {
+  --sk-icon-color: var(--sk-btn-ink-hover);
+  background-color: var(--sk-btn-primary-fill) !important;
+  box-shadow: none;
+}
+
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(td[class*="Over"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(td[class*="Over"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(td[class*="Down"]),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(td[class*="Down"]) {
+  --sk-icon-color: var(--sk-btn-ink-hover);
+  background-color: var(--sk-btn-primary-fill-hover) !important;
+}
+
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(td[class*="Disabled"]),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(td[class*="Disabled"]) {
+  --sk-icon-color: var(--sk-btn-ink-hover);
+  background-color: var(--sk-btn-primary-fill) !important;
+  opacity: 0.2;
+}
+
+/* The top bar's round buttons take the same quiet model on their white disc. */
+.etskin-on .etskin-tray-item:not(.etskin-tray-wide):hover,
+.etskin-on .etskin-tray-item:not(.etskin-tray-wide).OBNavBarComponentSelected {
+  --sk-icon-color: var(--sk-btn-ink-hover);
+  background-color: var(--sk-btn-fill-hover);
+}
+
+.etskin-on .etskin-tray-item:focus-within {
+  box-shadow: var(--sk-btn-ring);
+}
+
+/*
+ * Copilot in the top bar: the module draws a dark "Copilot" text pill. It becomes a round chip
+ * with the toolbar's Copilot artwork (com.etendoerp.copilot, web/images/copilot-toolbar.png), as
+ * the window toolbar shows it; etendo-skin-topbar.js marks it and moves the word to the tooltip.
+ */
+.etskin-on .etskin-tray-copilot td,
+.etskin-on .etskin-tray-copilot img {
+  font-size: 0 !important;
+  visibility: hidden;
+}
+
+.etskin-on .etskin-tray-copilot {
+  background-image: url(./../../images/copilot-toolbar.png);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.etskin-on .etskin-tray-copilot [class^="navBarButton"],
+.etskin-on .etskin-tray-copilot .OBNavBarTextButton {
+  background: transparent !important;
 }

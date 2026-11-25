@@ -479,6 +479,13 @@
       return;
     }
 
+    // Copilot's navigation bar button (com.etendoerp.copilot's template: a navBarButton with its
+    // AI.png icon) becomes a round chip like the rest, drawn with the toolbar's Copilot artwork.
+    if (inner.baseStyle === 'navBarButton' && /\/AI\.png$/.test(String(inner.icon || ''))) {
+      chip(wrapper, 'copilot', false);
+      return;
+    }
+
     if (isSearch(inner)) {
       keepMarked(wrapper, MARKER + 'search');
       wrapper.setOverflow('hidden');

@@ -416,6 +416,34 @@ for one - keeps its width and gets the glyph styling as text. That menu is added
 `OB.Layout.initialize`, so `OB.NavBar.addMembers` is wrapped too and late arrivals are dressed on
 the way in.
 
+Copilot's button (`com.etendoerp.copilot`'s navigation bar component: a `navBarButton` with its
+`AI.png` icon) is the one module button the skin recognises. It goes through `chip()` like any
+round button, its word moves to the tooltip, and it shows the artwork of Copilot's toolbar button
+(`web/images/copilot-toolbar.png`). Without the module there is no such button and nothing to do.
+
+### Button states
+
+Every button of the window toolbar and the top bar follows one state model (ETP-6447), in the new
+UI's values (workspace-ui `IconButton` and the toolbar's button styles). The tokens are
+`--sk-btn-*` in the last section of `etendo-skin.css`.
+
+| State | Quiet button (every glyph, Filters, Fields, Actions, the top bar discs) | Primary button (New, Save) |
+| --- | --- | --- |
+| Normal | no fill, glyph `#3f4a7e` | fill `#2a1757`, glyph and word `#fcfcfd` |
+| Hover | fill `#2a1757`, glyph and word `#fcfcfd` | fill `#1b0f3a`, glyph and word `#fcfcfd` |
+| Active (`Down`, `Selected`) | as hover | as hover |
+| Disabled | no fill, glyph at 30% of the ink | the normal look at 20% opacity |
+| Focus | a 2px `#2a1757` ring outside the button | the same ring |
+
+Each state pairs a light glyph with the dark fill, or a dark glyph with no fill, so no state can
+lose its glyph. A glyph is a mask over the colour `--sk-icon-color`. Only the state model sets that
+colour for a toolbar button, on the button's outer canvas, and the glyph cell inherits it.
+SmartClient puts the state classes (`Over`, `Down`, `Disabled`) on that cell, whose background is
+the glyph itself. The fill therefore goes on the canvas, which reads the cell's state with `:has()`,
+and no state rule may paint the cell. That was the bug behind icons that vanished under the
+pointer: a generic hover rule matched the glyph cell (`OBToolbarIconButton_icon_*` also starts with
+`OBToolbarIconButton`) and replaced the glyph's colour with a light fill.
+
 ### The standard windows
 
 Every standard window of Etendo Classic - every `OBStandardWindow`, whatever its module - takes the
