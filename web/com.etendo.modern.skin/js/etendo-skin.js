@@ -451,6 +451,11 @@
     addProperties('Canvas', { showCustomScrollbars: false });
     guardSorterDraw();
 
+    // The stock skin paints a field that failed validation with inline CSS - solid red fill and red
+    // rules - which outranks every class and turned the cell into a red block under the pointer.
+    // Without it the cell keeps its Error class, which the stylesheet tints in every state.
+    addProperties('OBGrid', { editFailedCSSText: '' });
+
     addProperties('OBViewGrid', {
       cellHeight: density.cellHeight,
       recordComponentHeight: density.cellHeight - 7
