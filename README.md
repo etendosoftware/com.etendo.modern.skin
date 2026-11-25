@@ -590,6 +590,11 @@ because a process in a tab has no standard window around it. Its row height is C
 `OB.Styles.Process.PickAndExecute.gridCellHeight`, which Core also sizes a grid parameter by (45px
 plus that height per displayed row), so the parameter shows the same number of rows, each taller.
 
+In a parameter window the combos (Organization, General Ledger...) are drawn as one field
+(ETP-6436): the control table holding the input and its arrow carries the fill, the rule and the
+focus and error states, and the input inside fills its cell, so the arrow sits inside the field as in
+the window forms.
+
 ### Classic process popups and classic reports
 
 The buttons backed by a classic `AD_Process` (Book / Complete, Reactivate, Void on orders; Post and

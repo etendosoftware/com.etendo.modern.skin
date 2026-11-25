@@ -5273,3 +5273,48 @@
 .etskin-on .etskin-go td[class^="OBGridCell"][class*="Error"][class*="Selected"] {
   background-color: color-mix(in srgb, var(--sk-danger) 24%, var(--sk-surface));
 }
+
+/* ------------------------------------------------ parameter window combos */
+
+/*
+ * A combo in a process definition's parameter window (Receivables Aging Schedule, ETP-6436) is a
+ * table holding the input and its picker cell. Outside the window forms' GO scope, the field look
+ * sat on the input alone, so the fill and the rule stopped where the input did and the arrow
+ * floated beside them. As in the window forms, the control is the field - fill, rule, corners,
+ * focus and error - and the input inside it gives its own up and fills its cell. The rule is an
+ * inset shadow: the table's width is SmartClient's.
+ */
+.etskin-on div[eventproxy^="isc_processDefinition_"] table[class^="OBFormFieldSelectControl"],
+.etskin-on .OBPopupBody table[class^="OBFormFieldSelectControl"] {
+  background-color: var(--sk-field-fill);
+  border-radius: var(--sk-radius) var(--sk-radius) 0 0;
+  box-shadow: inset 0 -1px 0 0 var(--sk-border-strong);
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] table[class^="OBFormFieldSelectControl"] [class^="OBFormFieldSelectInput"],
+.etskin-on .OBPopupBody table[class^="OBFormFieldSelectControl"] [class^="OBFormFieldSelectInput"] {
+  width: 100% !important;
+  background-color: transparent;
+  border-bottom: 0 none;
+  box-shadow: none;
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] table[class^="OBFormFieldSelectControl"]:focus-within,
+.etskin-on .OBPopupBody table[class^="OBFormFieldSelectControl"]:focus-within,
+.etskin-on div[eventproxy^="isc_processDefinition_"] table[class^="OBFormFieldSelectControl"][class*="Focused"],
+.etskin-on .OBPopupBody table[class^="OBFormFieldSelectControl"][class*="Focused"] {
+  background-color: var(--sk-surface);
+  box-shadow: inset 0 -2px 0 0 var(--sk-primary);
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] table[class^="OBFormFieldSelectControl"][class*="Error"],
+.etskin-on .OBPopupBody table[class^="OBFormFieldSelectControl"][class*="Error"] {
+  box-shadow: inset 0 -2px 0 0 var(--sk-danger);
+}
+
+.etskin-on div[eventproxy^="isc_processDefinition_"] table[class^="OBFormFieldSelectControl"][class*="Disabled"],
+.etskin-on .OBPopupBody table[class^="OBFormFieldSelectControl"][class*="Disabled"] {
+  background-color: transparent;
+  box-shadow: none;
+}
