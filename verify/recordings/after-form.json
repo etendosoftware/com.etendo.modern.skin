@@ -1,0 +1,1130 @@
+{
+  "screen": "form",
+  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795703743695__,tabTitle:__Sales%20Invoice__,targetTabId:__263__,targetRecordId:__ETP5928DRAFTINVOICE0000000000001__%7D%7D%5D%7D",
+  "recordedAt": "2026-11-26T14:35:47.617Z",
+  "sources": {
+    "css/etendo-skin.css": "9858d8af85c0fdb1aceafaf0b0f622de0189c55a84b07ffc103768fb0f9226b9",
+    "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
+    "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
+    "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
+    "js/etendo-skin-nav.js": "9455be20a6c9daf538614d34678ad7d0b60491586363ac74cd54fea7838c21d5",
+    "js/etendo-skin-topbar.js": "6b45cf3c15bae46f73411ccafb00138955e4ada0a130b531e75829c5642d4ae1",
+    "js/etendo-skin-toolbar.js": "474bc9142de9eb22afcad020ce4e23721835afec0e658eb4ee1bc6ea5f4e02a1",
+    "js/etendo-skin-form.js": "a9bc5c1d62e2020b67da533532d914a56c92d49b045ea897c30e7dbd6aefd315",
+    "js/etendo-skin-grid.js": "7cbf42572f5803b0d1c73b255d990a0fad23930e50542133f2539f33c4556c22"
+  },
+  "viewport": {
+    "w": 1440,
+    "h": 900
+  },
+  "tokens": {
+    "primary": "#2563eb",
+    "accent": "#1e293b",
+    "canvas": "#c6d3ff",
+    "surface": "#ffffff",
+    "text": "#101828"
+  },
+  "topBar": {
+    "height": 62,
+    "texts": [
+      {
+        "text": "AD",
+        "size": 13,
+        "weight": 600,
+        "transform": "none",
+        "color": "rgb(37, 99, 235)"
+      },
+      {
+        "text": "Sales Invoice",
+        "size": 20,
+        "weight": 700,
+        "transform": "none",
+        "color": "rgb(16, 24, 40)"
+      },
+      {
+        "text": "ETP5928-SI - 19-11-2026 - 4.08",
+        "size": 20,
+        "weight": 700,
+        "transform": "none",
+        "color": "rgb(16, 24, 40)"
+      }
+    ],
+    "logoHeight": 6,
+    "imageHeights": [
+      6,
+      6,
+      25,
+      14,
+      28,
+      28,
+      1
+    ],
+    "box": {
+      "top": 0,
+      "bottom": 62
+    },
+    "marks": [
+      {
+        "src": "ShowImageLogo?logo=yourc",
+        "top": 17.72,
+        "bottom": 45.72,
+        "height": 28,
+        "mid": 31.72
+      },
+      {
+        "src": "PoweredByOpenbravo.svg",
+        "top": 17.44,
+        "bottom": 45.44,
+        "height": 28,
+        "mid": 31.44
+      }
+    ],
+    "clusterMid": 31,
+    "cluster": {
+      "borderWidth": 0,
+      "background": "rgba(0, 0, 0, 0)",
+      "buttons": 5,
+      "sizes": [
+        [
+          40,
+          40
+        ],
+        [
+          40,
+          40
+        ],
+        [
+          40,
+          40
+        ],
+        [
+          40,
+          40
+        ],
+        [
+          40,
+          40
+        ]
+      ],
+      "gaps": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  },
+  "toolbar": {
+    "box": {
+      "x": 56,
+      "y": 106,
+      "w": 1384,
+      "h": 54
+    },
+    "icons": [
+      {
+        "name": "newDoc",
+        "box": {
+          "x": 68,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "create"
+      },
+      {
+        "name": "newRow",
+        "box": {
+          "x": 102,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": true,
+        "group": "create"
+      },
+      {
+        "name": "save",
+        "box": {
+          "x": 137,
+          "y": 117,
+          "w": 104,
+          "h": 32
+        },
+        "disabled": true,
+        "group": "create"
+      },
+      {
+        "name": "savecloseX",
+        "box": {
+          "x": 242,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "create"
+      },
+      {
+        "name": "refresh",
+        "box": {
+          "x": 276,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "record"
+      },
+      {
+        "name": "eliminate",
+        "box": {
+          "x": 310,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "edit"
+      },
+      {
+        "name": "undo",
+        "box": {
+          "x": 344,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "edit"
+      },
+      {
+        "name": "clone",
+        "box": {
+          "x": 378,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "more"
+      },
+      {
+        "name": "export",
+        "box": {
+          "x": 412,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": true,
+        "group": "more"
+      },
+      {
+        "name": "print",
+        "box": {
+          "x": 446,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "more"
+      },
+      {
+        "name": "link",
+        "box": {
+          "x": 480,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "more"
+      },
+      {
+        "name": "email",
+        "box": {
+          "x": 514,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "more"
+      },
+      {
+        "name": "attach",
+        "box": {
+          "x": 548,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "more"
+      },
+      {
+        "name": "etcop",
+        "box": {
+          "x": 597,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "extra"
+      },
+      {
+        "name": "etskinActions",
+        "box": {
+          "x": 647,
+          "y": 117,
+          "w": 96,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "actions"
+      },
+      {
+        "name": "etskinFilters",
+        "box": {
+          "x": 1099,
+          "y": 117,
+          "w": 104,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "right"
+      },
+      {
+        "name": "etskinFields",
+        "box": {
+          "x": 1205,
+          "y": 117,
+          "w": 110,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "right"
+      },
+      {
+        "name": "gridAndFilter",
+        "box": {
+          "x": 1352,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "right"
+      },
+      {
+        "name": "view",
+        "box": {
+          "x": 1318,
+          "y": 116,
+          "w": 32,
+          "h": 32
+        },
+        "disabled": false,
+        "group": "right",
+        "glyph": "mask"
+      }
+    ],
+    "texts": [],
+    "filled": [],
+    "primary": [
+      {
+        "label": "",
+        "box": {
+          "x": 136,
+          "y": 116,
+          "w": 104,
+          "h": 32
+        },
+        "background": "rgb(42, 23, 87)"
+      }
+    ],
+    "dividers": 2,
+    "rightMost": 1384,
+    "overflow": 0,
+    "viewGroup": [
+      {
+        "x": 1098,
+        "y": 116,
+        "w": 104,
+        "h": 32
+      },
+      {
+        "x": 1204,
+        "y": 116,
+        "w": 110,
+        "h": 32
+      },
+      {
+        "x": 1318,
+        "y": 116,
+        "w": 32,
+        "h": 32
+      },
+      {
+        "x": 1352,
+        "y": 116,
+        "w": 32,
+        "h": 32
+      }
+    ]
+  },
+  "grid": {
+    "headerCells": [],
+    "cellSample": [],
+    "rowHeight": null,
+    "rowSeparator": null,
+    "chromeLeftWidth": null,
+    "frozenWidth": 34,
+    "banner": null,
+    "filterBadge": {
+      "width": 8,
+      "height": 8
+    }
+  },
+  "form": {
+    "box": {
+      "x": 82,
+      "y": 195,
+      "w": 1338,
+      "h": 687
+    },
+    "inputs": [
+      {
+        "box": {
+          "x": 90,
+          "y": 220.8,
+          "w": 277,
+          "h": 26
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 0,
+        "borderBottomStyle": "none",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 424,
+          "y": 220.8,
+          "w": 277,
+          "h": 26
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 0,
+        "borderBottomStyle": "none",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 758,
+          "y": 220.8,
+          "w": 298,
+          "h": 28
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 2,
+        "borderBottomStyle": "dotted",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 1092,
+          "y": 220.8,
+          "w": 277,
+          "h": 28
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 2,
+        "borderBottomStyle": "dotted",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 90,
+          "y": 278.59,
+          "w": 256,
+          "h": 26
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 0,
+        "borderBottomStyle": "none",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 424,
+          "y": 276.09,
+          "w": 277,
+          "h": 26
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 0,
+        "borderBottomStyle": "none",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 758,
+          "y": 278.59,
+          "w": 277,
+          "h": 26
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 0,
+        "borderBottomStyle": "none",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 90,
+          "y": 332.98,
+          "w": 632,
+          "h": 53
+        },
+        "height": 53,
+        "borderLeft": 0,
+        "borderBottom": 2,
+        "borderBottomStyle": "solid",
+        "background": "rgba(0, 3, 13, 0.05)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 758,
+          "y": 336.39,
+          "w": 277,
+          "h": 26
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 0,
+        "borderBottomStyle": "none",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 1092,
+          "y": 336.39,
+          "w": 277,
+          "h": 26
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 0,
+        "borderBottomStyle": "none",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 90,
+          "y": 467.19,
+          "w": 298,
+          "h": 28
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 2,
+        "borderBottomStyle": "dotted",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 424,
+          "y": 467.19,
+          "w": 298,
+          "h": 28
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 2,
+        "borderBottomStyle": "dotted",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 758,
+          "y": 467.19,
+          "w": 298,
+          "h": 28
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 2,
+        "borderBottomStyle": "dotted",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 1092,
+          "y": 467.19,
+          "w": 298,
+          "h": 28
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 2,
+        "borderBottomStyle": "dotted",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      },
+      {
+        "box": {
+          "x": 90,
+          "y": 649.98,
+          "w": 256,
+          "h": 26
+        },
+        "height": 28,
+        "borderLeft": 0,
+        "borderBottom": 0,
+        "borderBottomStyle": "none",
+        "background": "rgba(0, 0, 0, 0)",
+        "size": 13
+      }
+    ],
+    "columns": [
+      {
+        "x": 90,
+        "width": 632,
+        "count": 5
+      },
+      {
+        "x": 424,
+        "width": 298,
+        "count": 3
+      },
+      {
+        "x": 758,
+        "width": 298,
+        "count": 4
+      },
+      {
+        "x": 1092,
+        "width": 298,
+        "count": 3
+      }
+    ],
+    "decorations": [
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "required": [
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      },
+      {
+        "color": "rgb(220, 38, 38)",
+        "hue": 0,
+        "size": 11
+      }
+    ],
+    "unwrappedAsterisks": 0,
+    "linkGlyphs": 8,
+    "linkGlyphOpacity": 0,
+    "sections": [
+      {
+        "text": "Payment monitor",
+        "height": 46.13,
+        "background": "rgba(0, 0, 0, 0)",
+        "right": 1410,
+        "chevronRight": 1399.66
+      },
+      {
+        "text": "More Information",
+        "height": 46.13,
+        "background": "rgba(0, 0, 0, 0)",
+        "right": 1410,
+        "chevronRight": 1399.66
+      },
+      {
+        "text": "Audit",
+        "height": 46.13,
+        "background": "rgba(0, 0, 0, 0)",
+        "right": 1410,
+        "chevronRight": 1399.66
+      },
+      {
+        "text": "Notes",
+        "height": 46.13,
+        "background": "rgba(0, 0, 0, 0)",
+        "right": 1410,
+        "chevronRight": 1399.66
+      },
+      {
+        "text": "Linked Items",
+        "height": 46.13,
+        "background": "rgba(0, 0, 0, 0)",
+        "right": 1410,
+        "chevronRight": 1399.66
+      },
+      {
+        "text": "Attachments",
+        "height": 46.13,
+        "background": "rgba(0, 0, 0, 0)",
+        "right": 1410,
+        "chevronRight": 1399.66
+      },
+      {
+        "text": "Dimensions",
+        "height": 46.13,
+        "background": "rgba(0, 0, 0, 0)",
+        "right": 1410,
+        "chevronRight": 1399.66
+      }
+    ]
+  },
+  "panes": {
+    "form": {
+      "x": 62,
+      "y": 190,
+      "w": 1378,
+      "h": 390
+    },
+    "grid": null,
+    "childStrip": {
+      "x": 56,
+      "y": 580,
+      "w": 1384,
+      "h": 43
+    },
+    "childPane": {
+      "x": 56,
+      "y": 580,
+      "w": 1384,
+      "h": 320
+    },
+    "viewportHeight": 900
+  },
+  "statusBar": {
+    "box": {
+      "x": 62,
+      "y": 160,
+      "w": 1378,
+      "h": 30
+    },
+    "height": 30,
+    "title": {
+      "text": "ETP5928-SI - 19-11-2026 - 4.08",
+      "size": 16,
+      "weight": 600
+    },
+    "largestText": {
+      "text": "ETP5928-SI - 19-11-2026 - 4.08",
+      "size": 16,
+      "weight": 600,
+      "transform": "none",
+      "color": "rgb(16, 24, 40)"
+    },
+    "texts": [
+      {
+        "text": "Document Status:",
+        "size": 13,
+        "weight": 600,
+        "transform": "none",
+        "color": "rgb(16, 24, 40)"
+      },
+      {
+        "text": "Completed",
+        "size": 13,
+        "weight": 400,
+        "transform": "none",
+        "color": "color(srgb 0.0627451 0.0941176 0.156863 / 0.58)"
+      },
+      {
+        "text": "|",
+        "size": 13,
+        "weight": 400,
+        "transform": "none",
+        "color": "color(srgb 0.0627451 0.0941176 0.156863 / 0.4)"
+      },
+      {
+        "text": "Total Gross Amount:",
+        "size": 13,
+        "weight": 600,
+        "transform": "none",
+        "color": "rgb(16, 24, 40)"
+      },
+      {
+        "text": "4.08",
+        "size": 13,
+        "weight": 400,
+        "transform": "none",
+        "color": "color(srgb 0.0627451 0.0941176 0.156863 / 0.58)"
+      },
+      {
+        "text": "|",
+        "size": 13,
+        "weight": 400,
+        "transform": "none",
+        "color": "color(srgb 0.0627451 0.0941176 0.156863 / 0.4)"
+      },
+      {
+        "text": "Total Net Amount:",
+        "size": 13,
+        "weight": 600,
+        "transform": "none",
+        "color": "rgb(16, 24, 40)"
+      },
+      {
+        "text": "4.08",
+        "size": 13,
+        "weight": 400,
+        "transform": "none",
+        "color": "color(srgb 0.0627451 0.0941176 0.156863 / 0.58)"
+      },
+      {
+        "text": "|",
+        "size": 13,
+        "weight": 400,
+        "transform": "none",
+        "color": "color(srgb 0.0627451 0.0941176 0.156863 / 0.4)"
+      },
+      {
+        "text": "Currency:",
+        "size": 13,
+        "weight": 600,
+        "transform": "none",
+        "color": "rgb(16, 24, 40)"
+      },
+      {
+        "text": "USD",
+        "size": 13,
+        "weight": 400,
+        "transform": "none",
+        "color": "color(srgb 0.0627451 0.0941176 0.156863 / 0.58)"
+      },
+      {
+        "text": "|",
+        "size": 13,
+        "weight": 400,
+        "transform": "none",
+        "color": "color(srgb 0.0627451 0.0941176 0.156863 / 0.4)"
+      }
+    ]
+  },
+  "nav": {
+    "collapsed": true,
+    "width": 56,
+    "itemHeight": null,
+    "topLevel": [],
+    "tiles": [
+      {
+        "label": "Application Dictionary",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4l2",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "General Setup",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Master Data Management",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l9",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Procurement Management",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v1",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Warehouse Management",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7l9-",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Production Management",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 20V1",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Etendo RX",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h7l",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Intrastat",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Material Requirement Planning",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4h6v",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Sales Management",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 17l5",
+        "background": "rgb(217, 216, 221)",
+        "current": true
+      },
+      {
+        "label": "Project and Service Management",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h18",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Financial Management",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Service",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Data-Fix History",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h7v",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Match Rule",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 3L5",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      },
+      {
+        "label": "Fiscal Declarations NEO Support",
+        "icon": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16",
+        "background": "rgba(0, 0, 0, 0)",
+        "current": false
+      }
+    ],
+    "searchPlaceholder": "Filter"
+  },
+  "paint": {
+    "grid": {
+      "cols": 173,
+      "rows": 104,
+      "step": 8
+    },
+    "contentArea": 1159792,
+    "byColour": [
+      {
+        "color": "255,255,255",
+        "share": 64.5,
+        "white": true
+      },
+      {
+        "color": "245,246,250",
+        "share": 21.14,
+        "white": false
+      },
+      {
+        "color": "193,197,242",
+        "share": 4.79,
+        "white": false
+      },
+      {
+        "color": "203,207,241",
+        "share": 3.82,
+        "white": false
+      },
+      {
+        "color": "236,232,246",
+        "share": 3.82,
+        "white": false
+      },
+      {
+        "color": "63,74,126",
+        "share": 1.09,
+        "white": false
+      }
+    ],
+    "largestRegion": {
+      "color": "255,255,255",
+      "share": 44.41,
+      "white": true
+    },
+    "largestColouredRegion": {
+      "color": "245,246,250",
+      "share": 21.14
+    },
+    "largestNonWhiteShare": 21.14,
+    "lavenderElements": [
+      {
+        "cls": "OBTabSetMain",
+        "w": 1384,
+        "h": 838
+      },
+      {
+        "cls": "normal etskin-go",
+        "w": 1384,
+        "h": 794
+      },
+      {
+        "cls": "OBTopLayout",
+        "w": 1440,
+        "h": 62
+      },
+      {
+        "cls": "OBTabBarMain",
+        "w": 1384,
+        "h": 44
+      },
+      {
+        "cls": "OBTabBarChild",
+        "w": 1384,
+        "h": 43
+      },
+      {
+        "cls": "OBTabBarChild",
+        "w": 1384,
+        "h": 43
+      },
+      {
+        "cls": "OBGridFilterBase",
+        "w": 1376,
+        "h": 36
+      },
+      {
+        "cls": "OBGridFilterBase",
+        "w": 1376,
+        "h": 36
+      }
+    ]
+  },
+  "accents": [
+    {
+      "cls": "OBViewActive",
+      "w": 3,
+      "h": 420,
+      "source": "marker"
+    }
+  ],
+  "login": null,
+  "typography": {
+    "sizes": [
+      11,
+      12,
+      12.5,
+      12.8,
+      13,
+      14,
+      16,
+      20
+    ],
+    "sizeCounts": {
+      "11": 12,
+      "12": 29,
+      "13": 34,
+      "14": 1,
+      "16": 8,
+      "20": 2,
+      "12.8": 7,
+      "12.5": 7
+    },
+    "uppercase": [],
+    "weight700": [
+      "Sales Invoice",
+      "ETP5928-SI - 19-11-2026 - 4.08"
+    ]
+  }
+}

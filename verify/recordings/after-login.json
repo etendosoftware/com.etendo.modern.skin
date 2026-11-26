@@ -1,0 +1,157 @@
+{
+  "screen": "login",
+  "href": "http://localhost:8080/etendo/security/Login",
+  "recordedAt": "2026-11-26T14:35:54.616Z",
+  "sources": {
+    "css/etendo-skin.css": "9858d8af85c0fdb1aceafaf0b0f622de0189c55a84b07ffc103768fb0f9226b9",
+    "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
+    "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
+    "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
+    "js/etendo-skin-nav.js": "9455be20a6c9daf538614d34678ad7d0b60491586363ac74cd54fea7838c21d5",
+    "js/etendo-skin-topbar.js": "6b45cf3c15bae46f73411ccafb00138955e4ada0a130b531e75829c5642d4ae1",
+    "js/etendo-skin-toolbar.js": "474bc9142de9eb22afcad020ce4e23721835afec0e658eb4ee1bc6ea5f4e02a1",
+    "js/etendo-skin-form.js": "a9bc5c1d62e2020b67da533532d914a56c92d49b045ea897c30e7dbd6aefd315",
+    "js/etendo-skin-grid.js": "7cbf42572f5803b0d1c73b255d990a0fad23930e50542133f2539f33c4556c22"
+  },
+  "viewport": {
+    "w": 1440,
+    "h": 900
+  },
+  "tokens": {
+    "primary": "#2563eb",
+    "accent": "#f5c518",
+    "canvas": "#c6d3ff",
+    "surface": "#ffffff",
+    "text": "#101828"
+  },
+  "topBar": {
+    "height": null,
+    "texts": [],
+    "logoHeight": null,
+    "imageHeights": [],
+    "box": null,
+    "marks": [],
+    "clusterMid": null,
+    "cluster": null
+  },
+  "toolbar": null,
+  "grid": {
+    "headerCells": [],
+    "cellSample": [],
+    "rowHeight": null,
+    "rowSeparator": null,
+    "chromeLeftWidth": null,
+    "frozenWidth": null,
+    "banner": null,
+    "filterBadge": null
+  },
+  "form": null,
+  "panes": {
+    "form": null,
+    "grid": null,
+    "childStrip": null,
+    "childPane": null,
+    "viewportHeight": 900
+  },
+  "statusBar": null,
+  "nav": null,
+  "paint": {
+    "grid": {
+      "cols": 180,
+      "rows": 112,
+      "step": 8
+    },
+    "contentArea": 1296000,
+    "byColour": [
+      {
+        "color": "255,255,255",
+        "share": 63.41,
+        "white": true
+      },
+      {
+        "color": "10,15,30",
+        "share": 33.89,
+        "white": false
+      },
+      {
+        "color": "37,99,235",
+        "share": 1.61,
+        "white": false
+      },
+      {
+        "color": "32,36,82",
+        "share": 1.09,
+        "white": false
+      }
+    ],
+    "largestRegion": {
+      "color": "255,255,255",
+      "share": 63.41,
+      "white": true
+    },
+    "largestColouredRegion": {
+      "color": "10,15,30",
+      "share": 33.89
+    },
+    "largestNonWhiteShare": 33.89,
+    "lavenderElements": []
+  },
+  "accents": [],
+  "login": {
+    "panel": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "w": 489.59,
+        "h": 900
+      },
+      "background": "rgb(10, 15, 30)",
+      "backgroundImage": "linear-gradient(150deg, rgb(10, 15, 30) 0%, rgb(37, 99, 235) 100%)",
+      "gradientStops": 2,
+      "filter": "none",
+      "blurred": false,
+      "contentElements": 1,
+      "contentText": [
+        "[img]"
+      ]
+    },
+    "primary": "rgb(37, 99, 235)",
+    "heading": {
+      "text": "Welcome Back!",
+      "size": 27,
+      "weight": 650
+    },
+    "inputs": [
+      {
+        "height": 48,
+        "radius": 12,
+        "border": 1
+      },
+      {
+        "height": 48,
+        "radius": 12,
+        "border": 1
+      }
+    ],
+    "footer": {
+      "size": 12,
+      "color": "rgb(16, 24, 40)"
+    }
+  },
+  "typography": {
+    "sizes": [
+      12,
+      13,
+      15,
+      27
+    ],
+    "sizeCounts": {
+      "12": 1,
+      "13": 1,
+      "15": 1,
+      "27": 1
+    },
+    "uppercase": [],
+    "weight700": []
+  }
+}
