@@ -739,11 +739,15 @@
     top.setMembers(ordered);
     if (brandSlot) {
       // The logos row was built to hug its content on the bar; in the head it takes the head's width.
-      // The head leaves the logos 212px beside its toggle: 12px in, 8px between them, so Etendo's
-      // mark (100px) ends inside it instead of being clipped.
-      logos.layoutLeftMargin = 12;
-      logos.membersMargin = 8;
+      // The head leaves the logos 212px beside its toggle: 8px in and 4px between them, so the
+      // company's logo and Etendo's mark fit side by side.
+      logos.layoutLeftMargin = 8;
+      logos.membersMargin = 4;
       logos.setWidth('*');
+      // Core draws Etendo's 150px mark in a 100px canvas, which cut its last letter.
+      if (OB.TopLayout.OpenbravoLogo && OB.TopLayout.OpenbravoLogo.setWidth) {
+        OB.TopLayout.OpenbravoLogo.setWidth(112);
+      }
       // Before the toggle that ends the head; hidden while the panel is a rail.
       brandSlot.addMember(logos, 0);
       if (OB.ETSkin.nav.collapsed && OB.ETSkin.nav.collapsed()) {
