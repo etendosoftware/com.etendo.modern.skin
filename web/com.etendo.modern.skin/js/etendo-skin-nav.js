@@ -42,7 +42,12 @@
   var RECENT_LIST = 'UINAVBA_MenuRecentList';
   var RECENT_DOCUMENTS = 'OBUIAPP_RecentDocumentsList';
 
+  // The brand head over the panel: the top bar's height, so its hairline meets the bar's floor.
+  var BRAND_HEIGHT = 62;
+
   var sidebar = null; // the isc.Canvas
+  var brandSlot = null; // the head the top bar puts the logos in (etendo-skin-topbar.js)
+  var sideColumn = null; // [brandSlot, sidebar], the full height of the window
   var menuDelegate = null; // an OBApplicationMenuTree, used only for itemClick
   var menuData = null;
   // The index path of the node whose window is open, kept because the row it names is not always
@@ -884,6 +889,15 @@
       return;
     }
     sidebar.setWidth(isCollapsed ? RAIL_WIDTH : NAV_WIDTH);
+    if (sideColumn) {
+      sideColumn.setWidth(isCollapsed ? RAIL_WIDTH : NAV_WIDTH);
+      brandSlot.setWidth(isCollapsed ? RAIL_WIDTH : NAV_WIDTH);
+      brandSlot.setStyleName(isCollapsed ? 'etskinNavBrand etskinNavBrandCollapsed' : 'etskinNavBrand');
+      // The top bar now starts beside the panel, so it is resized with it and refits its members.
+      if (OB.ETSkin.topBar && OB.ETSkin.topBar.fit) {
+        setTimeout(OB.ETSkin.topBar.fit, 0);
+      }
+    }
     setClass(root, 'etskin-nav-collapsed', isCollapsed);
     applyCurrent(currentPath);
     if (!isCollapsed && focusSearch) {
@@ -1034,21 +1048,49 @@
       contents: renderPanel(startCollapsed)
     });
 
-    var row = isc.HLayout.create({ width: '100%', height: '100%' });
-    OB.MainView.removeMember(tabSet);
-    OB.MainView.addMember(row);
-    row.addMember(sidebar);
-    row.addMember(tabSet);
-
     /*
-     * The tab set was sized for a VLayout, where its width was the breadth axis and '100%' meant
-     * "as wide as the parent". In an HLayout width is the length axis, so '100%' would make it as
-     * wide as the whole row and push it off the right edge by exactly the width of the panel.
-     * SmartClient's star means "whatever is left", which is the intent, and height '100%' is now
-     * the breadth axis and does stretch.
+     * The panel runs the full height of the window, as the new UI's does: the brand heads it and the
+     * top bar starts beside it, not above it. The page is a VLayout of [top bar, main view]; it
+     * becomes [row of [panel column, column of [top bar, main view]]]. The canvases are moved, not
+     * rebuilt, so every reference core and the other scripts hold stays good. Where the page is not
+     * shaped that way the panel goes beside the tab set under the bar, as before.
      */
-    tabSet.setWidth('*');
-    tabSet.setHeight('100%');
+    var top = OB.TopLayout;
+    var page = top && top.getParentCanvas ? top.getParentCanvas() : null;
+    var width = startCollapsed ? RAIL_WIDTH : NAV_WIDTH;
+    if (page && page.getMemberNumber && page.getMemberNumber(top) !== -1 &&
+        page.getMemberNumber(OB.MainView) !== -1) {
+      brandSlot = isc.HLayout.create({
+        width: width,
+        height: BRAND_HEIGHT,
+        overflow: 'hidden',
+        defaultLayoutAlign: 'center',
+        styleName: startCollapsed ? 'etskinNavBrand etskinNavBrandCollapsed' : 'etskinNavBrand'
+      });
+      sidebar.setHeight('*');
+      sideColumn = isc.VLayout.create({ width: width, height: '100%', members: [brandSlot, sidebar] });
+      var at = page.getMemberNumber(top);
+      page.removeMembers([top, OB.MainView]);
+      var column = isc.VLayout.create({ width: '*', height: '100%', members: [top, OB.MainView] });
+      page.addMember(isc.HLayout.create({ width: '100%', height: '100%', members: [sideColumn, column] }), at);
+      OB.MainView.setHeight('*');
+    } else {
+      var row = isc.HLayout.create({ width: '100%', height: '100%' });
+      OB.MainView.removeMember(tabSet);
+      OB.MainView.addMember(row);
+      row.addMember(sidebar);
+      row.addMember(tabSet);
+
+      /*
+       * The tab set was sized for a VLayout, where its width was the breadth axis and '100%' meant
+       * "as wide as the parent". In an HLayout width is the length axis, so '100%' would make it as
+       * wide as the whole row and push it off the right edge by exactly the width of the panel.
+       * SmartClient's star means "whatever is left", which is the intent, and height '100%' is now
+       * the breadth axis and does stretch.
+       */
+      tabSet.setWidth('*');
+      tabSet.setHeight('100%');
+    }
 
     // Capture, because SmartClient stops a good deal of what happens inside its own canvases.
     document.addEventListener('click', onClick, true);
@@ -1082,6 +1124,7 @@
 
     OB.ETSkin.nav = {
       canvas: sidebar,
+      brandSlot: brandSlot,
       refreshRecents: refreshRecents,
       syncCurrent: syncCurrent
     };

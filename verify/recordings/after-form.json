@@ -1,14 +1,14 @@
 {
   "screen": "form",
-  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795705146817__,tabTitle:__Sales%20Invoice__,targetTabId:__263__,targetRecordId:__ETP5928DRAFTINVOICE0000000000001__%7D%7D%5D%7D",
-  "recordedAt": "2026-11-26T14:59:10.706Z",
+  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795709752514__,tabTitle:__Sales%20Invoice__,targetTabId:__263__,targetRecordId:__ETP5928DRAFTINVOICE0000000000001__%7D%7D%5D%7D",
+  "recordedAt": "2026-11-26T16:15:57.782Z",
   "sources": {
-    "css/etendo-skin.css": "9badc5d977999aca885872c06ccc89c8eb6822646883c2c39c9f831aa018416b",
+    "css/etendo-skin.css": "c850c04540570982c9410a312ee9a64f3616de877ca7d7ff0b86e8e0030ce3ba",
     "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
     "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
     "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
-    "js/etendo-skin-nav.js": "9455be20a6c9daf538614d34678ad7d0b60491586363ac74cd54fea7838c21d5",
-    "js/etendo-skin-topbar.js": "6b45cf3c15bae46f73411ccafb00138955e4ada0a130b531e75829c5642d4ae1",
+    "js/etendo-skin-nav.js": "8ef2175da685b91ccfc9f6b80028c35f7b04c379f09631522e66518b3a70b47c",
+    "js/etendo-skin-topbar.js": "47aa26ac9f11e4cd4bd1f48a183835b07b0b88d191a64c64ae794689939c652b",
     "js/etendo-skin-toolbar.js": "474bc9142de9eb22afcad020ce4e23721835afec0e658eb4ee1bc6ea5f4e02a1",
     "js/etendo-skin-form.js": "a9bc5c1d62e2020b67da533532d914a56c92d49b045ea897c30e7dbd6aefd315",
     "js/etendo-skin-grid.js": "7cbf42572f5803b0d1c73b255d990a0fad23930e50542133f2539f33c4556c22"
@@ -55,8 +55,6 @@
       6,
       25,
       14,
-      28,
-      28,
       1
     ],
     "box": {
@@ -66,17 +64,10 @@
     "marks": [
       {
         "src": "ShowImageLogo?logo=yourc",
-        "top": 17.72,
-        "bottom": 45.72,
-        "height": 28,
+        "top": 24.97,
+        "bottom": 38.47,
+        "height": 13.5,
         "mid": 31.72
-      },
-      {
-        "src": "PoweredByOpenbravo.svg",
-        "top": 17.44,
-        "bottom": 45.44,
-        "height": 28,
-        "mid": 31.44
       }
     ],
     "clusterMid": 31,
@@ -383,7 +374,7 @@
     "rowHeight": null,
     "rowSeparator": null,
     "chromeLeftWidth": null,
-    "frozenWidth": 34,
+    "frozenWidth": 35,
     "banner": null,
     "filterBadge": {
       "width": 8,
@@ -1019,7 +1010,7 @@
       },
       {
         "color": "193,197,242",
-        "share": 4.79,
+        "share": 4.77,
         "white": false
       },
       {
@@ -1034,7 +1025,7 @@
       },
       {
         "color": "63,74,126",
-        "share": 1.09,
+        "share": 1.11,
         "white": false
       }
     ],
@@ -1061,7 +1052,7 @@
       },
       {
         "cls": "OBTopLayout",
-        "w": 1440,
+        "w": 1384,
         "h": 62
       },
       {

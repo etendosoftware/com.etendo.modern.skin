@@ -36,7 +36,7 @@ depend on this one:
 | `OB.ETSkin` | Published by `etendo-skin.js` when the skin is on. Every script, here or in an application, stands down without it. |
 | `OB.ETSkin.tokens` | The resolved palette. |
 | `OB.ETSkin.statusBadge(value, label)` | The document status badge: each status value maps to one of five tones (`STATUS_TONES` in `etendo-skin.js`), drawn as the new UI's filled tag - grey, accent, green, yellow, red. Which status takes which tone copies the new UI's `statusConfig`. The new UI itself colours the badge from `AD_REF_LIST.EM_ETMETA_COLOR` (`com.etendoerp.metadata`), which only its template fills, for five values; reading that column here instead is an open decision. The grid uses it, and so does any screen that shows a status. |
-| `OB.ETSkin.topBar` | `{ tray, chip, first, refreshTitle }` - `refreshTitle()` re-reads the title beside the brand; `chip(wrapper, role, active)` dresses a navigation bar button as one of the tray's icon chips, marked `etskin-tray-chip` so it keeps the round shape without the shell naming its role. A module that passes a role ships the icon for it. |
+| `OB.ETSkin.topBar` | `{ tray, chip, first, refreshTitle, fit }` - `refreshTitle()` re-reads the title beside the brand; `fit()` resizes the bar's members to the room it has; `chip(wrapper, role, active)` dresses a navigation bar button as one of the tray's icon chips, marked `etskin-tray-chip` so it keeps the round shape without the shell naming its role. A module that passes a role ships the icon for it. |
 | `OB.ETSkin.countText(grid)` | The grid's record count as words ("128 records", "more than 100 records"), or `''`. Published by `etendo-skin-grid.js`; the top bar shows it beside the title. |
 | `OB.ETSkin.labels`, `OB.ETSkin.navIcons`, `OB.ETSkin.trayCreateNew` | Optional overrides. Nothing here defines them; every read falls back to a default. |
 | The `--sk-*` tokens and the `.etskin-on` gate | The whole palette as CSS custom properties, and the class that switches the skin on. |
@@ -287,6 +287,14 @@ visible without expanding anything, and one on each group that contains no match
 out of the flow. Clearing the box drops both and the panel is back to whatever the user had open —
 the expanded state is never thrown away.
 
+**The side panel runs the full height**, as the new UI's does: `etendo-skin-nav.js` turns the page's
+`[top bar, main view]` into a row of `[panel column, column of [top bar, main view]]`, moving core's
+canvases rather than rebuilding them, and heads the panel with a 62px brand row
+(`OB.ETSkin.nav.brandSlot`, class `etskinNavBrand`) where `etendo-skin-topbar.js` puts the company
+and Etendo logos. Collapsed to the rail, the head narrows with it: Etendo's mark goes and the company's
+logo shrinks to 36px. The top bar is refitted on each collapse (`OB.ETSkin.topBar.fit`). With the
+navigation in the top bar instead, none of this happens and the logos stay on the bar.
+
 The geometry comes from Etendo GO's side navigation, the earlier reference, measured from its own
 markup: 56px
 collapsed (260px open, the new UI's width), 32px rows, thin 20px glyphs on the sections only, and every label starting at 52px. The
@@ -358,7 +366,8 @@ Almost all of that is a stylesheet problem. Two things are not, and they are the
   are re-ordered to `[logos, spacers, navbar]` - the *same* canvases, moved rather than rebuilt, so
   `OB.TopLayout.CompanyImageLogo` and `OB.TopLayout.OpenbravoLogo` remain the objects core handed
   out and anything holding a reference to them still works. The logo container was built to hug the
-  right, so it is flipped to `left`, where it becomes the brand.
+  right, so it is flipped to `left`, where it becomes the brand. With the side navigation on, the
+  logos leave the bar for the head of the panel instead (see *The side panel runs the full height*).
 - **Measurements.** SmartClient writes `width` and `height` inline after measuring, and it measures
   a toolstrip member by what that member *draws*. The profile button is the case in point: it is
   40px wide and still measured 59, because the hidden menu arrow keeps its slot. Each button is
@@ -370,7 +379,7 @@ Everything else - the glyphs, the fills, the hover and selected states - is CSS.
 The bar's geometry follows Etendo GO's top bar, measured from its own markup: 62px and no rule
 under it. Its colour is the new UI's header band: a pale lavender (`--sk-topbar-surface`,
 `#e4e6f9`) that the window strip under it shares, so bar and strip read as one band above the
-content. The brand column is 260px when the side navigation is on, so what follows starts over the
+content. With the side navigation on, the bar starts beside the panel, so its title starts over the
 content. The utilities are the new UI's round white chips: a 40px `--sk-surface` disc with a muted
 glyph and a neutral tint under the pointer or while their menu is open; the avatar keeps its tinted
 disc, and any chip another module hands to `chip()` stays round.
