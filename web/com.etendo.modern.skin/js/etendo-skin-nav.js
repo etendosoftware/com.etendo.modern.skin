@@ -44,10 +44,15 @@
 
   // The brand head over the panel: the top bar's height, so its hairline meets the bar's floor.
   var BRAND_HEIGHT = 62;
+  var HEAD_TOGGLE_WIDTH = 48;
 
   var sidebar = null; // the isc.Canvas
   var brandSlot = null; // the head the top bar puts the logos in (etendo-skin-topbar.js)
   var sideColumn = null; // [brandSlot, sidebar], the full height of the window
+  var headToggle = null; // the open / close button at the end of the brand head
+  var contentColumn = null; // [top bar, main view], beside the panel
+  // The panel's width changes over this long, so opening and closing read as one movement.
+  var SLIDE_MS = 180;
   var menuDelegate = null; // an OBApplicationMenuTree, used only for itemClick
   var menuData = null;
   // The index path of the node whose window is open, kept because the row it names is not always
@@ -883,28 +888,85 @@
    * of the pair move here or neither does. The first paint needs nothing from this function -
    * renderPanel already wrote the class - so returning early costs nothing and cannot desynchronise.
    */
-  function applyCollapsed(isCollapsed, focusSearch) {
+  function applyCollapsed(isCollapsed, focusSearch, animate) {
     var root = panel();
+    var width = isCollapsed ? RAIL_WIDTH : NAV_WIDTH;
     if (!sidebar || !root) {
       return;
     }
-    sidebar.setWidth(isCollapsed ? RAIL_WIDTH : NAV_WIDTH);
-    if (sideColumn) {
-      sideColumn.setWidth(isCollapsed ? RAIL_WIDTH : NAV_WIDTH);
-      brandSlot.setWidth(isCollapsed ? RAIL_WIDTH : NAV_WIDTH);
-      brandSlot.setStyleName(isCollapsed ? 'etskinNavBrand etskinNavBrandCollapsed' : 'etskinNavBrand');
-      // The top bar now starts beside the panel, so it is resized with it and refits its members.
-      if (OB.ETSkin.topBar && OB.ETSkin.topBar.fit) {
-        setTimeout(OB.ETSkin.topBar.fit, 0);
-      }
+    if (!sideColumn) {
+      sidebar.setWidth(width);
+      setClass(root, 'etskin-nav-collapsed', isCollapsed);
+      applyCurrent(currentPath);
+      focusFilter(root, isCollapsed, focusSearch);
+      return;
     }
+
+    /*
+     * With the brand head the panel's width changes in one step - one layout of the window, which is
+     * all SmartClient can afford: animating the width laid the whole window out again on every frame
+     * and the movement came in three jerks. The movement is then played on the content column alone
+     * with a CSS transform: it starts where it was and slides to its new place, so closing slides the
+     * content over the space the panel gave up and opening slides it off the panel, uncovering it. The
+     * head keeps only its toggle while closed.
+     */
+    brandSlot.setStyleName(isCollapsed ? 'etskinNavBrand etskinNavBrandCollapsed' : 'etskinNavBrand');
+    showBrandLogos(!isCollapsed);
+    var before = sideColumn.getVisibleWidth();
+    sideColumn.setWidth(width);
     setClass(root, 'etskin-nav-collapsed', isCollapsed);
     applyCurrent(currentPath);
+    // The top bar starts beside the panel, so it is refitted to the room it now has.
+    if (OB.ETSkin.topBar && OB.ETSkin.topBar.fit) {
+      OB.ETSkin.topBar.fit();
+    }
+    if (animate) {
+      slide(before - width);
+    }
+    focusFilter(root, isCollapsed, focusSearch);
+  }
+
+  function slide(offset) {
+    var handle = contentColumn && contentColumn.getHandle ? contentColumn.getHandle() : null;
+    if (!handle || !offset || !handle.style || typeof handle.getBoundingClientRect !== 'function') {
+      return;
+    }
+    handle.style.transition = 'none';
+    handle.style.transform = 'translateX(' + offset + 'px)';
+    // Read a layout value so the start position is applied before the transition is set.
+    handle.getBoundingClientRect();
+    handle.style.transition = 'transform ' + SLIDE_MS + 'ms ease';
+    handle.style.transform = '';
+    setTimeout(function () {
+      handle.style.transition = '';
+    }, SLIDE_MS + 50);
+  }
+
+  function focusFilter(root, isCollapsed, focusSearch) {
+    var input;
     if (!isCollapsed && focusSearch) {
-      var input = root.querySelector('.etskin-nav-search-input');
+      input = root.querySelector('.etskin-nav-search-input');
       if (input) {
         input.focus();
       }
+    }
+  }
+
+  // The logos core hands the head (etendo-skin-topbar.js) are every member but the toggle.
+  function showBrandLogos(show) {
+    var members = brandSlot ? brandSlot.getMembers() || [] : [];
+    var i;
+    for (i = 0; i < members.length; i++) {
+      if (members[i] !== headToggle) {
+        if (show) {
+          members[i].show();
+        } else {
+          members[i].hide();
+        }
+      }
+    }
+    if (headToggle) {
+      headToggle.setWidth(show ? HEAD_TOGGLE_WIDTH : RAIL_WIDTH);
     }
   }
 
@@ -912,22 +974,24 @@
 
   function onClick(event) {
     var target = event.target || event.srcElement;
-    if (!closestWithClass(target, 'etskin-nav')) {
-      return;
-    }
 
+    // The toggle sits in the brand head, outside the panel, or in the panel's own head without it.
     var toggle = closestWithClass(target, 'etskin-nav-toggle');
     if (toggle) {
       var next = !collapsed();
       rememberCollapsed(next);
-      applyCollapsed(next, false);
+      applyCollapsed(next, false, true);
+      return;
+    }
+
+    if (!closestWithClass(target, 'etskin-nav')) {
       return;
     }
 
     var search = closestWithClass(target, 'etskin-nav-search');
     if (search && collapsed()) {
       rememberCollapsed(false);
-      applyCollapsed(false, true);
+      applyCollapsed(false, true, true);
       return;
     }
 
@@ -939,7 +1003,7 @@
     var tile = closestWithClass(target, 'etskin-nav-tile');
     if (tile) {
       rememberCollapsed(false);
-      applyCollapsed(false, false);
+      applyCollapsed(false, false, true);
       var section = panel().querySelector(
         '.etskin-nav-row[data-p="' + tile.getAttribute('data-p') + '"]'
       );
@@ -1060,19 +1124,32 @@
     var width = startCollapsed ? RAIL_WIDTH : NAV_WIDTH;
     if (page && page.getMemberNumber && page.getMemberNumber(top) !== -1 &&
         page.getMemberNumber(OB.MainView) !== -1) {
+      // The toggle ends the head, as in the new UI; the panel's own head then has none.
+      headToggle = isc.Canvas.create({
+        width: startCollapsed ? RAIL_WIDTH : HEAD_TOGGLE_WIDTH,
+        height: '100%',
+        overflow: 'hidden',
+        canFocus: false,
+        contents: '<div class="etskin-nav-headtoggle"><button type="button" class="etskin-nav-toggle" aria-label="' +
+          esc(label('UINAVBA_APPLICATION_MENU', 'Application')) + '"></button></div>'
+      });
       brandSlot = isc.HLayout.create({
-        width: width,
+        width: '100%',
         height: BRAND_HEIGHT,
         overflow: 'hidden',
         defaultLayoutAlign: 'center',
-        styleName: startCollapsed ? 'etskinNavBrand etskinNavBrandCollapsed' : 'etskinNavBrand'
+        styleName: startCollapsed ? 'etskinNavBrand etskinNavBrandCollapsed' : 'etskinNavBrand',
+        members: [headToggle]
       });
+      sidebar.setWidth('100%');
       sidebar.setHeight('*');
-      sideColumn = isc.VLayout.create({ width: width, height: '100%', members: [brandSlot, sidebar] });
+      sidebar.setStyleName('etskinNavCanvas etskinNavHeaded');
+      sideColumn = isc.VLayout.create({ width: width, height: '100%', overflow: 'hidden', members: [brandSlot, sidebar] });
       var at = page.getMemberNumber(top);
       page.removeMembers([top, OB.MainView]);
       var column = isc.VLayout.create({ width: '*', height: '100%', members: [top, OB.MainView] });
-      page.addMember(isc.HLayout.create({ width: '100%', height: '100%', members: [sideColumn, column] }), at);
+      contentColumn = column;
+      page.addMember(isc.HLayout.create({ width: '100%', height: '100%', styleName: 'etskinNavRow', members: [sideColumn, column] }), at);
       OB.MainView.setHeight('*');
     } else {
       var row = isc.HLayout.create({ width: '100%', height: '100%' });
@@ -1125,6 +1202,7 @@
     OB.ETSkin.nav = {
       canvas: sidebar,
       brandSlot: brandSlot,
+      collapsed: collapsed,
       refreshRecents: refreshRecents,
       syncCurrent: syncCurrent
     };

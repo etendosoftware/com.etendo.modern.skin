@@ -741,7 +741,11 @@
       // The logos row was built to hug its content on the bar; in the head it takes the head's width.
       logos.layoutLeftMargin = 16;
       logos.setWidth('*');
-      brandSlot.addMember(logos);
+      // Before the toggle that ends the head; hidden while the panel is a rail.
+      brandSlot.addMember(logos, 0);
+      if (OB.ETSkin.nav.collapsed && OB.ETSkin.nav.collapsed()) {
+        logos.hide();
+      }
     }
   }
 

@@ -291,8 +291,11 @@ the expanded state is never thrown away.
 `[top bar, main view]` into a row of `[panel column, column of [top bar, main view]]`, moving core's
 canvases rather than rebuilding them, and heads the panel with a 62px brand row
 (`OB.ETSkin.nav.brandSlot`, class `etskinNavBrand`) where `etendo-skin-topbar.js` puts the company
-and Etendo logos. Collapsed to the rail, the head narrows with it: Etendo's mark goes and the company's
-logo shrinks to 36px. The top bar is refitted on each collapse (`OB.ETSkin.topBar.fit`). With the
+and Etendo logos. Collapsed to the rail, the head narrows with it and the logos are hidden. The open / close toggle ends that head, as in the new UI: right of the logos
+while open, alone at the top of the rail while closed (the panel's own head then keeps only its
+filter). Opening and closing change the width in one step - animating it made SmartClient lay the
+whole window out on every frame - and then slide the content column to its new place with a 180ms
+CSS transform. The top bar is refitted on each collapse (`OB.ETSkin.topBar.fit`). With the
 navigation in the top bar instead, none of this happens and the logos stay on the bar.
 
 The geometry comes from Etendo GO's side navigation, the earlier reference, measured from its own

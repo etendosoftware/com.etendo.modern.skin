@@ -2579,7 +2579,7 @@
  * The brand heads the panel, as in the new UI: the company's logo and Etendo's on the panel's own
  * surface, with the panel's right rule and a hairline under it where the top bar's floor is. The
  * row is etendo-skin-nav.js's; the logos are core's, moved there by etendo-skin-topbar.js. Collapsed
- * to the rail, Etendo's mark goes and the company's logo shrinks to the rail's width.
+ * to the rail, the logos are hidden and the head keeps only its toggle.
  */
 .etskin-on .etskinNavBrand {
   background-color: var(--sk-nav-surface);
@@ -2594,6 +2594,42 @@
 }
 
 .etskin-on .etskinNavBrandCollapsed a[href*="etendo"] {
+  display: none;
+}
+
+/*
+ * The open / close toggle ends the brand head, as in the new UI: right of the logos while the panel
+ * is open, alone at the top of the rail while it is closed. The panel's own head then keeps only its
+ * filter (etskinNavHeaded); without the brand head the toggle stays in the panel's head as before.
+ */
+/* Behind the content as it slides, the panel's surface, so the panel reads as narrowing or widening. */
+.etskin-on .etskinNavRow {
+  background-color: var(--sk-nav-surface);
+}
+
+.etskin-on .etskin-nav-headtoggle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.etskin-on .etskin-nav-headtoggle .etskin-nav-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--sk-radius);
+}
+
+.etskin-on .etskin-nav-headtoggle .etskin-nav-toggle::before {
+  width: 20px;
+  height: 20px;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+}
+
+.etskin-on .etskinNavHeaded .etskin-nav-head > .etskin-nav-toggle,
+.etskin-on .etskinNavHeaded .etskin-nav-collapsed .etskin-nav-head::after {
   display: none;
 }
 
@@ -3164,7 +3200,8 @@
   border-radius: var(--sk-radius);
 }
 
-.etskin-on .etskin-nav-collapsed .etskin-nav-toggle::before {
+.etskin-on .etskin-nav-collapsed .etskin-nav-toggle::before,
+.etskin-on .etskinNavBrandCollapsed .etskin-nav-toggle::before {
   width: 20px;
   height: 20px;
   -webkit-mask-size: 20px 20px;
