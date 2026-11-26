@@ -671,4 +671,34 @@
       console.warn('Etendo Modern Skin could not install the toolbar arrangement', e);
     }
   }
+
+  /*
+   * A button clicked into disabling - Cancel and back leaves the form with the pointer still on it -
+   * never hears the pointer go. SmartClient keeps Over as the state to return to and, when the form
+   * opens again and the button is enabled, draws it hovered with the pointer elsewhere. Enabling puts
+   * such a button back to its resting state.
+   */
+  try {
+    if (isc.OBToolbarIconButton) {
+      var originalSetDisabled = isc.OBToolbarIconButton.getPrototype().setDisabled;
+      isc.OBToolbarIconButton.addProperties({
+        setDisabled: function (disabled) {
+          var result = originalSetDisabled.apply(this, arguments);
+          try {
+            if (!disabled && this.getState && this.getState() === 'Over' &&
+                !(this.isVisible() && this.containsEvent && this.containsEvent())) {
+              this.setState('');
+            }
+          } catch (e) {
+            // A button drawn hovered is a cosmetic slip, not a broken button.
+          }
+          return result;
+        }
+      });
+    }
+  } catch (e) {
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn('Etendo Modern Skin could not reset toolbar hover states', e);
+    }
+  }
 })();
