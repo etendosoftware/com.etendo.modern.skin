@@ -573,8 +573,9 @@
   --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11.5l-8.4 8.4a5 5 0 0 1-7.1-7.1l8.5-8.5a3.5 3.5 0 0 1 4.9 4.9l-8.4 8.5a2 2 0 0 1-2.8-2.8l7.8-7.8'/%3E%3C/svg%3E");
 }
 
+/* Lucide's undo-2, on the 24px grid's centre: the earlier arc ran to the grid's foot and sat low. */
 .etskin-on .OBToolbarIconButton_icon_undo {
-  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 7L4 12l5 5 M4 12h10a6 6 0 0 1 0 12h-2'/%3E%3C/svg%3E");
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 14L4 9l5-5 M4 9h10.5a5.5 5.5 0 0 1 0 11H11'/%3E%3C/svg%3E");
 }
 
 .etskin-on .OBToolbarIconButton_icon_redo {
@@ -3669,12 +3670,13 @@
 }
 
 /*
- * Refresh sits in its own circle beside New, filled with the table header's lavender and no ring:
- * workspace-ui's TopToolbar gives .toolbar-button-refresh bg-(--ui-table-head-bg), #cbcff1.
+ * Refresh is drawn like every other glyph of the pill: round, with no fill or ring of its own.
+ * workspace-ui's TopToolbar fills it with the table header's lavender (#cbcff1); in the shell that
+ * read as one button out of line with the rest, so it was dropped on review (ETP-5931).
  */
 .etskin-on .etskin-go [data-etskin-group="record"] {
   border-radius: 999px;
-  background-color: #cbcff1;
+  background-color: transparent;
   box-shadow: none;
 }
 
@@ -4038,25 +4040,23 @@
 }
 
 /*
- * The record's heading and its facts as the new UI's record header (workspace-ui FormView
- * StatusBar): a card with 12px corners, a 50% gray-100 fill and a soft shadow, inset to line up with
- * the form's sections instead of a square band across the whole sheet. SmartClient sizes and places
- * the bar, so the card is a pseudo-element inside it; the bar's own fill and rule go.
+ * The record's heading and its facts float on the window's ground, as the new UI's form draws them
+ * above its first card: no fill, no rule, no card of their own (ETP-5931, variant D on review).
  */
 .etskin-on .etskin-go .OBStatusBar {
   background-color: transparent;
   border-bottom-color: transparent;
 }
 
-.etskin-on .etskin-go .OBStatusBar::before {
-  content: "";
-  position: absolute;
-  /* 2px clear above and below, or the bar's own clipping would cut the shadow off. */
-  inset: 2px 16px 2px 20px;
+/*
+ * The form's fields stand on one white sheet, drawn as the new UI's card: a hairline ring and 12px
+ * corners. In the new UI every section is a card that holds its fields; here the fields are rows of
+ * the form's one table, so the sheet is the card that holds them all, and each section keeps its
+ * card head inside it.
+ */
+.etskin-on .etskin-go .OBViewForm {
   border-radius: 12px;
-  background-color: #f9fafb;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
-  pointer-events: none;
+  box-shadow: inset 0 0 0 1px #e5e7eb;
 }
 
 /*
@@ -4967,10 +4967,14 @@
   box-shadow: none;
 }
 
-.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(td[class*="Over"]:not([class*="Disabled"])),
-.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(td[class*="Over"]:not([class*="Disabled"])),
-.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(td[class*="Down"]),
-.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(td[class*="Down"]) {
+/*
+ * Spelled like the quiet hover above (the same :has argument plus the button's class), or that rule
+ * outranks this one and the primary's hover paints the quiet hover's ink, its own resting colour.
+ */
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Over"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Over"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Down"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Down"]:not([class*="Disabled"])) {
   --sk-icon-color: var(--sk-btn-ink-hover);
   background-color: var(--sk-btn-primary-fill-hover) !important;
 }

@@ -489,10 +489,12 @@ class or `--sk-*` token a UIKit view reads is changed.
   never cut (ETP-6448); the hairline is `#d1d5db`, a step darker than the new UI's gray-200, so the
   cards read apart. A spacer whose fields the display logic hid on both sides (the SII section of a
   Sales Order outside Spain) goes to no height, so it no longer leaves a 20px hole between two cards.
-- **Record header.** The status bar above the form (identifier, Document Status, totals) is the new
-  UI's record header: a card with 12px corners, a 50% gray-100 fill and a soft shadow, inset to line
-  up with the form instead of a square band. It is a pseudo-element inside the bar, which SmartClient
-  sizes and places.
+- **Record header and the form's card.** The status bar above the form (identifier, Document Status,
+  totals) floats on the window's ground with no fill or rule, as the new UI's record header does
+  above its first card. The form's white sheet is drawn as that card: a `#e5e7eb` hairline ring and
+  12px corners. The new UI gives every section a card holding its fields; here the fields are rows
+  of the form's one table, so the sheet holds them all and each section keeps its card head inside
+  it (chosen on review in ETP-5931 among four mock-ups).
 - **Form and lines.** The child tab strip under a form takes the new UI's panel surface (`#f5f6fa`)
   with a hairline along its top, so the form ends where the lines begin.
 - **Form fields** (decided in ETP-6282). The field takes the new UI's look: no box, a pale neutral fill
@@ -511,7 +513,7 @@ class or `--sk-*` token a UIKit view reads is changed.
   positions, so only colour, border, radius and type change: every box keeps its size, and the
   new UI's drop zone has no counterpart - adding a file is still Core's dialog.
 - **The toolbar and the frame.** The strip is one pill, as in the new UI: New (filled, indigo) and
-  Save carry their word - New in the list, Save in the form - then refresh in its own circle, delete,
+  Save carry their word - New in the list, Save in the form - then refresh (drawn like the other glyphs: the new UI's lavender disc was dropped on review), delete,
   undo and the occasional glyphs (clone, export, print, link, email, attach) inline, then Actions,
   the process buttons as one menu in the place of the new UI's "Available Process". Filters and
   Fields / Columns sit on the right with the stock view glyphs. The record count moved to the top
