@@ -1,17 +1,17 @@
 {
   "screen": "form",
-  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795714617494__,tabTitle:__Sales%20Invoice__,targetTabId:__263__,targetRecordId:__ETP5928DRAFTINVOICE0000000000001__%7D%7D%5D%7D",
-  "recordedAt": "2026-11-26T17:37:02.954Z",
+  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795716782363__,tabTitle:__Sales%20Invoice__,targetTabId:__263__,targetRecordId:__ETP5928DRAFTINVOICE0000000000001__%7D%7D%5D%7D",
+  "recordedAt": "2026-11-26T18:13:07.935Z",
   "sources": {
-    "css/etendo-skin.css": "5955f7250e30323426c566e78598095147f7c006684e5cb29d616355bfcb83b4",
+    "css/etendo-skin.css": "a79cb1ea1175041f658ffc72e3ff9f073cdbd1e663a192d74b29e35d1afd425f",
     "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
     "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
     "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
     "js/etendo-skin-nav.js": "8ef2175da685b91ccfc9f6b80028c35f7b04c379f09631522e66518b3a70b47c",
     "js/etendo-skin-topbar.js": "47aa26ac9f11e4cd4bd1f48a183835b07b0b88d191a64c64ae794689939c652b",
-    "js/etendo-skin-toolbar.js": "df8620643fc1b224466f4a34f5f2d654f63bfc5e92bf1eb887bdd0f6ff486eb6",
+    "js/etendo-skin-toolbar.js": "10f4ddda7ed517d5d2bd36ed874ae9418d5474bd9173910271cbd72b772b7ba1",
     "js/etendo-skin-form.js": "f90a1f65d658c69d2ac5c2fd691491ae6a4b338e77fd4299276b5877cd35d799",
-    "js/etendo-skin-grid.js": "7cbf42572f5803b0d1c73b255d990a0fad23930e50542133f2539f33c4556c22"
+    "js/etendo-skin-grid.js": "61a7346a19dc3377d66f406ea2c98c864929417730551383ffab496401d290ad"
   },
   "viewport": {
     "w": 1440,
@@ -1000,12 +1000,12 @@
     "byColour": [
       {
         "color": "255,255,255",
-        "share": 63.14,
+        "share": 63.06,
         "white": true
       },
       {
         "color": "245,246,250",
-        "share": 22.64,
+        "share": 22.73,
         "white": false
       },
       {
@@ -1036,9 +1036,9 @@
     },
     "largestColouredRegion": {
       "color": "245,246,250",
-      "share": 22.64
+      "share": 22.73
     },
-    "largestNonWhiteShare": 22.64,
+    "largestNonWhiteShare": 22.73,
     "lavenderElements": [
       {
         "cls": "OBTabSetMain",
