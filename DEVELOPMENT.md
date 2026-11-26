@@ -121,4 +121,6 @@ The repository follows the Etendo Git Police rules, checked on every pull reques
   npx es-check@9.8.1 es5 'web/**/*.js'
   node verify/check-source.mjs
   ```
+- The browser checks (the design findings F1-F13 measured on a running instance, and the side
+  navigation) are in [verify/README.md](verify/README.md).
 - Fill in the PR template: before/after screenshots, the preset and the navigation mode used.
