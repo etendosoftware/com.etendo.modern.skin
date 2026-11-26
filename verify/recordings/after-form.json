@@ -1,16 +1,16 @@
 {
   "screen": "form",
-  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795713539253__,tabTitle:__Sales%20Invoice__,targetTabId:__263__,targetRecordId:__ETP5928DRAFTINVOICE0000000000001__%7D%7D%5D%7D",
-  "recordedAt": "2026-11-26T17:19:04.693Z",
+  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795714617494__,tabTitle:__Sales%20Invoice__,targetTabId:__263__,targetRecordId:__ETP5928DRAFTINVOICE0000000000001__%7D%7D%5D%7D",
+  "recordedAt": "2026-11-26T17:37:02.954Z",
   "sources": {
-    "css/etendo-skin.css": "e3add2704d6aaebe09a6e14d71c7e94aee64f458efae958a1665273098972f90",
+    "css/etendo-skin.css": "5955f7250e30323426c566e78598095147f7c006684e5cb29d616355bfcb83b4",
     "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
     "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
     "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
     "js/etendo-skin-nav.js": "8ef2175da685b91ccfc9f6b80028c35f7b04c379f09631522e66518b3a70b47c",
     "js/etendo-skin-topbar.js": "47aa26ac9f11e4cd4bd1f48a183835b07b0b88d191a64c64ae794689939c652b",
-    "js/etendo-skin-toolbar.js": "474bc9142de9eb22afcad020ce4e23721835afec0e658eb4ee1bc6ea5f4e02a1",
-    "js/etendo-skin-form.js": "a9bc5c1d62e2020b67da533532d914a56c92d49b045ea897c30e7dbd6aefd315",
+    "js/etendo-skin-toolbar.js": "df8620643fc1b224466f4a34f5f2d654f63bfc5e92bf1eb887bdd0f6ff486eb6",
+    "js/etendo-skin-form.js": "f90a1f65d658c69d2ac5c2fd691491ae6a4b338e77fd4299276b5877cd35d799",
     "js/etendo-skin-grid.js": "7cbf42572f5803b0d1c73b255d990a0fad23930e50542133f2539f33c4556c22"
   },
   "viewport": {
@@ -279,22 +279,22 @@
         "group": "actions"
       },
       {
-        "name": "etskinFilters",
+        "name": "etskinFields",
         "box": {
-          "x": 1099,
+          "x": 1205,
           "y": 117,
-          "w": 104,
+          "w": 110,
           "h": 32
         },
         "disabled": false,
         "group": "right"
       },
       {
-        "name": "etskinFields",
+        "name": "personalization",
         "box": {
-          "x": 1205,
-          "y": 117,
-          "w": 110,
+          "x": 56,
+          "y": 106,
+          "w": 32,
           "h": 32
         },
         "disabled": false,
@@ -343,15 +343,15 @@
     "overflow": 0,
     "viewGroup": [
       {
-        "x": 1098,
-        "y": 116,
-        "w": 104,
-        "h": 32
-      },
-      {
         "x": 1204,
         "y": 116,
         "w": 110,
+        "h": 32
+      },
+      {
+        "x": 56,
+        "y": 106,
+        "w": 32,
         "h": 32
       },
       {
@@ -1000,12 +1000,12 @@
     "byColour": [
       {
         "color": "255,255,255",
-        "share": 64.5,
+        "share": 63.14,
         "white": true
       },
       {
         "color": "245,246,250",
-        "share": 21.14,
+        "share": 22.64,
         "white": false
       },
       {
@@ -1025,7 +1025,7 @@
       },
       {
         "color": "63,74,126",
-        "share": 1.11,
+        "share": 1.24,
         "white": false
       }
     ],
@@ -1036,9 +1036,9 @@
     },
     "largestColouredRegion": {
       "color": "245,246,250",
-      "share": 21.14
+      "share": 22.64
     },
-    "largestNonWhiteShare": 21.14,
+    "largestNonWhiteShare": 22.64,
     "lavenderElements": [
       {
         "cls": "OBTabSetMain",
@@ -1104,7 +1104,7 @@
     ],
     "sizeCounts": {
       "11": 12,
-      "12": 29,
+      "12": 30,
       "13": 34,
       "14": 1,
       "16": 8,

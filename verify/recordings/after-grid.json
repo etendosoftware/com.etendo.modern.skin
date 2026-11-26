@@ -1,16 +1,16 @@
 {
   "screen": "grid",
-  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795713539253__,tabTitle:__Sales%20Invoice__%7D%7D%5D%7D",
-  "recordedAt": "2026-11-26T17:19:00.925Z",
+  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795714617494__,tabTitle:__Sales%20Invoice__%7D%7D%5D%7D",
+  "recordedAt": "2026-11-26T17:36:59.266Z",
   "sources": {
-    "css/etendo-skin.css": "e3add2704d6aaebe09a6e14d71c7e94aee64f458efae958a1665273098972f90",
+    "css/etendo-skin.css": "5955f7250e30323426c566e78598095147f7c006684e5cb29d616355bfcb83b4",
     "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
     "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
     "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
     "js/etendo-skin-nav.js": "8ef2175da685b91ccfc9f6b80028c35f7b04c379f09631522e66518b3a70b47c",
     "js/etendo-skin-topbar.js": "47aa26ac9f11e4cd4bd1f48a183835b07b0b88d191a64c64ae794689939c652b",
-    "js/etendo-skin-toolbar.js": "474bc9142de9eb22afcad020ce4e23721835afec0e658eb4ee1bc6ea5f4e02a1",
-    "js/etendo-skin-form.js": "a9bc5c1d62e2020b67da533532d914a56c92d49b045ea897c30e7dbd6aefd315",
+    "js/etendo-skin-toolbar.js": "df8620643fc1b224466f4a34f5f2d654f63bfc5e92bf1eb887bdd0f6ff486eb6",
+    "js/etendo-skin-form.js": "f90a1f65d658c69d2ac5c2fd691491ae6a4b338e77fd4299276b5877cd35d799",
     "js/etendo-skin-grid.js": "7cbf42572f5803b0d1c73b255d990a0fad23930e50542133f2539f33c4556c22"
   },
   "viewport": {
@@ -286,22 +286,22 @@
         "group": "actions"
       },
       {
-        "name": "etskinFilters",
+        "name": "etskinFields",
         "box": {
-          "x": 1099,
+          "x": 1205,
           "y": 117,
-          "w": 104,
+          "w": 110,
           "h": 32
         },
         "disabled": false,
         "group": "right"
       },
       {
-        "name": "etskinFields",
+        "name": "personalization",
         "box": {
-          "x": 1205,
-          "y": 117,
-          "w": 110,
+          "x": 260,
+          "y": 106,
+          "w": 32,
           "h": 32
         },
         "disabled": false,
@@ -350,15 +350,15 @@
     "overflow": 0,
     "viewGroup": [
       {
-        "x": 1098,
-        "y": 116,
-        "w": 104,
-        "h": 32
-      },
-      {
         "x": 1204,
         "y": 116,
         "w": 110,
+        "h": 32
+      },
+      {
+        "x": 260,
+        "y": 106,
+        "w": 32,
         "h": 32
       },
       {
@@ -381,7 +381,7 @@
         "text": "Organization",
         "box": {
           "x": 302,
-          "y": 161,
+          "y": 197,
           "w": 200,
           "h": 31
         },
@@ -395,7 +395,7 @@
         "text": "Document No. ",
         "box": {
           "x": 502,
-          "y": 161,
+          "y": 197,
           "w": 115.13,
           "h": 31
         },
@@ -409,7 +409,7 @@
         "text": "Invoice Date",
         "box": {
           "x": 617,
-          "y": 161,
+          "y": 197,
           "w": 100,
           "h": 31
         },
@@ -423,7 +423,7 @@
         "text": "Business Partner",
         "box": {
           "x": 717,
-          "y": 161,
+          "y": 197,
           "w": 200,
           "h": 31
         },
@@ -437,7 +437,7 @@
         "text": "Total Gross Amount",
         "box": {
           "x": 917,
-          "y": 161,
+          "y": 197,
           "w": 138,
           "h": 31
         },
@@ -451,7 +451,7 @@
         "text": "Payment Complete",
         "box": {
           "x": 1055,
-          "y": 161,
+          "y": 197,
           "w": 133,
           "h": 31
         },
@@ -465,7 +465,7 @@
         "text": "Currency",
         "box": {
           "x": 1188,
-          "y": 161,
+          "y": 197,
           "w": 200,
           "h": 31
         },
@@ -479,7 +479,7 @@
         "text": "Total Paid",
         "box": {
           "x": 1388,
-          "y": 161,
+          "y": 197,
           "w": 100,
           "h": 31
         },
@@ -493,7 +493,7 @@
         "text": "Total Outstanding",
         "box": {
           "x": 1488,
-          "y": 161,
+          "y": 197,
           "w": 125.22,
           "h": 31
         },
@@ -507,7 +507,7 @@
         "text": "Amount Currently Due",
         "box": {
           "x": 1613,
-          "y": 161,
+          "y": 197,
           "w": 153.38,
           "h": 31
         },
@@ -521,7 +521,7 @@
         "text": "Days Till Next Due",
         "box": {
           "x": 1766,
-          "y": 161,
+          "y": 197,
           "w": 129,
           "h": 31
         },
@@ -535,7 +535,7 @@
         "text": "Percentage Paid Late",
         "box": {
           "x": 1895,
-          "y": 161,
+          "y": 197,
           "w": 147,
           "h": 31
         },
@@ -551,7 +551,7 @@
         "text": "F&B US East Coast",
         "box": {
           "x": 302,
-          "y": 193,
+          "y": 229,
           "w": 200,
           "h": 32
         },
@@ -564,7 +564,7 @@
         "text": "ETP5928-SI",
         "box": {
           "x": 502,
-          "y": 193,
+          "y": 229,
           "w": 115,
           "h": 32
         },
@@ -577,7 +577,7 @@
         "text": "19-11-2026",
         "box": {
           "x": 617,
-          "y": 193,
+          "y": 229,
           "w": 100,
           "h": 32
         },
@@ -590,7 +590,7 @@
         "text": "Healthy Food Supermarket",
         "box": {
           "x": 717,
-          "y": 193,
+          "y": 229,
           "w": 200,
           "h": 32
         },
@@ -603,7 +603,7 @@
         "text": "4.08",
         "box": {
           "x": 917,
-          "y": 193,
+          "y": 229,
           "w": 138,
           "h": 32
         },
@@ -616,7 +616,7 @@
         "text": "No",
         "box": {
           "x": 1055,
-          "y": 193,
+          "y": 229,
           "w": 133,
           "h": 32
         },
@@ -629,7 +629,7 @@
         "text": "USD",
         "box": {
           "x": 1188,
-          "y": 193,
+          "y": 229,
           "w": 200,
           "h": 32
         },
@@ -642,7 +642,7 @@
         "text": "0.00",
         "box": {
           "x": 1388,
-          "y": 193,
+          "y": 229,
           "w": 100,
           "h": 32
         },
@@ -655,7 +655,7 @@
         "text": "4.08",
         "box": {
           "x": 1488,
-          "y": 193,
+          "y": 229,
           "w": 125,
           "h": 32
         },
@@ -668,7 +668,7 @@
         "text": "0.00",
         "box": {
           "x": 1613,
-          "y": 193,
+          "y": 229,
           "w": 153,
           "h": 32
         },
@@ -681,7 +681,7 @@
         "text": "26",
         "box": {
           "x": 1766,
-          "y": 193,
+          "y": 229,
           "w": 129,
           "h": 32
         },
@@ -694,7 +694,7 @@
         "text": "0",
         "box": {
           "x": 1895,
-          "y": 193,
+          "y": 229,
           "w": 147,
           "h": 32
         },
@@ -723,9 +723,9 @@
     "form": null,
     "grid": {
       "x": 302,
-      "y": 193,
+      "y": 229,
       "w": 1137,
-      "h": 386
+      "h": 350
     },
     "childStrip": {
       "x": 260,
@@ -954,12 +954,12 @@
     "byColour": [
       {
         "color": "255,255,255",
-        "share": 63.06,
+        "share": 60.05,
         "white": true
       },
       {
         "color": "245,246,250",
-        "share": 14.99,
+        "share": 17.91,
         "white": false
       },
       {
@@ -979,20 +979,20 @@
       },
       {
         "color": "63,74,126",
-        "share": 0.9,
+        "share": 1.28,
         "white": false
       }
     ],
     "largestRegion": {
       "color": "255,255,255",
-      "share": 42.97,
+      "share": 38.2,
       "white": true
     },
     "largestColouredRegion": {
       "color": "245,246,250",
-      "share": 14.99
+      "share": 17.91
     },
-    "largestNonWhiteShare": 14.99,
+    "largestNonWhiteShare": 17.91,
     "lavenderElements": [
       {
         "cls": "OBTabSetMain",
@@ -1055,7 +1055,7 @@
       20
     ],
     "sizeCounts": {
-      "12": 4,
+      "12": 6,
       "13": 14,
       "14": 21,
       "20": 1,
