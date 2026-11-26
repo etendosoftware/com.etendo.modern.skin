@@ -5249,6 +5249,17 @@
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%23c4c8d4' stroke='%23c4c8d4' stroke-width='1.5'/%3E%3Cpath d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
 }
 
+/*
+ * SmartClient sizes the checkbox span to its 13px stock image, so the 14px box above lost half a pixel
+ * of its outline on each side - most visibly in the grid's select column. The span is given the box's
+ * size; min-width and min-height win over the inline width and height.
+ */
+.etskin-on span[style*="/form/"][style*="checked"],
+.etskin-on span[style*="/DynamicForm/"][style*="checked"] {
+  min-width: 14px !important;
+  min-height: 14px !important;
+}
+
 /* ------------------------------------------------------- grid error cells */
 
 /*
