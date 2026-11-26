@@ -1,14 +1,14 @@
 {
   "screen": "login",
   "href": "http://localhost:8080/etendo/security/Login",
-  "recordedAt": "2026-11-26T18:13:15.875Z",
+  "recordedAt": "2026-11-26T18:19:00.068Z",
   "sources": {
-    "css/etendo-skin.css": "a79cb1ea1175041f658ffc72e3ff9f073cdbd1e663a192d74b29e35d1afd425f",
+    "css/etendo-skin.css": "9748c466dbfcd1e80c7e0c011c69f6daec07ba57406eb8ba4bf426d33b5d7f0b",
     "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
     "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
     "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
-    "js/etendo-skin-nav.js": "8ef2175da685b91ccfc9f6b80028c35f7b04c379f09631522e66518b3a70b47c",
-    "js/etendo-skin-topbar.js": "47aa26ac9f11e4cd4bd1f48a183835b07b0b88d191a64c64ae794689939c652b",
+    "js/etendo-skin-nav.js": "73b1e49448c8b197fcd6714805b49bac474455f452f9ba1230a4f4cda5655851",
+    "js/etendo-skin-topbar.js": "33e2a5c1e6f09ac36e09910b1c7963e9b6fd0ed960a77ea10bc7fc81ffedcbcd",
     "js/etendo-skin-toolbar.js": "10f4ddda7ed517d5d2bd36ed874ae9418d5474bd9173910271cbd72b772b7ba1",
     "js/etendo-skin-form.js": "f90a1f65d658c69d2ac5c2fd691491ae6a4b338e77fd4299276b5877cd35d799",
     "js/etendo-skin-grid.js": "61a7346a19dc3377d66f406ea2c98c864929417730551383ffab496401d290ad"
@@ -31,6 +31,7 @@
     "imageHeights": [],
     "box": null,
     "marks": [],
+    "brandOnRail": false,
     "clusterMid": null,
     "cluster": null
   },

@@ -145,7 +145,8 @@ async function etskinCapture(screen) {
     // its marks are looked for there too.
     var head = document.querySelector('.etskinNavBrand');
     var markHosts = (el ? all('img', el) : []).concat(head ? all('img', head) : []);
-    var marks = markHosts.filter(laidOut).filter(function (i) {
+    // Visible, not just laid out: on the rail the head hides its logos (visibility: hidden).
+    var marks = markHosts.filter(visible).filter(function (i) {
       return /ShowImageLogo|PoweredByOpenbravo/.test(String(i.src));
     }).map(function (i) {
       var r = i.getBoundingClientRect();
@@ -180,6 +181,8 @@ async function etskinCapture(screen) {
       imageHeights: el ? all('img', el).filter(laidOut).map(function (i) { return round(i.getBoundingClientRect().height); }) : [],
       box: barTop !== null && barHeight !== null ? { top: round(barTop), bottom: round(barTop + barHeight) } : null,
       marks: marks,
+      // The side panel closed to its rail shows no brand, as the new UI's does.
+      brandOnRail: !!document.querySelector('.etskinNavBrandCollapsed'),
       clusterMid: clusterRect ? round(clusterRect.top + clusterRect.height / 2) : null,
       cluster: cluster ? {
         borderWidth: round(parseFloat(getComputedStyle(cluster).borderTopWidth) || 0),

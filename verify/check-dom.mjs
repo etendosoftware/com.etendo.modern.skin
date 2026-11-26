@@ -246,6 +246,11 @@ for (const screen of ['grid', 'form']) {
    * the height check could not see: the marks were hanging ten pixels above the top of the page.
    */
   const marks = t.marks || [];
+  if (t.brandOnRail && marks.length === 0) {
+    check(`${screen}: brand marks are inside the bar`, true, 'panel on its rail: no brand shown, as in the new UI');
+    check(`${screen}: brand marks share the cluster's axis`, true, 'panel on its rail: no brand shown');
+    continue;
+  }
   const clipped = marks.filter((m) => !t.box || m.top < t.box.top || m.bottom > t.box.bottom);
   check(`${screen}: brand marks are inside the bar`, marks.length > 0 && clipped.length === 0,
     marks.length === 0 ? 'no brand mark found on the bar'
