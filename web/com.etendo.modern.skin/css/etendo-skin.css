@@ -4553,6 +4553,49 @@
   --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7 M5.5 9.5V20h5v-6h3v6h5V9.5'/%3E%3C/svg%3E");
 }
 
+/*
+ * The workspace tab is the new UI's Home button (workspace-ui WindowTabs): a 32px disc in
+ * --color-baseline-0 with an 18px house, filled with the ink and the house in its contrast colour on
+ * hover and while the workspace is the open tab. SmartClient draws a tab as two sibling canvases, its
+ * shape and its label, so the shape is cleared and the disc is drawn on it, under the label. The
+ * workspace is always Core's first tab (it cannot be closed or moved), hence the first shape of the
+ * strip and the first label; the label's colour follows the shape's state through the strip.
+ */
+.etskin-on .OBTabBarMain > :nth-child(1 of div[class^="OBTabBarButtonMainTop"]) {
+  background: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.etskin-on .OBTabBarMain > :nth-child(1 of div[class^="OBTabBarButtonMainTop"])::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: calc(50% - 16px);
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background-color: #fcfcfd;
+  transition: background-color 120ms ease;
+}
+
+.etskin-on .OBTabBarMain > :nth-child(1 of div[class^="OBTabBarButtonMainTop"])[class*="Over"]::before,
+.etskin-on .OBTabBarMain > :nth-child(1 of div[class^="OBTabBarButtonMainTop"])[class*="Selected"]::before {
+  background-color: #2a1757;
+}
+
+.etskin-on .OBTabBarMain:has(> :nth-child(1 of div[class^="OBTabBarButtonMainTop"])[class*="Over"]) > :nth-child(1 of div:has(td[class^="OBTabBarButtonMainTitle"])) td[class^="OBTabBarButtonMainTitle"],
+.etskin-on .OBTabBarMain:has(> :nth-child(1 of div[class^="OBTabBarButtonMainTop"])[class*="Selected"]) > :nth-child(1 of div:has(td[class^="OBTabBarButtonMainTitle"])) td[class^="OBTabBarButtonMainTitle"] {
+  color: #ece8f6;
+}
+
+.etskin-on .OBTabBarMain td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
+  width: 18px;
+  height: 18px;
+  -webkit-mask-size: 18px 18px;
+  mask-size: 18px 18px;
+}
+
 .etskin-on [class^="OBTabBarButtonMainTop"][class*="Over"]:not([class*="Selected"]) {
   /* workspace-ui --color-baseline-0, the new UI's tab hover */
   background-color: #fcfcfd;
