@@ -1,9 +1,9 @@
 {
   "screen": "grid",
-  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795703743695__,tabTitle:__Sales%20Invoice__%7D%7D%5D%7D",
-  "recordedAt": "2026-11-26T14:35:44.717Z",
+  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795705146817__,tabTitle:__Sales%20Invoice__%7D%7D%5D%7D",
+  "recordedAt": "2026-11-26T14:59:07.804Z",
   "sources": {
-    "css/etendo-skin.css": "9858d8af85c0fdb1aceafaf0b0f622de0189c55a84b07ffc103768fb0f9226b9",
+    "css/etendo-skin.css": "9badc5d977999aca885872c06ccc89c8eb6822646883c2c39c9f831aa018416b",
     "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
     "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
     "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
@@ -37,7 +37,7 @@
       {
         "text": "Sales Invoice",
         "size": 20,
-        "weight": 700,
+        "weight": 600,
         "transform": "none",
         "color": "rgb(16, 24, 40)"
       },
@@ -1073,8 +1073,6 @@
       "12.5": 29
     },
     "uppercase": [],
-    "weight700": [
-      "Sales Invoice"
-    ]
+    "weight700": []
   }
 }

@@ -491,8 +491,9 @@ class or `--sk-*` token a UIKit view reads is changed.
   no fill when read-only, the danger colour when wrong. The label stays **above** the field, unlike the
   new UI's label on the left: the Application Dictionary lays every form out as a four-column grid
   (column spans, new lines, row spans), and moving the labels to the left broke that grid in a
-  prototype - fields overflowed, checkboxes moved and sections lost half their width. The height stays
-  the skin's 32px rather than the new UI's 42px, to keep the form as dense as the grid.
+  prototype - fields overflowed, checkboxes moved and sections lost half their width. The record
+  form's fields are 28px under 12px labels, one step below the skin's 32px elsewhere and well below
+  the new UI's 42px, so a section title stays larger than what it groups.
 - **Notes, attachments and linked items.** The three sections at the foot of every form take the new
   UI's values. The new note is a dashed box and each note a soft card with its author bar, deleted
   with a small cross. The attachment actions are rounded chips, without the brackets Core writes
@@ -684,6 +685,28 @@ JS was the alternative, but that would mean overriding a core function
 
 There the label is kept — it is `OBUIAPP_LOADING`, so unlike the boot screen's hardcoded string it
 is translated, and it is the only thing on that pane a screen reader can read.
+
+## Known differences from the design findings
+
+`verify/check-dom.mjs` measures the running skin against the design findings F1-F13
+(`verify/feedback.md`), whose thresholds were written against Etendo GO. Since ETP-6245 the reference
+is the new UI, and these assertions fail on purpose. Each is listed under `known` in
+`verify/criteria.json`, which reports it as KNOWN instead of FAIL.
+
+| Finding | Assertion | Why it differs |
+| --- | --- | --- |
+| F1 | 15 glyphs left of the right-anchored group (max 10) | The toolbar is the new UI's single pill with its glyphs inline; only extras go to the overflow. |
+| F1 | Intra-group pitch (max 36px) | The right-anchored group holds Filters and Fields, labelled buttons whose pitch is their width. |
+| F2 | Field height (min 32px) | The record form's fields are 28px (see *Form fields*). |
+| F3 | Largest tinted region (max 15%) | The tint is the new UI's near-white panel surface `#f5f6fa` under the form, not lavender; lavender is the top band only. |
+| F4 | Row height (min 36px) | 32px rows, between the critique's 36px and the new UI's 28px, as dense as the form. |
+| F4 | Row separator alpha (max 0.08) | An opaque `#d1d5db` hairline, a step darker than the new UI's gray-200 so it survives every background (ETP-6448). |
+| F7 | Top bar 62px with a 20px title (max 56px, 16px) | The new UI's title: window and record at 20px semibold in the top bar. The status bar's 16px title is secondary. |
+| F8 | Item height (min 40px) | The new UI's 32px navigation rows. |
+| F8 | Distinct rail tiles | A tile carries the glyph of what it opens (folder, window, report, process), so two folders share it. |
+| F9 | Section band painted | The new UI's sections are white card heads with an icon and a chevron. |
+| F10 | Distinct font sizes (max 5) | The new UI's 12.5px cells and 12.8px (0.8rem) grid headers sit between 12px and 13px. |
+| F11 | Gap between top-bar chips (min 6px) | The new UI's 4px (`gap: 0.25rem` in its navigation bar). |
 
 ## Conventions the stylesheet follows
 

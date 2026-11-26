@@ -1770,7 +1770,7 @@
 
 .etskin-on .etskin-top-title-main {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 26px;
   color: var(--sk-text);
 }
@@ -1782,7 +1782,7 @@
 
 .etskin-on .etskin-top-title-record {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 26px;
   color: var(--sk-text);
 }

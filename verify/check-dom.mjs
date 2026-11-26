@@ -40,8 +40,11 @@ function finding(id, title) {
   results.push(currentFinding);
 }
 
+// A failing check listed under criteria.known is a deliberate difference (README, Known differences).
+const KNOWN = criteria.known || [];
 function check(name, ok, detail) {
-  currentFinding.checks.push({ name, ok: !!ok, detail });
+  const known = KNOWN.some((k) => k.finding === currentFinding.id && name.endsWith(k.check));
+  currentFinding.checks.push({ name, ok: !!ok, known, detail });
 }
 
 function rgbOf(value) {
@@ -373,16 +376,27 @@ finding('F13', 'The login page belongs to the same product');
 // ---------------------------------------------------------------- reporting
 
 let failed = 0;
+let knownCount = 0;
 let total = 0;
 for (const f of results) {
-  const bad = f.checks.filter((c) => !c.ok);
+  const bad = f.checks.filter((c) => !c.ok && !c.known);
   failed += bad.length;
+  knownCount += f.checks.filter((c) => !c.ok && c.known).length;
   total += f.checks.length;
   const mark = bad.length === 0 ? 'PASS' : 'FAIL';
   console.log(`\n[${mark}] ${f.id} — ${f.title}`);
   for (const c of f.checks) {
-    console.log(`   ${c.ok ? '  ok' : 'FAIL'}  ${c.name}: ${c.detail}`);
+    const tag = c.ok ? '  ok' : (c.known ? 'KNOWN' : 'FAIL');
+    console.log(`   ${tag}  ${c.name}: ${c.detail}`);
   }
 }
-console.log(`\n[ux-dom] ${total - failed}/${total} assertions hold across ${SCREENS.length} recorded screens.`);
+// An entry no failing check matches any more is stale: the skin now meets that threshold.
+for (const k of KNOWN) {
+  const f = results.find((r) => r.id === k.finding);
+  if (!f || !f.checks.some((c) => !c.ok && c.name.endsWith(k.check))) {
+    console.log(`\n[ux-dom] known difference no longer needed: ${k.finding} "${k.check}" - remove it from criteria.json`);
+  }
+}
+console.log(`\n[ux-dom] ${total - failed - knownCount}/${total} assertions hold, ${knownCount} known differences, ` +
+  `${failed} failing, across ${SCREENS.length} recorded screens.`);
 process.exit(failed === 0 ? 0 : 1);

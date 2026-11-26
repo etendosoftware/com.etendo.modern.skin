@@ -37,8 +37,7 @@ branch you are on before recording, or the check refuses the recordings.
 ## Reading the result
 
 The thresholds are the ones the critique was written with, against Etendo GO. Since ETP-6245 the
-reference is the new UI (`workspace-ui` on `main`), and several assertions fail on values the skin
-takes from it on purpose: the 62px top bar and its 20px title, 32px navigation rows and grid rows,
-white section card heads, one toolbar pill with its glyphs inline, the 4px gap between the top-bar
-chips, and the 28px form fields. The status of each finding, and which failures are deliberate, is
-recorded in ETP-5919.
+reference is the new UI (`workspace-ui` on `main`), and some assertions fail on values the skin takes
+from it on purpose. Those are listed under `known` in `criteria.json`, with the reasons in the main
+README (*Known differences from the design findings*), and are reported as `KNOWN`: the run passes
+when nothing else fails. A known assertion that starts passing is flagged so its entry can go.
