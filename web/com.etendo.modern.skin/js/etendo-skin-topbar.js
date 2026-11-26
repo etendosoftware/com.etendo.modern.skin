@@ -675,7 +675,11 @@
       return;
     }
 
-    ordered.push(logos);
+    // With the side navigation the brand heads the panel (etendo-skin-nav.js), not the bar.
+    var brandSlot = OB.ETSkin.nav && OB.ETSkin.nav.brandSlot;
+    if (!brandSlot) {
+      ordered.push(logos);
+    }
     ordered.push(makeTitle());
     for (i = 0; i < members.length; i++) {
       member = members[i];
@@ -722,7 +726,7 @@
     }
     logos.layoutLeftMargin = 0;
     logos.layoutRightMargin = 12;
-    if (OB.ETSkin.nav && logos.setWidth) {
+    if (OB.ETSkin.nav && !brandSlot && logos.setWidth) {
       logos.setWidth(BRAND_WIDTH);
     }
     // As tall as the tray: the logo's line box measured a pixel more and made the bar 63px.
@@ -730,9 +734,26 @@
       logos.setOverflow('hidden');
       logos.setHeight(BUTTON + 2 * TRAY_PAD);
     }
-    top.etskinBrand = logos;
+    top.etskinBrand = brandSlot ? null : logos;
 
     top.setMembers(ordered);
+    if (brandSlot) {
+      // The logos row was built to hug its content on the bar; in the head it takes the head's width.
+      // The head leaves the logos 212px beside its toggle: 8px in and 4px between them, so the
+      // company's logo and Etendo's mark fit side by side.
+      logos.layoutLeftMargin = 8;
+      logos.membersMargin = 4;
+      logos.setWidth('*');
+      // Core draws Etendo's 150px mark in a 100px canvas, which cut its last letter.
+      if (OB.TopLayout.OpenbravoLogo && OB.TopLayout.OpenbravoLogo.setWidth) {
+        OB.TopLayout.OpenbravoLogo.setWidth(112);
+      }
+      // Before the toggle that ends the head; hidden while the panel is a rail.
+      brandSlot.addMember(logos, 0);
+      if (OB.ETSkin.nav.collapsed && OB.ETSkin.nav.collapsed()) {
+        logos.hide();
+      }
+    }
   }
 
   /*
@@ -780,7 +801,7 @@
       });
     }
 
-    OB.ETSkin.topBar = { tray: OB.NavBar, chip: chip, first: moveFirst, refreshTitle: scheduleTitle };
+    OB.ETSkin.topBar = { tray: OB.NavBar, chip: chip, first: moveFirst, refreshTitle: scheduleTitle, fit: fit };
   }
 
   // ------------------------------------------------------------------ main

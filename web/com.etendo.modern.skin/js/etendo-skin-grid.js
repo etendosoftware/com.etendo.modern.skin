@@ -343,6 +343,9 @@
 
   // -------------------------------------------------------------------- main
 
+  // The filter row's clear-filters funnel: as wide as a toolbar glyph's hit area, less its gaps.
+  var FUNNEL_WIDTH = 28;
+
   // The top bar reads the root grid's count through this.
   OB.ETSkin.countText = countText;
 
@@ -468,6 +471,32 @@
   } catch (e) {
     if (typeof console !== 'undefined' && console.warn) {
       console.warn('Etendo Modern Skin could not adjust the grid', e);
+    }
+  }
+
+  /*
+   * The funnel that clears a list's filters is SmartClient's filter row action button. SmartClient
+   * gives it the width of the vertical scrollbar and parks it over the scrollbar's column, at the
+   * row's trailing end, outside the part that scrolls sideways; the filter cells are laid out short
+   * of it. The skin's scrollbars take no room, so the button measured nothing and the funnel showed
+   * as a sliver. A filter row reports a 28px scrollbar instead, so SmartClient itself sizes and
+   * places the button and the cells around a slot that stays in reach however far the list scrolls.
+   * (Correcting the widths after SmartClient's layout fought it: each pass undid the other's and the
+   * page froze.)
+   */
+  try {
+    if (isc.RecordEditor) {
+      var originalScrollbarSize = isc.RecordEditor.getPrototype().getScrollbarSize;
+      isc.RecordEditor.addProperties({
+        getScrollbarSize: function () {
+          var size = originalScrollbarSize.apply(this, arguments);
+          return this.isAFilterEditor && this.isAFilterEditor() ? Math.max(size, FUNNEL_WIDTH) : size;
+        }
+      });
+    }
+  } catch (e) {
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn('Etendo Modern Skin could not widen the filter funnel', e);
     }
   }
 })();

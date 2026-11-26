@@ -95,5 +95,64 @@
       "allowPanelBlur": false,
       "maxFooterSize": 12
     }
-  }
+  },
+  "knownNote": "Assertions that fail on purpose since the reference became the new UI (ETP-6245). check-dom.mjs reports a failing check that matches one as KNOWN; the reasons are in the README, Known differences from the design findings. Matched by finding and by the end of the check name.",
+  "known": [
+    {
+      "finding": "F1",
+      "check": "glyphs left of the right-anchored group"
+    },
+    {
+      "finding": "F1",
+      "check": "intra-group pitch"
+    },
+    {
+      "finding": "F2",
+      "check": "input height"
+    },
+    {
+      "finding": "F3",
+      "check": "largest single-colour non-white region"
+    },
+    {
+      "finding": "F4",
+      "check": "row height"
+    },
+    {
+      "finding": "F4",
+      "check": "row separator is a hairline"
+    },
+    {
+      "finding": "F7",
+      "check": "top-bar text size"
+    },
+    {
+      "finding": "F7",
+      "check": "top-bar height"
+    },
+    {
+      "finding": "F7",
+      "check": "the open record is titled"
+    },
+    {
+      "finding": "F8",
+      "check": "item height"
+    },
+    {
+      "finding": "F8",
+      "check": "rail tiles are distinguishable"
+    },
+    {
+      "finding": "F9",
+      "check": "band is painted"
+    },
+    {
+      "finding": "F10",
+      "check": "distinct font sizes"
+    },
+    {
+      "finding": "F11",
+      "check": "gap between buttons"
+    }
+  ]
 }

@@ -36,7 +36,7 @@ depend on this one:
 | `OB.ETSkin` | Published by `etendo-skin.js` when the skin is on. Every script, here or in an application, stands down without it. |
 | `OB.ETSkin.tokens` | The resolved palette. |
 | `OB.ETSkin.statusBadge(value, label)` | The document status badge: each status value maps to one of five tones (`STATUS_TONES` in `etendo-skin.js`), drawn as the new UI's filled tag - grey, accent, green, yellow, red. Which status takes which tone copies the new UI's `statusConfig`. The new UI itself colours the badge from `AD_REF_LIST.EM_ETMETA_COLOR` (`com.etendoerp.metadata`), which only its template fills, for five values; reading that column here instead is an open decision. The grid uses it, and so does any screen that shows a status. |
-| `OB.ETSkin.topBar` | `{ tray, chip, first, refreshTitle }` - `refreshTitle()` re-reads the title beside the brand; `chip(wrapper, role, active)` dresses a navigation bar button as one of the tray's icon chips, marked `etskin-tray-chip` so it keeps the round shape without the shell naming its role. A module that passes a role ships the icon for it. |
+| `OB.ETSkin.topBar` | `{ tray, chip, first, refreshTitle, fit }` - `refreshTitle()` re-reads the title beside the brand; `fit()` resizes the bar's members to the room it has; `chip(wrapper, role, active)` dresses a navigation bar button as one of the tray's icon chips, marked `etskin-tray-chip` so it keeps the round shape without the shell naming its role. A module that passes a role ships the icon for it. |
 | `OB.ETSkin.countText(grid)` | The grid's record count as words ("128 records", "more than 100 records"), or `''`. Published by `etendo-skin-grid.js`; the top bar shows it beside the title. |
 | `OB.ETSkin.labels`, `OB.ETSkin.navIcons`, `OB.ETSkin.trayCreateNew` | Optional overrides. Nothing here defines them; every read falls back to a default. |
 | The `--sk-*` tokens and the `.etskin-on` gate | The whole palette as CSS custom properties, and the class that switches the skin on. |
@@ -50,8 +50,8 @@ depend on this one:
 | `web/com.etendo.modern.skin/js/etendo-skin.js` | Resolves the palette per session and writes the custom properties onto `<html>`. Also overrides the SmartClient sizes that live in JS rather than CSS, and publishes `OB.ETSkin`. |
 | `web/com.etendo.modern.skin/js/etendo-skin-nav.js` | Builds the left navigation panel out of `OB.Application.menu`. Stands down unless the script above ran. |
 | `web/com.etendo.modern.skin/js/etendo-skin-topbar.js` | Reorders the top bar and sizes its buttons. Same rule. |
-| `web/com.etendo.modern.skin/js/etendo-skin-toolbar.js` | Arranges the view toolbar as the new UI's single pill: one run of glyphs in its order, the process buttons in one Actions menu after it, and the view controls (Filters, Fields / Columns) on the right. Buttons other modules add spill into an overflow menu once the run is full. Same rule. |
-| `web/com.etendo.modern.skin/js/etendo-skin-form.js` | What a form's stylesheet cannot reach: the required marker, the link glyph, the section chevrons, the status bar title and the child panes. Also the standard windows' GO design - the Fields / Columns menu, the Filters button and the light frame; see [The standard windows](#the-standard-windows). Same rule. |
+| `web/com.etendo.modern.skin/js/etendo-skin-toolbar.js` | Arranges the view toolbar as the new UI's single pill: one run of glyphs in its order, the process buttons in one Actions menu after it, and the view controls (Fields / Columns and the stock view glyphs) on the right. Buttons other modules add spill into an overflow menu once the run is full. Same rule. |
+| `web/com.etendo.modern.skin/js/etendo-skin-form.js` | What a form's stylesheet cannot reach: the required marker, the link glyph, the section chevrons, the status bar title and the child panes. Also the standard windows' GO design - the Fields / Columns menu and the light frame; see [The standard windows](#the-standard-windows). Same rule. |
 | `web/com.etendo.modern.skin/js/etendo-skin-grid.js` | What a grid's stylesheet cannot reach: the row height, the header alignment, the frozen pane, the status badge, and the reference cells as links to their record (the form's own `OB.Utilities.openDirectView` call). Same rule. |
 | `src/com/etendo/modern/skin/LoginSignInProvider.java` | Puts the login stylesheet on the login page through the core's `SignInProvider` seam. |
 | `web/com.etendo.modern.skin/css/etendo-skin-login.css` | The login page, loaded by the provider above. |
@@ -225,7 +225,7 @@ framework is counting on, so the sheet-on-a-desk look is built out of things tha
 - The sheet is not inset. It gets rounded top corners and the canvas shows through around the tab
   strip, which reads the same at a glance.
 - The workspace's left column is gone with the side navigation (ETP-6451): its Recent Views and
-  Recent Documents are in the panel, and its actions are a row above the widgets. In top bar mode
+  Recent Documents are in the panel, and its actions are a row above the widgets; Add Widget and Admin Others open their dialog as a popover over the widgets instead of inside the row. In top bar mode
   the stock column stays, styled as before.
 - Both tab strips mark the selected tab the new UI's way, with a 2px underline in the ink, drawn
   as an inset shadow: every tab button carries an inline `width` and `height` SmartClient measured,
@@ -286,6 +286,17 @@ Filtering is two classes: one on the root, which opens every subtree so a match 
 visible without expanding anything, and one on each group that contains no match, which takes it
 out of the flow. Clearing the box drops both and the panel is back to whatever the user had open —
 the expanded state is never thrown away.
+
+**The side panel runs the full height**, as the new UI's does: `etendo-skin-nav.js` turns the page's
+`[top bar, main view]` into a row of `[panel column, column of [top bar, main view]]`, moving core's
+canvases rather than rebuilding them, and heads the panel with a 62px brand row
+(`OB.ETSkin.nav.brandSlot`, class `etskinNavBrand`) where `etendo-skin-topbar.js` puts the company
+and Etendo logos. Collapsed to the rail, the head narrows with it and the logos are hidden. The open / close toggle ends that head, as in the new UI: right of the logos
+while open, alone at the top of the rail while closed (the panel's own head then keeps only its
+filter). Opening and closing change the width in one step - animating it made SmartClient lay the
+whole window out on every frame - and then slide the content column to its new place with a 180ms
+CSS transform. The top bar is refitted on each collapse (`OB.ETSkin.topBar.fit`). With the
+navigation in the top bar instead, none of this happens and the logos stay on the bar.
 
 The geometry comes from Etendo GO's side navigation, the earlier reference, measured from its own
 markup: 56px
@@ -358,7 +369,8 @@ Almost all of that is a stylesheet problem. Two things are not, and they are the
   are re-ordered to `[logos, spacers, navbar]` - the *same* canvases, moved rather than rebuilt, so
   `OB.TopLayout.CompanyImageLogo` and `OB.TopLayout.OpenbravoLogo` remain the objects core handed
   out and anything holding a reference to them still works. The logo container was built to hug the
-  right, so it is flipped to `left`, where it becomes the brand.
+  right, so it is flipped to `left`, where it becomes the brand. With the side navigation on, the
+  logos leave the bar for the head of the panel instead (see *The side panel runs the full height*).
 - **Measurements.** SmartClient writes `width` and `height` inline after measuring, and it measures
   a toolstrip member by what that member *draws*. The profile button is the case in point: it is
   40px wide and still measured 59, because the hidden menu arrow keeps its slot. Each button is
@@ -370,7 +382,7 @@ Everything else - the glyphs, the fills, the hover and selected states - is CSS.
 The bar's geometry follows Etendo GO's top bar, measured from its own markup: 62px and no rule
 under it. Its colour is the new UI's header band: a pale lavender (`--sk-topbar-surface`,
 `#e4e6f9`) that the window strip under it shares, so bar and strip read as one band above the
-content. The brand column is 260px when the side navigation is on, so what follows starts over the
+content. With the side navigation on, the bar starts beside the panel, so its title starts over the
 content. The utilities are the new UI's round white chips: a 40px `--sk-surface` disc with a muted
 glyph and a neutral tint under the pointer or while their menu is open; the avatar keeps its tinted
 disc, and any chip another module hands to `chip()` stays round.
@@ -427,7 +439,7 @@ Every button of the window toolbar and the top bar follows one state model (ETP-
 UI's values (workspace-ui `IconButton` and the toolbar's button styles). The tokens are
 `--sk-btn-*` in the last section of `etendo-skin.css`.
 
-| State | Quiet button (every glyph, Filters, Fields, Actions, the top bar discs) | Primary button (New, Save) |
+| State | Quiet button (every glyph, Fields, Actions, the top bar discs) | Primary button (New, Save) |
 | --- | --- | --- |
 | Normal | no fill, glyph `#3f4a7e` | fill `#2a1757`, glyph and word `#fcfcfd` |
 | Hover | fill `#2a1757`, glyph and word `#fcfcfd` | fill `#1b0f3a`, glyph and word `#fcfcfd` |
@@ -453,9 +465,9 @@ canvases, never `OBStandardWindow`, and none of this reaches them: every rule ha
 `etskin-go`, the class `etendo-skin-form.js` puts on a standard window's root, and no SmartClient
 class or `--sk-*` token a UIKit view reads is changed.
 
-- **The list.** 44px rows under a 40px header; the filter row is folded behind a Filters button that
-  brings it back and counts the criteria in force - never the link of a child tab to its parent. The
-  row is hidden, not removed, because Core reads it to know the grid is filtered and to clear it.
+- **The list.** 44px rows under a 40px header, with the filter row always on screen, as in Classic
+  and the new UI. The GO line folded it behind a Filters button; ETP-5931 dropped the button. A list
+  under a filter still shows it with the dot on the stock filter button.
 - **Fields and Columns.** One toolbar button offers the form's fields while the form shows and the
   grid's columns while the list shows. Any field the user's role gets can be hidden or shown,
   required ones included, and so can a whole section - a field group, or the notes, linked items,
@@ -480,10 +492,12 @@ class or `--sk-*` token a UIKit view reads is changed.
   never cut (ETP-6448); the hairline is `#d1d5db`, a step darker than the new UI's gray-200, so the
   cards read apart. A spacer whose fields the display logic hid on both sides (the SII section of a
   Sales Order outside Spain) goes to no height, so it no longer leaves a 20px hole between two cards.
-- **Record header.** The status bar above the form (identifier, Document Status, totals) is the new
-  UI's record header: a card with 12px corners, a 50% gray-100 fill and a soft shadow, inset to line
-  up with the form instead of a square band. It is a pseudo-element inside the bar, which SmartClient
-  sizes and places.
+- **Record header and the form's card.** The status bar above the form (identifier, Document Status,
+  totals) floats on the window's ground with no fill or rule, as the new UI's record header does
+  above its first card. The form's white sheet is drawn as that card: a `#e5e7eb` hairline ring and
+  12px corners. The new UI gives every section a card holding its fields; here the fields are rows
+  of the form's one table, so the sheet holds them all and each section keeps its card head inside
+  it (chosen on review in ETP-5931 among four mock-ups).
 - **Form and lines.** The child tab strip under a form takes the new UI's panel surface (`#f5f6fa`)
   with a hairline along its top, so the form ends where the lines begin.
 - **Form fields** (decided in ETP-6282). The field takes the new UI's look: no box, a pale neutral fill
@@ -491,8 +505,9 @@ class or `--sk-*` token a UIKit view reads is changed.
   no fill when read-only, the danger colour when wrong. The label stays **above** the field, unlike the
   new UI's label on the left: the Application Dictionary lays every form out as a four-column grid
   (column spans, new lines, row spans), and moving the labels to the left broke that grid in a
-  prototype - fields overflowed, checkboxes moved and sections lost half their width. The height stays
-  the skin's 32px rather than the new UI's 42px, to keep the form as dense as the grid.
+  prototype - fields overflowed, checkboxes moved and sections lost half their width. The record
+  form's fields are 28px under 12px labels, one step below the skin's 32px elsewhere and well below
+  the new UI's 42px, so a section title stays larger than what it groups.
 - **Notes, attachments and linked items.** The three sections at the foot of every form take the new
   UI's values. The new note is a dashed box and each note a soft card with its author bar, deleted
   with a small cross. The attachment actions are rounded chips, without the brackets Core writes
@@ -501,10 +516,10 @@ class or `--sk-*` token a UIKit view reads is changed.
   positions, so only colour, border, radius and type change: every box keeps its size, and the
   new UI's drop zone has no counterpart - adding a file is still Core's dialog.
 - **The toolbar and the frame.** The strip is one pill, as in the new UI: New (filled, indigo) and
-  Save carry their word - New in the list, Save in the form - then refresh in its own circle, delete,
+  Save carry their word - New in the list, Save in the form - then refresh (drawn like the other glyphs: the new UI's lavender disc was dropped on review), delete,
   undo and the occasional glyphs (clone, export, print, link, email, attach) inline, then Actions,
-  the process buttons as one menu in the place of the new UI's "Available Process". Filters and
-  Fields / Columns sit on the right with the stock view glyphs. The record count moved to the top
+  the process buttons as one menu in the place of the new UI's "Available Process". Fields /
+  Columns sits on the right with the stock view glyphs. The record count moved to the top
   bar. The new UI's fullscreen button has no stock control behind it and is not drawn. The desk
   and the window strip take the top bar's lavender whatever the tab shows - a standard window, the
   workspace, an EMOS view or a window still loading - so the strip never changes colour between
@@ -684,6 +699,28 @@ JS was the alternative, but that would mean overriding a core function
 
 There the label is kept — it is `OBUIAPP_LOADING`, so unlike the boot screen's hardcoded string it
 is translated, and it is the only thing on that pane a screen reader can read.
+
+## Known differences from the design findings
+
+`verify/check-dom.mjs` measures the running skin against the design findings F1-F13
+(`verify/feedback.md`), whose thresholds were written against Etendo GO. Since ETP-6245 the reference
+is the new UI, and these assertions fail on purpose. Each is listed under `known` in
+`verify/criteria.json`, which reports it as KNOWN instead of FAIL.
+
+| Finding | Assertion | Why it differs |
+| --- | --- | --- |
+| F1 | 15 glyphs left of the right-anchored group (max 10) | The toolbar is the new UI's single pill with its glyphs inline; only extras go to the overflow. |
+| F1 | Intra-group pitch (max 36px) | The right-anchored group holds Fields / Columns, a labelled button whose pitch is its width. |
+| F2 | Field height (min 32px) | The record form's fields are 28px (see *Form fields*). |
+| F3 | Largest tinted region (max 15%) | The tint is the new UI's near-white panel surface `#f5f6fa` - under the form, and the grid's filter row, always on screen - not lavender; lavender is the top band only. |
+| F4 | Row height (min 36px) | 32px rows, between the critique's 36px and the new UI's 28px, as dense as the form. |
+| F4 | Row separator alpha (max 0.08) | An opaque `#d1d5db` hairline, a step darker than the new UI's gray-200 so it survives every background (ETP-6448). |
+| F7 | Top bar 62px with a 20px title (max 56px, 16px) | The new UI's title: window and record at 20px semibold in the top bar. The status bar's 16px title is secondary. |
+| F8 | Item height (min 40px) | The new UI's 32px navigation rows. |
+| F8 | Distinct rail tiles | A tile carries the glyph of what it opens (folder, window, report, process), so two folders share it. |
+| F9 | Section band painted | The new UI's sections are white card heads with an icon and a chevron. |
+| F10 | Distinct font sizes (max 5) | The new UI's 12.5px cells and 12.8px (0.8rem) grid headers sit between 12px and 13px. |
+| F11 | Gap between top-bar chips (min 6px) | The new UI's 4px (`gap: 0.25rem` in its navigation bar). |
 
 ## Conventions the stylesheet follows
 

@@ -528,9 +528,10 @@
   --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h11l5 5v11H4z M8 4v5h6V4 M8 20v-6h8v6'/%3E%3C/svg%3E");
 }
 
+/* Drawn on the 24px grid's centre (x 4-20, y 3-20) so it sits on the toolbar's line like the rest. */
 .etskin-on .OBToolbarIconButton_icon_saveclose,
 .etskin-on .OBToolbarIconButton_icon_savecloseX {
-  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h10l4 4v6 M8 4v4h5V4 M4 14v6h8 M16 17l5 5 M21 17l-5 5'/%3E%3C/svg%3E");
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 3h10l4 4v5 M8 3v4h5V3 M4 3v14h8 M15 15l5 5 M20 15l-5 5'/%3E%3C/svg%3E");
 }
 
 .etskin-on .OBToolbarIconButton_icon_saveView {
@@ -572,8 +573,9 @@
   --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11.5l-8.4 8.4a5 5 0 0 1-7.1-7.1l8.5-8.5a3.5 3.5 0 0 1 4.9 4.9l-8.4 8.5a2 2 0 0 1-2.8-2.8l7.8-7.8'/%3E%3C/svg%3E");
 }
 
+/* Lucide's undo-2, on the 24px grid's centre: the earlier arc ran to the grid's foot and sat low. */
 .etskin-on .OBToolbarIconButton_icon_undo {
-  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 7L4 12l5 5 M4 12h10a6 6 0 0 1 0 12h-2'/%3E%3C/svg%3E");
+  --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 14L4 9l5-5 M4 9h10.5a5.5 5.5 0 0 1 0 11H11'/%3E%3C/svg%3E");
 }
 
 .etskin-on .OBToolbarIconButton_icon_redo {
@@ -1770,7 +1772,7 @@
 
 .etskin-on .etskin-top-title-main {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 26px;
   color: var(--sk-text);
 }
@@ -1782,7 +1784,7 @@
 
 .etskin-on .etskin-top-title-record {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 26px;
   color: var(--sk-text);
 }
@@ -1899,10 +1901,11 @@
   color: #00030d !important;
 }
 
-.etskin-on .etskin-home-actions [class^="OBMyOBDialog"],
-.etskin-on .etskin-home-actions .OBMyOBDialog {
+/* The Add Widget and Admin Others popovers (etendo-skin-nav.js, floatDialogs), over the widgets. */
+.etskin-on .etskin-home-dialog {
+  border: 0 !important;
   border-radius: 12px;
-  box-shadow: 0 0 0 1px #e3e5ea;
+  box-shadow: 0 0 0 1px #e3e5ea, 0 8px 24px rgb(0 3 13 / 12%);
   background-color: var(--sk-surface);
 }
 
@@ -2573,6 +2576,64 @@
   border-inline-end: 1px solid var(--sk-nav-border);
 }
 
+/*
+ * The brand heads the panel, as in the new UI: the company's logo and Etendo's on the panel's own
+ * surface, with the panel's right rule and a hairline under it where the top bar's floor is. The
+ * row is etendo-skin-nav.js's; the logos are core's, moved there by etendo-skin-topbar.js. Collapsed
+ * to the rail, the logos are hidden and the head keeps only its toggle.
+ */
+.etskin-on .etskinNavBrand {
+  background-color: var(--sk-nav-surface);
+  border-inline-end: 1px solid var(--sk-nav-border);
+  box-shadow: inset 0 -1px 0 var(--sk-nav-border);
+  box-sizing: border-box;
+}
+
+.etskin-on .etskinNavBrandCollapsed img[src*="ShowImageLogo"] {
+  max-width: 36px;
+  height: auto;
+}
+
+.etskin-on .etskinNavBrandCollapsed a[href*="etendo"] {
+  display: none;
+}
+
+/*
+ * The open / close toggle ends the brand head, as in the new UI: right of the logos while the panel
+ * is open, alone at the top of the rail while it is closed. The panel's own head then keeps only its
+ * filter (etskinNavHeaded); without the brand head the toggle stays in the panel's head as before.
+ */
+/* Behind the content as it slides, the panel's surface, so the panel reads as narrowing or widening. */
+.etskin-on .etskinNavRow {
+  background-color: var(--sk-nav-surface);
+}
+
+.etskin-on .etskin-nav-headtoggle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.etskin-on .etskin-nav-headtoggle .etskin-nav-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--sk-radius);
+}
+
+.etskin-on .etskin-nav-headtoggle .etskin-nav-toggle::before {
+  width: 20px;
+  height: 20px;
+  -webkit-mask-size: 20px 20px;
+  mask-size: 20px 20px;
+}
+
+.etskin-on .etskinNavHeaded .etskin-nav-head > .etskin-nav-toggle,
+.etskin-on .etskinNavHeaded .etskin-nav-collapsed .etskin-nav-head::after {
+  display: none;
+}
+
 /* -------------------------------------------------------------- nav head */
 
 /*
@@ -3140,7 +3201,8 @@
   border-radius: var(--sk-radius);
 }
 
-.etskin-on .etskin-nav-collapsed .etskin-nav-toggle::before {
+.etskin-on .etskin-nav-collapsed .etskin-nav-toggle::before,
+.etskin-on .etskinNavBrandCollapsed .etskin-nav-toggle::before {
   width: 20px;
   height: 20px;
   -webkit-mask-size: 20px 20px;
@@ -3645,11 +3707,15 @@
   pointer-events: none;
 }
 
-/* Refresh sits in its own white circle, as the new UI draws it beside New. */
+/*
+ * Refresh is drawn like every other glyph of the pill: round, with no fill or ring of its own.
+ * workspace-ui's TopToolbar fills it with the table header's lavender (#cbcff1); in the shell that
+ * read as one button out of line with the rest, so it was dropped on review (ETP-5931).
+ */
 .etskin-on .etskin-go [data-etskin-group="record"] {
   border-radius: 999px;
-  background-color: var(--sk-surface);
-  box-shadow: 0 0 0 1px var(--sk-nav-border);
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .etskin-on .etskin-go [class^="OBToolbarIconButton"] {
@@ -4012,25 +4078,23 @@
 }
 
 /*
- * The record's heading and its facts as the new UI's record header (workspace-ui FormView
- * StatusBar): a card with 12px corners, a 50% gray-100 fill and a soft shadow, inset to line up with
- * the form's sections instead of a square band across the whole sheet. SmartClient sizes and places
- * the bar, so the card is a pseudo-element inside it; the bar's own fill and rule go.
+ * The record's heading and its facts float on the window's ground, as the new UI's form draws them
+ * above its first card: no fill, no rule, no card of their own (ETP-5931, variant D on review).
  */
 .etskin-on .etskin-go .OBStatusBar {
   background-color: transparent;
   border-bottom-color: transparent;
 }
 
-.etskin-on .etskin-go .OBStatusBar::before {
-  content: "";
-  position: absolute;
-  /* 2px clear above and below, or the bar's own clipping would cut the shadow off. */
-  inset: 2px 16px 2px 20px;
+/*
+ * The form's fields stand on one white sheet, drawn as the new UI's card: a hairline ring and 12px
+ * corners. In the new UI every section is a card that holds its fields; here the fields are rows of
+ * the form's one table, so the sheet is the card that holds them all, and each section keeps its
+ * card head inside it.
+ */
+.etskin-on .etskin-go .OBViewForm {
   border-radius: 12px;
-  background-color: #f9fafb;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
-  pointer-events: none;
+  box-shadow: inset 0 0 0 1px #e5e7eb;
 }
 
 /*
@@ -4353,54 +4417,10 @@
 /* --------------------------------------------------------- GO action row */
 
 /*
- * The list's action row as GO lays it out: Filters first, an outlined button with its funnel, its
- * word and - while filters are in force - their count; New as the filled primary with its word; the
- * rest quiet glyphs. In the form, Save carries its word instead, filled while there is something to
- * save and outlined while there is not.
+ * The list's action row: New as the filled primary with its word; the rest quiet glyphs. In the
+ * form, Save carries its word instead, filled while there is something to save and outlined while
+ * there is not.
  */
-.etskin-on .etskin-tb-filters {
-  border: 1px solid var(--sk-nav-border);
-  border-radius: var(--sk-radius);
-  background-color: var(--sk-surface);
-  box-sizing: border-box;
-  transition: background-color 120ms ease, border-color 120ms ease;
-}
-
-.etskin-on .etskin-tb-filters:hover,
-.etskin-on .etskin-tb-filters[aria-pressed="true"] {
-  border-color: var(--sk-border-strong);
-  background-color: var(--sk-go-fill-soft);
-}
-
-.etskin-on .etskin-tb-filters::after {
-  content: var(--sk-filters-label, "") attr(data-badge);
-  position: absolute;
-  inset-inline-start: 34px;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  font-family: var(--sk-font);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--sk-text);
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.etskin-on .OBToolbarIconButton_icon_etskinFilters {
-  background-image: none;
-  background-color: var(--sk-go-icon);
-  -webkit-mask-position: 11px center;
-  mask-position: 11px center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: 16px 16px;
-  mask-size: 16px 16px;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18l-7 8.5V19l-4 2v-7.5z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18l-7 8.5V19l-4 2v-7.5z'/%3E%3C/svg%3E");
-}
-
 .etskin-on .etskin-go .etskin-tb-new {
   --sk-icon-color: var(--sk-surface);
   background-color: var(--sk-go-ink);
@@ -4412,7 +4432,8 @@
   background-color: var(--sk-go-ink-hover);
 }
 
-.etskin-on .etskin-go .etskin-tb-new [class^="OBToolbarIconButton"][class*="Over"] {
+/* Not the glyph cell: its background is the glyph's mask, and clearing it hid the icon on hover. */
+.etskin-on .etskin-go .etskin-tb-new [class^="OBToolbarIconButton"][class*="Over"]:not([class*="_icon_"]) {
   background-color: transparent;
 }
 
@@ -4546,6 +4567,49 @@
 .etskin-on .OBTabBarMain td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
   margin-inline-end: 0;
   --sk-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7 M5.5 9.5V20h5v-6h3v6h5V9.5'/%3E%3C/svg%3E");
+}
+
+/*
+ * The workspace tab is the new UI's Home button (workspace-ui WindowTabs): a 32px disc in
+ * --color-baseline-0 with an 18px house, filled with the ink and the house in its contrast colour on
+ * hover and while the workspace is the open tab. SmartClient draws a tab as two sibling canvases, its
+ * shape and its label, so the shape is cleared and the disc is drawn on it, under the label. The
+ * workspace is always Core's first tab (it cannot be closed or moved), hence the first shape of the
+ * strip and the first label; the label's colour follows the shape's state through the strip.
+ */
+.etskin-on .OBTabBarMain > :nth-child(1 of div[class^="OBTabBarButtonMainTop"]) {
+  background: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.etskin-on .OBTabBarMain > :nth-child(1 of div[class^="OBTabBarButtonMainTop"])::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: calc(50% - 16px);
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background-color: #fcfcfd;
+  transition: background-color 120ms ease;
+}
+
+.etskin-on .OBTabBarMain > :nth-child(1 of div[class^="OBTabBarButtonMainTop"])[class*="Over"]::before,
+.etskin-on .OBTabBarMain > :nth-child(1 of div[class^="OBTabBarButtonMainTop"])[class*="Selected"]::before {
+  background-color: #2a1757;
+}
+
+.etskin-on .OBTabBarMain:has(> :nth-child(1 of div[class^="OBTabBarButtonMainTop"])[class*="Over"]) > :nth-child(1 of div:has(td[class^="OBTabBarButtonMainTitle"])) td[class^="OBTabBarButtonMainTitle"],
+.etskin-on .OBTabBarMain:has(> :nth-child(1 of div[class^="OBTabBarButtonMainTop"])[class*="Selected"]) > :nth-child(1 of div:has(td[class^="OBTabBarButtonMainTitle"])) td[class^="OBTabBarButtonMainTitle"] {
+  color: #ece8f6;
+}
+
+.etskin-on .OBTabBarMain td[class^="OBTabBarButtonMainTitle"][align]:not(:has(table))::before {
+  width: 18px;
+  height: 18px;
+  -webkit-mask-size: 18px 18px;
+  mask-size: 18px 18px;
 }
 
 .etskin-on [class^="OBTabBarButtonMainTop"][class*="Over"]:not([class*="Selected"]) {
@@ -4882,7 +4946,6 @@
 }
 
 /* The words of the text buttons follow the glyph. */
-.etskin-on .etskin-go .etskin-tb-filters::after,
 .etskin-on .etskin-go .etskin-tb-fields::after,
 .etskin-on .etskin-go .etskin-tb-new::after,
 .etskin-on .etskin-go .etskin-tb-savelabel::after {
@@ -4897,10 +4960,14 @@
   box-shadow: none;
 }
 
-.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(td[class*="Over"]:not([class*="Disabled"])),
-.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(td[class*="Over"]:not([class*="Disabled"])),
-.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(td[class*="Down"]),
-.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(td[class*="Down"]) {
+/*
+ * Spelled like the quiet hover above (the same :has argument plus the button's class), or that rule
+ * outranks this one and the primary's hover paints the quiet hover's ink, its own resting colour.
+ */
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Over"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Over"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-new:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Down"]:not([class*="Disabled"])),
+.etskin-on .etskin-go .OBToolbar div.etskin-tb-primary:has(> table > tbody > tr > td[class^="OBToolbarIconButton_icon_"][class*="Down"]:not([class*="Disabled"])) {
   --sk-icon-color: var(--sk-btn-ink-hover);
   background-color: var(--sk-btn-primary-fill-hover) !important;
 }
@@ -5247,6 +5314,44 @@
 .etskin-on span[style*="/form/checked_Disabled.png"],
 .etskin-on span[style*="/DynamicForm/checked_Disabled.png"] {
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' rx='3' fill='%23c4c8d4' stroke='%23c4c8d4' stroke-width='1.5'/%3E%3Cpath d='M4.5 8.2l2.3 2.3 4.7-4.9' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+/*
+ * SmartClient sizes the checkbox span to its 13px stock image, so the 14px box above lost half a pixel
+ * of its outline on each side - most visibly in the grid's select column. The span is given the box's
+ * size; min-width and min-height win over the inline width and height.
+ */
+.etskin-on span[style*="/form/"][style*="checked"],
+.etskin-on span[style*="/DynamicForm/"][style*="checked"] {
+  min-width: 14px !important;
+  min-height: 14px !important;
+}
+
+/*
+ * The filter row's clear-filters funnel (Core's OBGridFilterFunnelIcon, a SmartClient Button sized in
+ * etendo-skin-grid.js): a 16px funnel in the ink, centred in its 28px slot, filled under the pointer
+ * like the toolbar's quiet glyphs. The stock image and its title are not drawn.
+ */
+.etskin-on [class^="OBGridFilterFunnelIcon"] {
+  background: none !important;
+  border: 0 !important;
+  font-size: 0 !important;
+  cursor: pointer;
+}
+
+.etskin-on [class^="OBGridFilterFunnelIcon"] img {
+  visibility: hidden;
+}
+
+.etskin-on div[class^="OBGridFilterFunnelIcon"]::after,
+.etskin-on td[class^="OBGridFilterFunnelIcon"]::after {
+  content: "";
+  position: absolute;
+  inset: calc(50% - 12px) calc(50% - 12px);
+  border-radius: 999px;
+  background-color: var(--sk-btn-ink, #3f4a7e);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18l-7 8.5V19l-4 2v-7.5z'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18l-7 8.5V19l-4 2v-7.5z'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
 }
 
 /* ------------------------------------------------------- grid error cells */
