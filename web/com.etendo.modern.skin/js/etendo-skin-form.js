@@ -448,12 +448,12 @@
  * see - and, for fields, the ones whose display logic holds for the record that is open.
  *
  * A REQUIRED FIELD THE USER HID. Validation, values and callouts are Etendo's and are left alone, so a
- * required field can be empty and off screen. Core keeps Save disabled while any required field is
- * empty, hidden or not, so the message bar says why, naming each hidden required field that is empty
- * with an action that shows the field and puts the focus in it. A save that still fails on a hidden
- * field - an autosave, a shortcut, an error from the server - gets the same line added to Core's own
- * error message. The reveal lasts until the form is given another record; it never changes the saved
- * choice.
+ * required field can be empty and off screen. The message bar names each hidden required field that
+ * is empty with an action that shows the field and puts the focus in it. Core's validation skips a
+ * hidden field, so a save - the button, a shortcut, an autosave - first shows every hidden required
+ * field that is empty and lets Core stop the save on it. An error from the server on a hidden field
+ * gets the same line added to Core's own error message. The reveal lasts until the form is given
+ * another record; it never changes the saved choice.
  *
  * HOW A FIELD IS HIDDEN. With the form's own API and the flag Core already uses for exactly this:
  * hiddenInForm, which the form reads to skip a field in its sections, its display logic wrapper
@@ -2378,6 +2378,28 @@
               }
             }
           }
+        };
+      }
+      var coreValidateForm = OB.ViewFormProperties.validateForm;
+      if (coreValidateForm) {
+        /*
+         * Core's validation skips a field hidden with hiddenInForm, so a required field the user hid
+         * and left empty reached the server and came back as a raw database error (ETP-6432). Every
+         * save - the button, the shortcut, the autosave - passes here first: the empty hidden required
+         * fields are shown for this record before Core validates, so Core stops the save with its own
+         * required-field error on a field that is now on screen.
+         */
+        OB.ViewFormProperties.validateForm = function () {
+          var missing, i;
+          try {
+            missing = isGoView(this.view) ? hiddenMissing(this) : [];
+            for (i = 0; i < missing.length; i++) {
+              revealField(this, missing[i].name);
+            }
+          } catch (e) {
+            // Core validates either way; at worst the server answers as before.
+          }
+          return coreValidateForm.apply(this, arguments);
         };
       }
     }
