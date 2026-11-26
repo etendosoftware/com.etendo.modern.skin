@@ -1,14 +1,14 @@
 {
   "screen": "form",
-  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795717475915__,tabTitle:__Sales%20Invoice__,targetTabId:__263__,targetRecordId:__ETP5928DRAFTINVOICE0000000000001__%7D%7D%5D%7D",
-  "recordedAt": "2026-11-26T18:24:41.282Z",
+  "href": "http://localhost:8080/etendo/#%7Bst:1,bm:%5B%7BviewId:__OBMyOpenbravoImplementation__,params:%7BmyOB:true,canClose:false,tabTitle:__Workspace__%7D%7D,%7BviewId:___167__,params:%7BwindowId:__167__,viewId:___167_1795717833150__,tabTitle:__Sales%20Invoice__,targetTabId:__263__,targetRecordId:__ETP5928DRAFTINVOICE0000000000001__%7D%7D%5D%7D",
+  "recordedAt": "2026-11-26T18:30:38.531Z",
   "sources": {
-    "css/etendo-skin.css": "9748c466dbfcd1e80c7e0c011c69f6daec07ba57406eb8ba4bf426d33b5d7f0b",
+    "css/etendo-skin.css": "46857d7095870801b78d15478033daa3a372201c8bebceb0a1bc6248d08dee53",
     "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
     "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
     "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
-    "js/etendo-skin-nav.js": "73b1e49448c8b197fcd6714805b49bac474455f452f9ba1230a4f4cda5655851",
-    "js/etendo-skin-topbar.js": "e1bf059603fb1ffcd7b35dce8ab6c53bbd6e7f3099e1949eb845b8d58516768c",
+    "js/etendo-skin-nav.js": "86d2580129ef19765be34d4c378d28e6618ae5a022e31129991b5d1a34d25516",
+    "js/etendo-skin-topbar.js": "9d9ab3a6bc454776c32ce87ada2f9e93be25ad37bcdd0802ce4101909af2b111",
     "js/etendo-skin-toolbar.js": "10f4ddda7ed517d5d2bd36ed874ae9418d5474bd9173910271cbd72b772b7ba1",
     "js/etendo-skin-form.js": "f90a1f65d658c69d2ac5c2fd691491ae6a4b338e77fd4299276b5877cd35d799",
     "js/etendo-skin-grid.js": "61a7346a19dc3377d66f406ea2c98c864929417730551383ffab496401d290ad"
