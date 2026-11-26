@@ -225,7 +225,7 @@ framework is counting on, so the sheet-on-a-desk look is built out of things tha
 - The sheet is not inset. It gets rounded top corners and the canvas shows through around the tab
   strip, which reads the same at a glance.
 - The workspace's left column is gone with the side navigation (ETP-6451): its Recent Views and
-  Recent Documents are in the panel, and its actions are a row above the widgets. In top bar mode
+  Recent Documents are in the panel, and its actions are a row above the widgets; Add Widget and Admin Others open their dialog as a popover over the widgets instead of inside the row. In top bar mode
   the stock column stays, styled as before.
 - Both tab strips mark the selected tab the new UI's way, with a 2px underline in the ink, drawn
   as an inset shadow: every tab button carries an inline `width` and `height` SmartClient measured,

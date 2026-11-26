@@ -45,6 +45,8 @@
   // The brand head over the panel: the top bar's height, so its hairline meets the bar's floor.
   var BRAND_HEIGHT = 62;
   var HEAD_TOGGLE_WIDTH = 48;
+  // The workspace's Add Widget and Admin Others popovers.
+  var DIALOG_WIDTH = 320;
 
   var sidebar = null; // the isc.Canvas
   var brandSlot = null; // the head the top bar puts the logos in (etendo-skin-topbar.js)
@@ -1219,6 +1221,57 @@
    */
   function noop() {}
 
+  /*
+   * Add Widget and Admin Others open their dialog as the second member of the label's cell, and
+   * Core opens or closes it by counting those members. In the row of actions that member grew the
+   * row and pushed the widgets down. The cell keeps a 1px placeholder as its second member, so Core's
+   * count works as before, and the dialog is drawn over the page, under its label, as a popover.
+   * Destroying either one destroys the other.
+   */
+  function floatDialogs(cell) {
+    var original = cell && cell.addMember;
+    if (!original || cell.etskinFloats) {
+      return;
+    }
+    cell.etskinFloats = true;
+    cell.addMember = function (member) {
+      var label, rect, placeholder, dialogDestroy;
+      if (!isc.OBMyOBDialog || !isc.isA.OBMyOBDialog || !isc.isA.OBMyOBDialog(member)) {
+        return original.apply(this, arguments);
+      }
+      placeholder = isc.Canvas.create({ width: 1, height: 1, overflow: 'hidden', etskinDialog: member });
+      placeholder.destroy = function () {
+        var dialog = this.etskinDialog;
+        this.etskinDialog = null;
+        if (dialog && !dialog.destroyed) {
+          dialog.destroy();
+        }
+        return isc.Canvas.getPrototype().destroy.apply(this, arguments);
+      };
+      dialogDestroy = member.destroy;
+      member.destroy = function () {
+        var holder = placeholder;
+        placeholder = null;
+        if (holder && holder.etskinDialog && !holder.destroyed) {
+          holder.etskinDialog = null;
+          holder.destroy();
+        }
+        return dialogDestroy.apply(this, arguments);
+      };
+      original.call(this, placeholder);
+      label = this.getMember(0);
+      rect = label && label.getPageRect ? label.getPageRect() : [0, 0, 0, 0];
+      member.setWidth(DIALOG_WIDTH);
+      member.moveTo(Math.max(8, rect[0] + rect[2] - DIALOG_WIDTH), rect[1] + rect[3] + 6);
+      member.setStyleName('OBMyOBDialog etskin-home-dialog');
+      if (!member.isDrawn()) {
+        member.draw();
+      }
+      member.bringToFront();
+      return member;
+    };
+  }
+
   function arrangeWorkspace(myob) {
     var column = myob.leftColumnLayout;
     var members, i;
@@ -1246,6 +1299,7 @@
     column.setOverflow('visible');
     members = [column.refreshLayout, column.addWidgetLayout, column.adminOtherMyOBLayout];
     for (i = 0; i < members.length; i++) {
+      floatDialogs(members[i]);
       if (members[i] && members[i].getMember(0)) {
         members[i].setWidth(1);
         members[i].setOverflow('visible');
@@ -1269,9 +1323,9 @@
     if (!original) {
       return;
     }
-    // Core's dialogs are as wide as the column they open in; in a row, that is as wide as a label.
+    // Core's dialogs are as wide as the column they open in; over the page they take their own width.
     if (isc.OBMyOBDialog) {
-      isc.OBMyOBDialog.addProperties({ width: 280 });
+      isc.OBMyOBDialog.addProperties({ width: DIALOG_WIDTH });
     }
     // Wrapped after the portal is built, so both members exist; the column is built just before.
     proto.createPortalLayout = function () {

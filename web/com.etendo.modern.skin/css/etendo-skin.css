@@ -1901,10 +1901,11 @@
   color: #00030d !important;
 }
 
-.etskin-on .etskin-home-actions [class^="OBMyOBDialog"],
-.etskin-on .etskin-home-actions .OBMyOBDialog {
+/* The Add Widget and Admin Others popovers (etendo-skin-nav.js, floatDialogs), over the widgets. */
+.etskin-on .etskin-home-dialog {
+  border: 0 !important;
   border-radius: 12px;
-  box-shadow: 0 0 0 1px #e3e5ea;
+  box-shadow: 0 0 0 1px #e3e5ea, 0 8px 24px rgb(0 3 13 / 12%);
   background-color: var(--sk-surface);
 }
 
