@@ -462,8 +462,11 @@ class or `--sk-*` token a UIKit view reads is changed.
   attachments and audit blocks - from its own row. The menu stays open through every tick. A hidden
   field goes with `hiddenInForm` and the item's own `hide()`; it keeps its value, its callouts and
   its validation. A required field that is hidden and empty, or in error, is named in the message
-  bar with an action that shows it for that record only. The native personalization button, which
-  in this installation only answers with the licence notice, gives way to the menu.
+  bar with an action that shows it for that record only, and Save stays disabled while it is empty,
+  as Core keeps it for an empty field on screen. A save that finds a required field hidden and
+  empty shows it first, so Core stops the save with its own required-field error instead of
+  sending the record to the server. The native personalization button, which in this installation
+  only answers with the licence notice, gives way to the menu.
 - **What a tab opens on.** What Core shows. The one exception is Sales Order, which keeps the first
   selection approved in its pilot, named by `AD_Tab` id. No other window gets one: which fields and
   columns matter is chosen from the interface by the team and the users. The user's choices win and live in `localStorage`, per user, role and tab: fields
