@@ -68,10 +68,10 @@
     { name: 'edit', types: ['eliminate', 'undo'] },
     { name: 'more', types: ['clone', 'export', 'print', 'link', 'email', 'attach'] }
   ];
-  // etskinFilters and etskinFields are the Filters button and the Fields / Columns menu of the
-  // standard windows (etendo-skin-form.js), each a glyph with its word.
-  var VIEW = ['etskinFilters', 'etskinFields', 'personalization', 'manageviews', 'gridAndFilter'];
-  var WIDE = { etskinFilters: 104, etskinFields: 110 };
+  // etskinFields is the Fields / Columns menu of the standard windows (etendo-skin-form.js), a glyph
+  // with its word.
+  var VIEW = ['etskinFields', 'personalization', 'manageviews', 'gridAndFilter'];
+  var WIDE = { etskinFields: 110 };
   var PRIMARY = 'save';
 
   // Beyond this the run stops reading as one row of glyphs and starts reading as a wall again, so
@@ -478,9 +478,6 @@
          * to the tooltip so nothing is lost.
          */
         classes = 'etskin-tb-view';
-        if (VIEW[i] === 'etskinFilters') {
-          classes += ' etskin-tb-filters';
-        }
         if (VIEW[i] === 'etskinFields') {
           classes += ' etskin-tb-fields';
         }

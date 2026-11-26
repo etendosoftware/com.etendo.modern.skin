@@ -4379,54 +4379,10 @@
 /* --------------------------------------------------------- GO action row */
 
 /*
- * The list's action row as GO lays it out: Filters first, an outlined button with its funnel, its
- * word and - while filters are in force - their count; New as the filled primary with its word; the
- * rest quiet glyphs. In the form, Save carries its word instead, filled while there is something to
- * save and outlined while there is not.
+ * The list's action row: New as the filled primary with its word; the rest quiet glyphs. In the
+ * form, Save carries its word instead, filled while there is something to save and outlined while
+ * there is not.
  */
-.etskin-on .etskin-tb-filters {
-  border: 1px solid var(--sk-nav-border);
-  border-radius: var(--sk-radius);
-  background-color: var(--sk-surface);
-  box-sizing: border-box;
-  transition: background-color 120ms ease, border-color 120ms ease;
-}
-
-.etskin-on .etskin-tb-filters:hover,
-.etskin-on .etskin-tb-filters[aria-pressed="true"] {
-  border-color: var(--sk-border-strong);
-  background-color: var(--sk-go-fill-soft);
-}
-
-.etskin-on .etskin-tb-filters::after {
-  content: var(--sk-filters-label, "") attr(data-badge);
-  position: absolute;
-  inset-inline-start: 34px;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  font-family: var(--sk-font);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--sk-text);
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.etskin-on .OBToolbarIconButton_icon_etskinFilters {
-  background-image: none;
-  background-color: var(--sk-go-icon);
-  -webkit-mask-position: 11px center;
-  mask-position: 11px center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: 16px 16px;
-  mask-size: 16px 16px;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18l-7 8.5V19l-4 2v-7.5z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h18l-7 8.5V19l-4 2v-7.5z'/%3E%3C/svg%3E");
-}
-
 .etskin-on .etskin-go .etskin-tb-new {
   --sk-icon-color: var(--sk-surface);
   background-color: var(--sk-go-ink);
@@ -4952,7 +4908,6 @@
 }
 
 /* The words of the text buttons follow the glyph. */
-.etskin-on .etskin-go .etskin-tb-filters::after,
 .etskin-on .etskin-go .etskin-tb-fields::after,
 .etskin-on .etskin-go .etskin-tb-new::after,
 .etskin-on .etskin-go .etskin-tb-savelabel::after {

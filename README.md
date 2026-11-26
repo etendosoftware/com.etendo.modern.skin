@@ -50,8 +50,8 @@ depend on this one:
 | `web/com.etendo.modern.skin/js/etendo-skin.js` | Resolves the palette per session and writes the custom properties onto `<html>`. Also overrides the SmartClient sizes that live in JS rather than CSS, and publishes `OB.ETSkin`. |
 | `web/com.etendo.modern.skin/js/etendo-skin-nav.js` | Builds the left navigation panel out of `OB.Application.menu`. Stands down unless the script above ran. |
 | `web/com.etendo.modern.skin/js/etendo-skin-topbar.js` | Reorders the top bar and sizes its buttons. Same rule. |
-| `web/com.etendo.modern.skin/js/etendo-skin-toolbar.js` | Arranges the view toolbar as the new UI's single pill: one run of glyphs in its order, the process buttons in one Actions menu after it, and the view controls (Filters, Fields / Columns) on the right. Buttons other modules add spill into an overflow menu once the run is full. Same rule. |
-| `web/com.etendo.modern.skin/js/etendo-skin-form.js` | What a form's stylesheet cannot reach: the required marker, the link glyph, the section chevrons, the status bar title and the child panes. Also the standard windows' GO design - the Fields / Columns menu, the Filters button and the light frame; see [The standard windows](#the-standard-windows). Same rule. |
+| `web/com.etendo.modern.skin/js/etendo-skin-toolbar.js` | Arranges the view toolbar as the new UI's single pill: one run of glyphs in its order, the process buttons in one Actions menu after it, and the view controls (Fields / Columns and the stock view glyphs) on the right. Buttons other modules add spill into an overflow menu once the run is full. Same rule. |
+| `web/com.etendo.modern.skin/js/etendo-skin-form.js` | What a form's stylesheet cannot reach: the required marker, the link glyph, the section chevrons, the status bar title and the child panes. Also the standard windows' GO design - the Fields / Columns menu and the light frame; see [The standard windows](#the-standard-windows). Same rule. |
 | `web/com.etendo.modern.skin/js/etendo-skin-grid.js` | What a grid's stylesheet cannot reach: the row height, the header alignment, the frozen pane, the status badge, and the reference cells as links to their record (the form's own `OB.Utilities.openDirectView` call). Same rule. |
 | `src/com/etendo/modern/skin/LoginSignInProvider.java` | Puts the login stylesheet on the login page through the core's `SignInProvider` seam. |
 | `web/com.etendo.modern.skin/css/etendo-skin-login.css` | The login page, loaded by the provider above. |
@@ -436,7 +436,7 @@ Every button of the window toolbar and the top bar follows one state model (ETP-
 UI's values (workspace-ui `IconButton` and the toolbar's button styles). The tokens are
 `--sk-btn-*` in the last section of `etendo-skin.css`.
 
-| State | Quiet button (every glyph, Filters, Fields, Actions, the top bar discs) | Primary button (New, Save) |
+| State | Quiet button (every glyph, Fields, Actions, the top bar discs) | Primary button (New, Save) |
 | --- | --- | --- |
 | Normal | no fill, glyph `#3f4a7e` | fill `#2a1757`, glyph and word `#fcfcfd` |
 | Hover | fill `#2a1757`, glyph and word `#fcfcfd` | fill `#1b0f3a`, glyph and word `#fcfcfd` |
@@ -462,9 +462,9 @@ canvases, never `OBStandardWindow`, and none of this reaches them: every rule ha
 `etskin-go`, the class `etendo-skin-form.js` puts on a standard window's root, and no SmartClient
 class or `--sk-*` token a UIKit view reads is changed.
 
-- **The list.** 44px rows under a 40px header; the filter row is folded behind a Filters button that
-  brings it back and counts the criteria in force - never the link of a child tab to its parent. The
-  row is hidden, not removed, because Core reads it to know the grid is filtered and to clear it.
+- **The list.** 44px rows under a 40px header, with the filter row always on screen, as in Classic
+  and the new UI. The GO line folded it behind a Filters button; ETP-5931 dropped the button. A list
+  under a filter still shows it with the dot on the stock filter button.
 - **Fields and Columns.** One toolbar button offers the form's fields while the form shows and the
   grid's columns while the list shows. Any field the user's role gets can be hidden or shown,
   required ones included, and so can a whole section - a field group, or the notes, linked items,
@@ -515,8 +515,8 @@ class or `--sk-*` token a UIKit view reads is changed.
 - **The toolbar and the frame.** The strip is one pill, as in the new UI: New (filled, indigo) and
   Save carry their word - New in the list, Save in the form - then refresh (drawn like the other glyphs: the new UI's lavender disc was dropped on review), delete,
   undo and the occasional glyphs (clone, export, print, link, email, attach) inline, then Actions,
-  the process buttons as one menu in the place of the new UI's "Available Process". Filters and
-  Fields / Columns sit on the right with the stock view glyphs. The record count moved to the top
+  the process buttons as one menu in the place of the new UI's "Available Process". Fields /
+  Columns sits on the right with the stock view glyphs. The record count moved to the top
   bar. The new UI's fullscreen button has no stock control behind it and is not drawn. The desk
   and the window strip take the top bar's lavender whatever the tab shows - a standard window, the
   workspace, an EMOS view or a window still loading - so the strip never changes colour between
@@ -707,9 +707,9 @@ is the new UI, and these assertions fail on purpose. Each is listed under `known
 | Finding | Assertion | Why it differs |
 | --- | --- | --- |
 | F1 | 15 glyphs left of the right-anchored group (max 10) | The toolbar is the new UI's single pill with its glyphs inline; only extras go to the overflow. |
-| F1 | Intra-group pitch (max 36px) | The right-anchored group holds Filters and Fields, labelled buttons whose pitch is their width. |
+| F1 | Intra-group pitch (max 36px) | The right-anchored group holds Fields / Columns, a labelled button whose pitch is its width. |
 | F2 | Field height (min 32px) | The record form's fields are 28px (see *Form fields*). |
-| F3 | Largest tinted region (max 15%) | The tint is the new UI's near-white panel surface `#f5f6fa` under the form, not lavender; lavender is the top band only. |
+| F3 | Largest tinted region (max 15%) | The tint is the new UI's near-white panel surface `#f5f6fa` - under the form, and the grid's filter row, always on screen - not lavender; lavender is the top band only. |
 | F4 | Row height (min 36px) | 32px rows, between the critique's 36px and the new UI's 28px, as dense as the form. |
 | F4 | Row separator alpha (max 0.08) | An opaque `#d1d5db` hairline, a step darker than the new UI's gray-200 so it survives every background (ETP-6448). |
 | F7 | Top bar 62px with a 20px title (max 56px, 16px) | The new UI's title: window and record at 20px semibold in the top bar. The status bar's 16px title is secondary. |

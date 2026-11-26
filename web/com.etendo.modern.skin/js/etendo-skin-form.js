@@ -484,12 +484,11 @@
  * its button, which here only answers with the licence notice, gives way to the Fields menu.
  *
  * THE LIST. Each grid of the window is given GO's proportions - 44px rows under a 40px header - and
- * its filter row is folded away behind a Filters button that brings it back; the criteria themselves
- * are never touched, so a filter that is on stays on and the button counts it. The same button that
- * offers the form's fields offers the grid's columns while the list is showing, kept per user, role
- * and tab like the fields. A window with child tabs gives the main list the larger share of the
- * split; the child tabs stay one resize bar away. The toolbar leads with Filters, New is GO's filled
- * primary in the list and Save is in the form, each with its word.
+ * keeps its filter row on screen, as Classic and the new UI do (the GO line folded it behind a
+ * Filters button; ETP-5931 dropped it). The same button that offers the form's fields offers the
+ * grid's columns while the list is showing, kept per user, role and tab like the fields. A window
+ * with child tabs gives the main list the larger share of the split; the child tabs stay one resize
+ * bar away. New is GO's filled primary in the list and Save is in the form, each with its word.
  *
  * The strings are this file's own, in Spanish, as agreed; they become AD messages when the design
  * leaves the rehearsal.
@@ -538,7 +537,6 @@
   var TREE_COLUMN_WIDTH = 240;
   // The lines' share of a split window; the main list takes the rest.
   var LINES_SHARE = '38%';
-  var FILTERS_TYPE = 'etskinFilters';
   // The toolbar's plain glyph width, and the widths of the two buttons that carry their word.
   var ICON_WIDTH = 32;
   var NEW_WIDTH = 96;
@@ -557,7 +555,6 @@
   var TEXT = {
     fields: 'Fields',
     columns: 'Columns',
-    filters: 'Filters',
     newRecord: 'New',
     save: 'Save',
     search: 'Search field',
@@ -1307,14 +1304,6 @@
     }
   }
 
-  // Core shows the row again on some redraws; a folded grid folds it back.
-  function keepFolded(grid) {
-    if (grid && grid.etskinFolded && grid.filterEditor && grid.filterEditor.isVisible &&
-        grid.filterEditor.isVisible()) {
-      setFolded(grid, true);
-    }
-  }
-
   /*
    * Shows and hides columns with the grid's own showField and hideField. While the filter row is on
    * screen SmartClient updates its cells one by one and trips over a column that has just gone, so
@@ -1356,8 +1345,8 @@
   }
 
   /*
-   * Once per grid: GO's row and header heights, the filter row folded away behind the Filters button
-   * - hidden, not removed, and the criteria exactly as they are - and the columns the user chose. The columns Core showed
+   * Once per grid: GO's row and header heights and the columns the user chose. The filter row stays
+   * on screen, as in Classic and the new UI (ETP-5931 dropped the GO line's Filters button). The columns Core showed
    * are remembered first, as the defaults of a tab this file has no list for. It runs just before the
    * grid's first draw, where changing heights and columns is cheap: on a drawn grid every one of those
    * changes lays the whole grid out again.
@@ -1387,7 +1376,6 @@
       tree.setCellHeight(ROW_HEIGHT);
       tree.setHeaderHeight(HEADER_HEIGHT);
     }
-    setFolded(grid, true);
     applyColumns(view);
   }
 
@@ -1397,7 +1385,6 @@
     var i;
     for (i = 0; i < views.length; i++) {
       adaptGrid(views[i]);
-      keepFolded(views[i] && views[i].viewGrid);
     }
     // Once the lines are on screen: a height set before that is overwritten when Core lays them out.
     if (win && win.view && win.view.childTabSet && !win.etskinGoSplit && win.view.childTabSet.isDrawn &&
@@ -1405,40 +1392,6 @@
       win.etskinGoSplit = true;
       win.view.childTabSet.setHeight(LINES_SHARE);
     }
-  }
-
-  // The filters in force, counted as the conditions a person set - one per column filtered.
-  function filterCount(grid) {
-    var count = 0;
-    // A child tab's grid is always narrowed to its parent record; that link is not a filter the user
-    // set, and Core leaves it out of its own filter handling the same way.
-    var parentProperty = grid && grid.view ? grid.view.parentProperty : null;
-    function walk(criteria) {
-      var list, i;
-      if (!criteria) {
-        return;
-      }
-      if (criteria.fieldName) {
-        if (String(criteria.fieldName).charAt(0) !== '_' && criteria.fieldName !== parentProperty) {
-          count++;
-        }
-        return;
-      }
-      list = criteria.criteria || [];
-      for (i = 0; i < list.length; i++) {
-        walk(list[i]);
-      }
-    }
-    try {
-      walk(grid.getCriteria ? grid.getCriteria() : null);
-    } catch (e) {
-      return 0;
-    }
-    // The window's own filter - Core's implicit one, shown by its funnel in the filter row - counts too.
-    if (grid.filterClause || grid.sqlFilterClause) {
-      count++;
-    }
-    return count;
   }
 
   function toolbarMember(view, type) {
@@ -1450,13 +1403,6 @@
       }
     }
     return null;
-  }
-
-  function refreshFiltersButton(view) {
-    var button = toolbarMember(view, FILTERS_TYPE);
-    if (button && button.updateState) {
-      button.updateState();
-    }
   }
 
   /*
@@ -2063,53 +2009,14 @@
     }, 360);
   }
 
-  /*
-   * Filters: the filter row, folded away by adaptGrid, comes back and goes again from here. Only the
-   * row is shown or hidden - the criteria are the grid's and stay as they are - and the button says
-   * how many are in force, so a list that is filtered never looks as if it were not.
-   */
-  function registerFiltersButton() {
-    OB.ToolbarRegistry.registerButton(FILTERS_TYPE, isc.OBToolbarIconButton, {
-      buttonType: FILTERS_TYPE,
-      prompt: text('filters'),
-      action: function () {
-        var grid = this.view && this.view.viewGrid;
-        if (!grid || !grid.filterEditor) {
-          return;
-        }
-        setFolded(grid, !grid.etskinFolded);
-        this.updateState();
-      },
-      updateState: function () {
-        var view = this.view;
-        var grid = view && view.viewGrid;
-        var handle = this.getHandle && this.getHandle();
-        var count;
-        if (!isGoView(view) || view.isShowingForm || !grid) {
-          this.hide();
-          return;
-        }
-        adaptWindow(view.standardWindow);
-        count = filterCount(grid);
-        if (handle) {
-          handle.setAttribute('data-badge', count ? ' · ' + count : '');
-          handle.setAttribute('aria-pressed', grid.etskinFolded ? 'false' : 'true');
-        }
-        this.show();
-      }
-    }, 1);
-  }
-
   // ------------------------------------------------------------------ hooks
 
   try {
     document.documentElement.style.setProperty('--sk-fields-label', JSON.stringify(text('fields')));
     document.documentElement.style.setProperty('--sk-columns-label', JSON.stringify(text('columns')));
-    document.documentElement.style.setProperty('--sk-filters-label', JSON.stringify(text('filters')));
     document.documentElement.style.setProperty('--sk-new-label', JSON.stringify(text('newRecord')));
     document.documentElement.style.setProperty('--sk-save-label', JSON.stringify(text('save')));
     registerButton();
-    registerFiltersButton();
 
     /*
      * A process definition's parameter window draws every button the same: Done, Cancel, the
@@ -2174,7 +2081,6 @@
     }
 
     var originalGridDraw = isc.OBViewGrid.getPrototype().draw;
-    var originalGridFilter = isc.OBViewGrid.getPrototype().filterData;
     isc.OBViewGrid.addProperties({
       draw: function () {
         if (!this.isDrawn() && isGoView(this.view) && this.view.viewGrid === this) {
@@ -2185,19 +2091,6 @@
           }
         }
         return originalGridDraw.apply(this, arguments);
-      },
-      // Every filter change - typed, cleared, the implicit filter switched off - ends here, so the
-      // count on the Filters button follows it instead of waiting for the next press.
-      filterData: function () {
-        var result = originalGridFilter.apply(this, arguments);
-        if (isGoView(this.view) && this.view.viewGrid === this) {
-          try {
-            refreshFiltersButton(this.view);
-          } catch (e) {
-            // A stale count is a stale count, not a broken filter.
-          }
-        }
-        return result;
       }
     });
 

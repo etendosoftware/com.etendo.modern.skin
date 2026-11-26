@@ -52,8 +52,8 @@ Each one stands down unless `OB.ETSkin` exists, and wraps prototypes at load tim
 - A Core class must be defined **before** the bundle is evaluated, or its wrapper is silently skipped
   (`isc.OBViewGrid`, `isc.OBViewForm`, `isc.OBToolbar`, `isc.OBStatusBar`, `isc.OBStandardView`,
   `isc.OBTabSetMain`, `isc.ImgSectionHeader`, `OB.ViewFormProperties`).
-- Two scripts wrap the same method on `isc.OBViewGrid` (`draw`, `filterData`): the form script first,
-  then the grid script on top of it. Both call through, so the order only decides which runs first.
+- Two scripts wrap `isc.OBViewGrid.draw`: the form script first, then the grid script on top of it.
+  Both call through, so the order only decides which runs first.
 
 ## Functions wrapped or replaced
 
@@ -72,7 +72,6 @@ called on that path.
 | Target | Where | What the skin does | If it changes |
 | --- | --- | --- | --- |
 | `isc.OBViewGrid.prototype.draw` | `etendo-skin-form.js:2104` | Before the first draw of a standard view's grid: row and header heights, folded filter row, column choice (`adaptGrid`). | Grid shows Core's columns and the filter row; on a late adapt, +70% open time on Sales Order (ETP-5923). |
-| `isc.OBViewGrid.prototype.filterData` | `etendo-skin-form.js:2116` | Refreshes the count on the Filters button. | "Filters · N" stays stale after a filter change. |
 | `isc.OBViewGrid.prototype.draw`, `filterData` | `etendo-skin-grid.js:400, 411` | Aligns header cells and marks the filtered state on the stock filter button. | Misaligned headers; no filtered mark. |
 | `isc.OBViewGrid.prototype.updateRowCountDisplay` | `etendo-skin-grid.js:375` | **Replaced** (unless the grid has an edit-link column): refreshes the top bar title count and sets `view.recordCount` on child tabs, which Core's `updateTabTitle` already draws as "Lines (13)". | No count in the title or on child tabs. |
 | `isc.OBViewGrid.prototype.checkShowFilterFunnelIcon` | `etendo-skin-grid.js:422` | Passes a fake message bar (`QUIET_BAR`, line 248) that reports itself visible, so Core skips the implicit filter banner. Depends on Core guarding with `messageBar && !messageBar.isVisible()`. | The two-line implicit filter banner comes back. |
@@ -111,7 +110,7 @@ called on that path.
 | `OB.TopLayout.CompanyImageLogo`, `OB.TopLayout.reflow` | `etendo-skin-topbar.js:661, 765` | Moves Core's logo canvas next to "Etendo". | Logo in its stock place. |
 | `OB.ViewFormProperties.handleFieldErrors`, `OB.ViewFormProperties.processFICReturn`, `OB.ViewFormProperties.setFocusInErrorField`, `OB.ViewFormProperties.allRequiredFieldsSet`, `OB.ViewFormProperties.validateForm` | `etendo-skin-form.js:2325, 2341, 2366, 2392, 2413` | Core copies these onto every form at creation, so they are wrapped at the source: the hidden required fields notice, the focus on a visible field in error, Save and the process buttons kept disabled while a required field the user hid is empty (Core counts only the fields on screen), and - before Core validates a save - the reveal of every required field the user hid and left empty, since Core's `validateField` skips `hiddenInForm` fields. After `processFICReturn` (display logic applied), `syncOrphanSpacers` (line 2210) sets to `0` the `height` of a `SpacerItem` whose nearest fields on both sides are hidden, keeps the original in `etskinHeight` to restore it, and calls `markForRedraw`. Reads `getItems()`, `Class`, `isVisible()`. | No notice; SmartClient error focusing a hidden field; a 20px gap where a hidden section's spacer was; a hidden empty required field reaches the server and comes back as a raw database error. |
 | `OB.Styles.Process.PickAndExecute.gridCellHeight` | `etendo-skin-form.js:2166` | Set to 32 (`ROW_HEIGHT`) at load. `OBPickAndExecuteView` passes it as the grid's `cellHeight`, and `ob-formitem-pickeditgrid.js` sizes a grid parameter as 45 + this × `displayedRowsNumber`. | Stock 25px rows in every pick and execute grid. |
-| `OB.ToolbarRegistry.registerButton` | `etendo-skin-form.js:2011, 2059` | Registers `etskinFields` and `etskinFilters` (`isc.OBToolbarIconButton`). | No Fields / Columns or Filters buttons. |
+| `OB.ToolbarRegistry.registerButton` | `etendo-skin-form.js:1970` | Registers `etskinFields` (`isc.OBToolbarIconButton`). | No Fields / Columns button. |
 | `OB.Layout.ViewManager.loadedWindowClassName` | `etendo-skin-nav.js:791` | Cleared before every open from the side panel (a development window leaves it set and `ob-view-manager.js` reuses it). | The first open renders the last development window instead. |
 | `isc.OBApplicationMenuTree.create(...).itemClick` | `etendo-skin-nav.js:1019` | The side panel opens entries through Core's own menu tree. | Clicks in the side panel do nothing. |
 | Toolbar canvases `disableShortcut`, `enableShortcut`, `show`, `hide` (instances) | `etendo-skin-toolbar.js:202, 550` | No-op shortcuts for the skin's canvases; `show`/`hide` that do not draw a button moved into the Actions menu. | Buttons drawn over the logo; `TypeError` in `refreshCustomButtons`. |
