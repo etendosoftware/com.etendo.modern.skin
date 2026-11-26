@@ -1,9 +1,9 @@
 {
   "screen": "login",
   "href": "http://localhost:8080/etendo/security/Login",
-  "recordedAt": "2026-11-26T16:16:05.574Z",
+  "recordedAt": "2026-11-26T17:19:12.564Z",
   "sources": {
-    "css/etendo-skin.css": "c850c04540570982c9410a312ee9a64f3616de877ca7d7ff0b86e8e0030ce3ba",
+    "css/etendo-skin.css": "e3add2704d6aaebe09a6e14d71c7e94aee64f458efae958a1665273098972f90",
     "css/etendo-skin-classic.css": "fdbca35cf28d43a237f65777d7bdc5b08c7a91af83903ad3663123d192d2c630",
     "css/etendo-skin-login.css": "d8b56669baa69080e1f582397cabce671ea2f219e73c2ed08fa381cff81e1e2b",
     "js/etendo-skin.js": "39f492f8305718557d6dc1d382f962bdf3a940c89ff4b7489c0b2266a486ce94",
